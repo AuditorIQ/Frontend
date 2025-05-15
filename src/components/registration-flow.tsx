@@ -15,9 +15,9 @@ export function RegistrationFlow() {
     password: "",
     practiceName: "",
     zipCode: "",
-    licenseNumber: "",
+    providerLicenseNo: "",
     providers: [],
-    subscription: "",
+    subscriptionType: "",
   });
 
 
@@ -33,7 +33,7 @@ export function RegistrationFlow() {
       <div className="w-full  mx-auto p-6 flex flex-col items-center justify-center h-screen">
         <div className="w-full">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-[#0a2463]">AuditorIQ</h1>
+          <center><img style={{ width: "200px"}} src= "logo_asset.svg" /></center>
           </div>
 
           {step === 1 && (

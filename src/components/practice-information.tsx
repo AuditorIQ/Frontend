@@ -34,15 +34,15 @@ export function PracticeInformation({
     if (!formData.practiceName)
       newErrors.practiceName = "Practice name is required";
     if (!formData.zipCode) newErrors.zipCode = "ZIP code is required";
-    if (!formData.licenseNumber)
-      newErrors.licenseNumber = "License number is required";
+    if (!formData.providerLicenseNo)
+      newErrors.providerLicenseNo = "License number is required";
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       setZipCode(formData.zipCode);
       setPracticeName(formData.practiceName);
-      setProviderLicenseNo(formData.licenseNumber);
+      setProviderLicenseNo(formData.providerLicenseNo);
       onNext();
     }
   };
@@ -83,16 +83,16 @@ export function PracticeInformation({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="licenseNumber">Number of provider license</Label>
+          <Label htmlFor="providerLicenseNo">Number of provider license</Label>
           <Input
-            id="licenseNumber"
+            id="providerLicenseNo"
             type="text"
             placeholder="Enter your license number"
-            value={formData.licenseNumber}
-            onChange={(e) => updateFormData({ licenseNumber: e.target.value })}
+            value={formData.providerLicenseNo}
+            onChange={(e) => updateFormData({ providerLicenseNo: e.target.value })}
           />
-          {errors.licenseNumber && (
-            <p className="text-red-500 text-xs">{errors.licenseNumber}</p>
+          {errors.providerLicenseNo && (
+            <p className="text-red-500 text-xs">{errors.providerLicenseNo}</p>
           )}
         </div>
 

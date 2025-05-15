@@ -41,7 +41,7 @@ export function AddProviders({
     //   { id: "3", name: "Dr. Robert", npiNumber: "24690" },
     // ]
   );
-  const [isEdit, setIsEdit] = useState(null);
+  const [isEdit, setIsEdit] = useState<string | null>(null);
 
   const addProvider = () => {
     // Validate

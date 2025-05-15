@@ -10,19 +10,27 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 export default function SignIn() {
+  
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    sessionStorage.setItem('token',"");
+    sessionStorage.setItem('user_email',"");
+    sessionStorage.setItem('user_name',"");
+  });
+
   // Handle form submission and registration process
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically submit the complete registration data
 
+    // Here you would typically submit the complete registration data
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/signin`,
@@ -32,9 +40,13 @@ export default function SignIn() {
         }
       );
       if (res?.data?.success) successToast("Successfully signed In");
+      // save token to the storage
+      sessionStorage.setItem('token', res?.data?.data.accessToken);
+      sessionStorage.setItem('user_email', res?.data?.data.user.email);
+      sessionStorage.setItem('user_name', res?.data?.data.user.name);
+      // move to dashboard
       router.push("/dashboard");
     } catch (error: any) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
       errorToast(error?.response?.data?.message || "Something went wrong");
     }
     // Redirect to dashboard or confirmation page
@@ -46,7 +58,7 @@ export default function SignIn() {
         {/* Left side - Form */}
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
           <div className="text-center mb-28">
-            <h1 className="text-2xl font-bold text-[#0a2463]">AuditorIQ</h1>
+            <center><img style={{ width: "200px"}} src= "logo_asset.svg" /></center>
           </div>
 
           <div className="flex-grow flex flex-col justify-center max-w-md mx-auto w-full">
@@ -60,7 +72,7 @@ export default function SignIn() {
             <Button
               variant="outline"
               className="w-full mb-6 relative"
-              type="button"
+              onClick={() => {window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;}}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
@@ -190,8 +202,7 @@ export default function SignIn() {
         {/* Right side - Image */}
         <div className="#hidden md:block md:w-1/2 bg-gray-100">
           <Image
-            src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="Healthcare professional with patient"
+            src="firstscreen.svg" alt="Healthcare professional with patient"
             width={800}
             height={900}
             className="w-full h-full object-cover"

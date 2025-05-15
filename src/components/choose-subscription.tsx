@@ -22,7 +22,7 @@ export function ChooseSubscription({
   onBack,
 }: ChooseSubscriptionProps) {
   const [selectedPlan, setSelectedPlan] = useState(
-    formData.subscription || "FREE"
+    formData.subscriptionType || "FREE"
   );
   const {
     setSubscriptionType,
@@ -36,62 +36,63 @@ export function ChooseSubscription({
     profilePicUrl,
     providers,
   } = useSignupFormStore();
+  
   const router = useRouter();
 
   const handleSelectPlan = (plan: string) => {
     setSelectedPlan(plan);
-    updateFormData({ subscription: plan });
+    updateFormData({ subscriptionType: plan });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would typically submit the complete registration data
-    console.log("Registration complete with data:", {
-      ...formData,
-      subscription: selectedPlan,
-    });
+  const connectStripe = async () => {
+    sessionStorage.setItem("formData",JSON.stringify(formData));
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`, { plan: selectedPlan.toLowerCase() });
+    window.location.href = res.data.checkoutUrl;
+  }
 
+  const handleSubmit = async () => {
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`,
-        {
-          name,
-          email,
-          password,
-          practiceName,
-          zipCode,
-          providerLicenseNo,
-          subscriptionType: selectedPlan,
-          providers: providers.map((provider: any) => ({
-            name: provider.name,
-            npiNumber: provider.npiNumber,
-          })),
-        }
-      );
-      console.log("🚀 ~ handleSubmit ~ res:", res);
-      if (res?.data?.success) successToast("Successfully signed up");
-      router.push("/dashboard"); // Redirect to dashboard or confirmation page
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`, {
+        name,
+        email,
+        password,
+        practiceName,
+        zipCode,
+        providerLicenseNo,
+        subscriptionType: selectedPlan,
+        providers: { create: providers.map((provider: any, index: number) => ({
+          id: (Date.now()+index),
+          name: provider.name,
+          npiNumber: provider.npiNumber,
+        }))},
+      });
+  
+      if (res?.data?.success) {
+        successToast("Successfully signed up");
+  
+        setTimeout(() => {
+          router.push('/sign-in');
+        }, 100); // small delay just in case
+      }
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
     }
-    // Redirect to dashboard or confirmation page
   };
-
+  
   return (
     <div className="bg-white p-6 rounded-lg max-w-4xl mx-auto">
       <div className="text-center mb-6">
         <h2 className="text-4xl font-bold">Choose Your Subscription</h2>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Starter Plan */}
         <div
-          className={` rounded-lg bg-[#EBF9FF] p-4 ${
-            selectedPlan === "STARTER" ? "ring-2 ring-[#0a2463]" : ""
+          className={` rounded-lg p-4 ${
+            selectedPlan === "STARTER" ? "bg-primary ring-2 ring-[#0a2463]" : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("STARTER")}
         >
-          <div className="bg-[#f0f7ff] p-3 rounded-t-lg">
+          <div className="p-3 rounded-t-lg">
             <h3 className="font-bold">Starter</h3>
             <p className="text-xs text-gray-600">
               For solo providers or small clinics
@@ -103,14 +104,6 @@ export function ChooseSubscription({
               <span className="text-3xl font-bold">$99</span>
               <span className="text-gray-500 text-sm">/Month</span>
             </div>
-
-            <Button
-              variant="outline"
-              className="w-full mb-4 rounded-full bg-[#f0f7ff] ring ring-primary"
-              onClick={() => handleSelectPlan("STARTER")}
-            >
-              Get Started Now
-            </Button>
 
             <ul className="space-y-4">
               <li className="flex items-start">
@@ -156,10 +149,8 @@ export function ChooseSubscription({
 
         {/* Professional Plan */}
         <div
-          className={`bg-primary text-white rounded-lg p-4 ${
-            selectedPlan === "PROFESSIONAL"
-              ? "ring-2 ring-offset-2 ring-[#0a2463]"
-              : ""
+          className={` rounded-lg p-4 ${
+            selectedPlan === "PROFESSIONAL" ? "bg-primary ring-2 ring-[#0a2463]" : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("PROFESSIONAL")}
         >
@@ -193,16 +184,6 @@ export function ChooseSubscription({
                 /Month
               </span>
             </div>
-
-            <Button
-              variant={
-                selectedPlan === "professional" ? "secondary" : "outline"
-              }
-              className="w-full mb-4 bg-secondary text-black rounded-full"
-              onClick={() => handleSelectPlan("PROFESSIONAL")}
-            >
-              Get Started Now
-            </Button>
 
             <ul className="space-y-4">
               <li className="flex items-start">
@@ -277,12 +258,12 @@ export function ChooseSubscription({
 
         {/* Enterprise Plan */}
         <div
-          className={`border bg-[#EBF9FF] rounded-lg p-4 ${
-            selectedPlan === "ENTERPRISE" ? "ring-2 ring-[#0a2463]" : ""
+          className={` rounded-lg p-4 ${
+            selectedPlan === "ENTERPRISE" ? "bg-primary ring-2 ring-[#0a2463]" : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("ENTERPRISE")}
         >
-          <div className="bg-[#f0f7ff] p-3 rounded-t-lg">
+          <div className="p-3 rounded-t-lg">
             <h3 className="font-bold">Enterprise</h3>
             <p className="text-xs text-gray-600">
               For larger clinics or hospitals
@@ -294,14 +275,6 @@ export function ChooseSubscription({
               <span className="text-3xl font-bold">$100</span>
               <span className="text-gray-500 text-sm">/Month</span>
             </div>
-
-            <Button
-              variant="outline"
-              className="w-full mb-4 rounded-full bg-[#f0f7ff] ring ring-primary"
-              onClick={() => handleSelectPlan("ENTERPRISE")}
-            >
-              Get Started Now
-            </Button>
 
             <ul className="space-y-4">
               <li className="flex items-start">
@@ -350,24 +323,14 @@ export function ChooseSubscription({
           </div>
         </div>
       </div>
-
-      <form
-        onSubmit={handleSubmit}
-        className="flex items-center justify-center w-full"
-      >
-        <Button
-          type="submit"
-          className="#w-full bg-[#0a2463] min-w-xs max-w-sm"
-        >
-          Next
+      <div className="flex justify-center gap-4">
+        <Button className="bg-[#0a2463] min-w-xs max-w-sm" onClick={() => connectStripe()}>
+          Continue to Pay
         </Button>
-        {/* <Button
-          type="submit"
-          className="#w-full bg-[#0a2463] min-w-xs max-w-sm"
-        >
-          Continue to pay
-        </Button> */}
-      </form>
+        <button onClick={() => handleSubmit()} className="bg-[#ffffff] min-w-xs max-w-sm">
+          Skip for now
+        </button>
+      </div>
     </div>
   );
 }

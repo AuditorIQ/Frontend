@@ -1,0 +1,26 @@
+.register-button {
+    display: flex;
+    align-items: center;
+    background-color: #002366; /* Dark blue */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 16px;
+    cursor: pointer;
+    gap: 10px;
+  }
+  
+  .arrow-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #d2edff; /* Light blue circle */
+    color: #002366; /* Arrow color */
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+    font-weight: bold;
+  }
+  

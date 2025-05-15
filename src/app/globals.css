@@ -124,3 +124,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+.gradient-text {
+  font-size: 48px;
+  font-weight: bold;
+  background: linear-gradient(to right, #0072C6, #00BFFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  align-items: center;
+  height: 100px;
+}

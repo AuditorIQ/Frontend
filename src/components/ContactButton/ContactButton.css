@@ -1,0 +1,23 @@
+.contact-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: white;
+    color: #002366;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 0 0 1px #e6f7ff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .contact-button:hover {
+    background-color: #f0faff;
+  }
+  
+  .phone-icon {
+    stroke: #002366;
+  }
