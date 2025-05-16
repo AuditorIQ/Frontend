@@ -20,6 +20,7 @@ import {
 import { useEffect, useState } from 'react';
 import { errorToast, successToast } from "@/lib/toast";
 import Sidebar from "@/components/Sidebar";
+import UploadModal from "@/components/UploadModal";
 
 
 let providerData: { name: string; value: number }[];
@@ -91,6 +92,7 @@ const [dataset, setDataset] = useState<[number, string, string, string, string, 
 const [currentPage, setCurrentPage] = useState(1);
 const [searchkey, setSearchKey] = useState('');
 const [userName, setUserName] = useState<string | null>(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
 const recordsPerPage = 5;
 
 const filteredDataset = dataset.filter(item =>
@@ -218,9 +220,17 @@ useEffect(() => {
           <h1 className="text-2xl font-semibold">Overview</h1>
           <div className="flex gap-2 items-center">
             <div>
-              <input id='fileInput' type="file" multiple onChange={uploadCharts} style={{ display: 'none'}} />
-              <label htmlFor='fileInput' style={{ backgroundColor: "#4CAF50", color: "white", padding: "10px 20px", borderRadius: "6px", display: "inline-block", cursor: "pointer", fontWeight: "bold", transition: "background 0.3s ease"}}>+ Upload Charts</label>
-            </div>
+            <div>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="bg-blue-500 text-white px-6 py-3 rounded-lg"
+      >
+        + Upload Charts
+      </button>
+
+      <UploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </div>
+              </div>
             <select className="border rounded px-2 py-1">
               <option>This month</option>
             </select>
