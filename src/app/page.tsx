@@ -148,7 +148,7 @@ export default function Home() {
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen text-slate-900">
       {/* Navbar */}
-      <nav className="flex justify-between items-center px-8 py-4 bg-white shadow-sm">
+      <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-8 py-4 bg-white shadow-sm">
         <img src="logo_asset.svg" style={{width: "200px" }} />
         <Navbar />
         {/* Register Button */}
@@ -157,7 +157,7 @@ export default function Home() {
           <img src="nextBtn.svg" />
         </button>
       </nav>
-      <section id="home">
+      <section id="home" className="pt-20">
         {/* Hero Section */}
         <section className="text-center py-20 px-6">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -179,7 +179,7 @@ export default function Home() {
         </section>
         <center><img src="dashboard.svg" /></center>
       </section>
-      <section id="about">
+      <section id="about" className="pt-20">
         {/* Services Section */}
         <section className="text-center py-20 px-6 bg-white">
           <h2 className="text-3xl font-bold mb-4">Everything You Need to Simplify Medicare Audits</h2>
@@ -218,7 +218,7 @@ export default function Home() {
           </div>
         </section>
       </section>
-      <section id="features">
+      <section id="features" className="pt-20">
         {/* Features Section */}
         <section className="py-20 text-center bg-white">
           <p className="text-sm text-blue-600 font-medium mb-2">Features</p>
@@ -238,7 +238,7 @@ export default function Home() {
           </div>
         </section>
       </section>
-      <section id="pricing">
+      <section id="pricing" className="pt-20">
         {/* Pricing Section */}
       <section className="py-20 text-center bg-white">
         <p className="text-sm text-blue-600 font-medium mb-2">Pricing</p>
@@ -249,8 +249,8 @@ export default function Home() {
         <Pricing />
       </section>
       </section>
-      <section id="contactus">
-      <div className="space-y-16 px-8 py-10 mx-auto" style={{paddingLeft: "11%", paddingRight: "11%"}}>
+      <section id="contactus" className="pt-20">
+      <div className="space-y-16 px-8 py-20 mx-auto" style={{paddingLeft: "11%", paddingRight: "11%"}}>
       <section className="text-center">
         <h2 className="text-3xl font-bold">What Our Client Are Saying</h2>
         <p className="text-gray-600 mt-2 max-w-2xl mx-auto">

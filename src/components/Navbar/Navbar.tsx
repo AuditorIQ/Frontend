@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Navbar.css';
 
 type NavLink = {
@@ -21,6 +21,29 @@ const Navbar: React.FC = () => {
     setActiveLink(id);
   };
 
+  const linkClass = (id: string) =>
+    activeLink === id
+      ? 'active'
+      : '';
+
+      useEffect(() => {
+        const handleScroll = () => {
+          const scrollY = window.scrollY;
+    
+          for (let i = links.length - 1; i >= 0; i--) {
+            const id = links[i].id;
+            const el = document.getElementById(id);
+            if (el && scrollY >= el.offsetTop - 80) {
+              setActiveLink(id);
+              break;
+            }
+          }
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
   return (
     <nav className="navbar">
       <div className="nav-container">
@@ -28,7 +51,7 @@ const Navbar: React.FC = () => {
           <a
             key={link.id}
             href={`#${link.id}`}
-            className={`nav-link ${activeLink === link.id ? 'active' : ''}`}
+            className={`linkClass('${link.id}') nav-link ${activeLink === link.id ? 'active' : ''}`}
             onClick={() => handleClick(link.id)}
           >
             {link.label}
