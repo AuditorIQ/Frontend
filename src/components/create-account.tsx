@@ -10,7 +10,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import useSignupFormStore from "@/stores/authStore";
-import { Pacifico } from "next/font/google";
 
 const overlayStyle: React.CSSProperties = {
   position: "fixed",
@@ -87,7 +86,7 @@ export function CreateAccount({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg max-w-md mx-auto ">
+    <div className="p-6 rounded-lg max-w-md mx-auto">
       <div className="text-center mb-6">
         <h2 className="text-3xl font-bold mb-3">Create Your Account</h2>
         <p className="text-gray-500 text-sm">

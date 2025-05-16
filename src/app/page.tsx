@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import '@/components/RegisterButton/RegisterButton.css';
 import '@/components/ContactButton/ContactButton.css';
 import FaqAccordion from '@/components/FaqAccordion/FaqAccordion';
+import Pricing from "@/components/pricing";
 
 export default function Home() {
 
@@ -153,9 +154,7 @@ export default function Home() {
         {/* Register Button */}
         <button className="register-button" onClick={() => window.location.href = '/sign-up'}>
           <span>Register</span>
-          <span className="arrow-circle">
-            →
-          </span>
+          <img src="nextBtn.svg" />
         </button>
       </nav>
       <section id="home">
@@ -170,28 +169,11 @@ export default function Home() {
           <div className="flex justify-center space-x-4">
           <a className="contact-button" href="#contactus">
             <span>Contact us</span>
-            <svg
-              className="phone-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 5a2 2 0 012-2h3.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V8a1 1 0 01-.293.707L9 11l1 1 2.293-2.293A1 1 0 0113 9h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V19a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"
-              />
-            </svg>
+            <img src = "dial.svg" />
           </a>
           <button className="register-button" onClick={() => window.location.href = '/sign-in'}>
             <span>Get Started</span>
-            <span className="arrow-circle">
-              →
-            </span>
+            <img src = "nextBtn.svg" />
           </button>
           </div>
         </section>
@@ -264,42 +246,7 @@ export default function Home() {
         <p className="max-w-2xl mx-auto text-gray-500 mb-10">
           Whether you're a solo provider or managing a multi-clinic operation, our plans scale with your needs — no hidden fees, no surprises.
         </p>
-        <div className="flex justify-center items-center p-4">
-          <div className="flex items-center gap-4">
-            <span>Pay Monthly</span>
-            <div className="w-14 h-8 flex items-center bg-blue-100 rounded-full p-1 cursor-pointer transition duration-300">
-              <div className="w-6 h-6 bg-blue-900 rounded-full shadow-md transform transition duration-300 translate-x-0"></div>
-            </div>
-            <span>Pay Yearly</span>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 px-6 mx-auto" style={{paddingLeft: "11%", paddingRight: "11%"}}>
-          {plans.map((plan, i) => (
-            <div
-              key={i}
-              className={`rounded-xl p-6 text-left shadow ${plan.cardStyle} ${
-                plan.highlight ? "scale-105 border-4 border-blue-300" : ""
-              }`}
-            >
-              <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
-              <p className="text-3xl font-bold mb-4">
-                {plan.price} <span className="text-sm font-normal">/ Month</span>
-              </p>
-              <button className={`w-full py-2 rounded-md mb-4 ${plan.buttonStyle}`}>
-                Get Started Now
-              </button>
-              <ul className="space-y-2 text-sm">
-                {plan.features.map((f, j) => (
-                  <li key={j} className="flex items-start gap-2">
-                    <span className="text-blue-500">✔</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        <Pricing />
       </section>
       </section>
       <section id="contactus">
@@ -340,42 +287,60 @@ export default function Home() {
       </section>
       </div>
       </section>
-      <footer className="bg-blue-900 text-white">
-        <center>
-        <div style={{ paddingLeft: "10px", paddingTop: "10px", fontSize: "25px"}}>
-          Let's Connect With Us.
+      <footer className="bg-[#0A2463] text-white">
+      <div className="text-white px-8 py-12 flex flex-col md:flex-row items-center justify-between">
+        {/* Left Section - Heading */}
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 md:mb-0">
+          Let’s Connect with us
+        </h2>
+
+        {/* Right Section - Buttons */}
+        <div className="flex gap-4">
+          {/* Get Started Button */}
+          <button className="flex items-center gap-2 bg-blue-100 text-[#0A2463] font-semibold px-6 py-3 rounded-full hover:bg-blue-200 transition" onClick={() => window.location.href = '/sign-in'}>
+            Get Started
+            <span className="bg-[#0A2463] text-white p-1 rounded-full">
+              <img src="nextBtn.svg" />
+            </span>
+          </button>
+
+          {/* Contact Us Button */}
+          <a className="flex items-center gap-2 border border-white text-white px-6 py-3 rounded-full hover:bg-white hover:text-[#0A2463] transition" href="#contactus">
+            Contact us
+            <img src="dial.svg" />
+          </a>
         </div>
-        </center>
+      </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 p-10">
           <div>
-            <h4 className="text-lg font-bold">AuditorIQ</h4>
-            <p className="text-sm mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+            <img src = "logo_footer.svg" style={{ height:"125px"}}/>
           </div>
           <div>
             <h4 className="font-semibold">Important</h4>
-            <ul className="space-y-1 text-sm mt-2">
-              <li>Home</li>
-              <li>About</li>
-              <li>Features</li>
-              <li>Pricing</li>
+            <ul className="space-y-1 mt-2">
+              <li><a href="#home">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#pricing">Pricing</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold">Legal</h4>
-            <ul className="space-y-1 text-sm mt-2">
-              <li>Contact Us</li>
+            <ul className="space-y-1 mt-2">
+              <li><a href="#contactus">Contact Us</a></li>
               <li>Terms & Conditions</li>
               <li>Privacy Policy</li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold">Contact</h4>
-            <p className="text-sm mt-2">hello.auditoriq@gmail.com<br/>+(123) 123 456 789</p>
+            <p className="mt-2">info@auditoriq.ai<br/>+(1) 123 456 7890</p>
           </div>
         </div>
-        <div style={{ paddingLeft: "10px", paddingBottom: "10px"}}>
+        <center><div style={{ paddingLeft: "50px", paddingBottom: "25px"}}>
           Copyright @ 2025 All rights reserved.
         </div>
+        </center>
       </footer>
     </div>
   );

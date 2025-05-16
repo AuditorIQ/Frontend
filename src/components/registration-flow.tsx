@@ -30,10 +30,10 @@ export function RegistrationFlow() {
 
   return (
     <>
-      <div className="w-full  mx-auto p-6 flex flex-col items-center justify-center h-screen">
-        <div className="w-full">
+      <div className="bg-[url('/register-background.jpg')] w-full  mx-auto p-6 flex flex-col items-center justify-center h-screen">
+        <div className="bg-white" style={{border: "1px solid black"}}>
           <div className="text-center mb-6">
-          <center><img style={{ width: "200px"}} src= "logo_asset.svg" /></center>
+          <center><img style={{ width: "200px", paddingTop: "50px"}} src= "logo_asset.svg" /></center>
           </div>
 
           {step === 1 && (

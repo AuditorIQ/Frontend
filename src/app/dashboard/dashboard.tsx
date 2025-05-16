@@ -111,6 +111,19 @@ const SearchKeyChange = (e: any) => {
 }
 
 useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
+  const name = params.get("name");
+  const email = params.get("email");
+
+  if (token && name && email) {
+    sessionStorage.setItem("token", token);
+    sessionStorage.setItem("user_name", name);
+    sessionStorage.setItem("user_email", email);
+  }
+
+  window.history.replaceState({}, document.title, "/dashboard");
+
   setUserName(sessionStorage.getItem("user_name"));
   const fetchData = async () => {
     try {
