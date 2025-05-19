@@ -20,7 +20,7 @@ const navItems = [
       { name: "Plan & Payments", href: "/plan", icon: CreditCard },
       { name: "Settings", href: "/settings", icon: Settings },
       { name: "Help", href: "/help", icon: HelpCircle },
-      { name: "Log Out", href: "/sign-in", icon: LogOut },
+      { name: "Log Out", href: "/logout", icon: LogOut },
     ],
   },
 ];
@@ -30,7 +30,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 h-full bg-white border-r p-4 text-sm">
-    <center><img style={{ width: "200px", paddingBottom: "50px"}} src= "logo_asset.svg" /></center>
+    <button onClick={() => window.location.href="/"}><img style={{ width: "200px", marginBottom: "15px"}} src= "logo_asset.svg" /></button>
       {navItems.map((section, index) => (
         <div key={index} className="mb-6">
           <h4 className="uppercase text-xs text-gray-400 mb-2">{section.section}</h4>

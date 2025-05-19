@@ -20,12 +20,6 @@ export default function SignIn() {
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    sessionStorage.setItem('token',"");
-    sessionStorage.setItem('user_email',"");
-    sessionStorage.setItem('user_name',"");
-  });
-
   // Handle form submission and registration process
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +38,8 @@ export default function SignIn() {
       sessionStorage.setItem('token', res?.data?.data.accessToken);
       sessionStorage.setItem('user_email', res?.data?.data.user.email);
       sessionStorage.setItem('user_name', res?.data?.data.user.name);
+      sessionStorage.setItem('subscriptionType', res?.data?.data.user.subscriptionType);
+      
       // move to dashboard
       router.push("/dashboard");
     } catch (error: any) {
@@ -58,7 +54,7 @@ export default function SignIn() {
         {/* Left side - Form */}
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
           <div className="text-center mb-28">
-            <center><img style={{ width: "200px"}} src= "logo_asset.svg" /></center>
+          <button onClick={() => window.location.href="/"}><img style={{ width: "200px"}} src= "logo_asset.svg" /></button>
           </div>
 
           <div className="flex-grow flex flex-col justify-center max-w-md mx-auto w-full">
@@ -72,7 +68,7 @@ export default function SignIn() {
             <Button
               variant="outline"
               className="w-full mb-6 relative"
-              onClick={() => {window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;}}
+              onClick={() => {window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`}}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path

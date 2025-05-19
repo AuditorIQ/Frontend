@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { CreateAccount } from "@/components/create-account";
-import { PracticeInformation } from "@/components/practice-information";
-import { AddProviders } from "@/components/add-providers";
-import { ChooseSubscription } from "@/components/choose-subscription";
+import { useState, useEffect } from "react";
+import { CreateAccount } from "@/app/(auth)/sign-up/create-account";
+import { PracticeInformation } from "@/app/(auth)/sign-up/practice-information";
+import { AddProviders } from "@/app/(auth)/sign-up/add-providers";
+import { ChooseSubscription } from "@/app/(auth)/sign-up/choose-subscription";
 import useSignupFormStore from "@/stores/authStore";
 
-export function RegistrationFlow() {
-  const [step, setStep] = useState(1);
+type RegistrationFlowProps = {
+  curstep?: string | number;
+  curname?: string;
+  curemail?: string;
+};
+
+export const RegistrationFlow = ({ curstep = 1, curname="", curemail="" }) => {
+  const [step, setStep] = useState(curstep);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,7 +27,6 @@ export function RegistrationFlow() {
     subscriptionType: "",
   });
 
-
   const updateFormData = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   };
@@ -28,12 +34,21 @@ export function RegistrationFlow() {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      name: curname,
+      email: curemail,
+      password: "1234567890"
+    }));
+  }, [curname, curemail]);
+
   return (
     <>
       <div className="bg-[url('/register-background.jpg')] w-full  mx-auto p-6 flex flex-col items-center justify-center h-screen">
         <div className="bg-white" style={{border: "1px solid black"}}>
           <div className="text-center mb-6">
-          <center><img style={{ width: "200px", paddingTop: "50px"}} src= "logo_asset.svg" /></center>
+          <button onClick={() => window.location.href="/"}><img style={{ width: "200px", paddingTop: "50px"}} src= "logo_asset.svg" /></button>
           </div>
 
           {step === 1 && (
@@ -81,4 +96,4 @@ export function RegistrationFlow() {
       </div>
     </>
   );
-}
+};

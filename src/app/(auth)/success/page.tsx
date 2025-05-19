@@ -1,7 +1,7 @@
 'use client';
 
 import axios from "axios";
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function SuccessPage() {
 
@@ -22,6 +22,7 @@ export default function SuccessPage() {
           create: providersArray.map((provider: any) => ({
             ...provider,
             id: parseInt(provider.id, 10),
+            isYearly: true
           })),
         },
       };

@@ -7,7 +7,7 @@ const Pricing = () => {
     {
       name: "Starter",
       price: "$99",
-      yearlyPrice: "$1,000",
+      yearlyPrice: "$999",
       cardStyle: "bg-white",
       buttonStyle: "bg-blue-500 text-white",
       highlight: true,
@@ -22,7 +22,7 @@ const Pricing = () => {
     {
       name: "Professional",
       price: "$249",
-      yearlyPrice: "$2,500",
+      yearlyPrice: "$2,499",
       cardStyle: "bg-white",
       buttonStyle: "bg-blue-700 text-white",
       highlight: true,

@@ -1,10 +1,10 @@
-import { RegistrationFlow } from "@/components/registration-flow";
-import React from "react";
+import ClientWrapper from "./client-wrapper";
+import { Suspense } from "react";
 
-type Props = {};
-
-const page = (props: Props) => {
-  return <RegistrationFlow />;
-};
-
-export default page;
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ClientWrapper />
+    </Suspense>
+  );
+}

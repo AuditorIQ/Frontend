@@ -106,13 +106,13 @@ export function ChooseSubscription({
   const handleSubmit = async () => {
     try {
       const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`, {
-        name,
-        email,
-        password,
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
         practiceName,
         zipCode,
         providerLicenseNo,
-        subscriptionType: selectedPlan,
+        subscriptionType: "FREE",
         providers: { create: providers.map((provider: any, index: number) => ({
           id: (Date.now()+index),
           name: provider.name,
@@ -122,7 +122,6 @@ export function ChooseSubscription({
   
       if (res?.data?.success) {
         successToast("Successfully signed up");
-  
         setTimeout(() => {
           router.push('/sign-in');
         }, 100); // small delay just in case

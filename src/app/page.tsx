@@ -1,56 +1,17 @@
 'use client';
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
 import Navbar from "@/components/Navbar/Navbar";
-import '@/components/RegisterButton/RegisterButton.css';
-import '@/components/ContactButton/ContactButton.css';
-import FaqAccordion from '@/components/FaqAccordion/FaqAccordion';
-import Pricing from "@/components/pricing";
+import '@/app/RegisterButton.css';
+import '@/app/ContactButton.css';
+import FaqAccordion from '@/app/FaqAccordion';
+import Pricing from "@/app/pricing";
 
 export default function Home() {
-
-  const [activeSection, setActiveSection] = useState<string>('home');
-  const [isMonthly, setIsMonthly] = useState(true);
-
-  const ToggleSwitch = () => {
-    const [isMonthly, setIsMonthly] = useState(true);
-  
-    const toggleSwitch = () => {
-      setIsMonthly((prev) => !prev);
-    };
-  }
-
-  const providerData = [
-    { name: "Dr. Smith", value: 80 },
-    { name: "Dr. Williams", value: 50 },
-    { name: "Dr. Brown", value: 85 },
-    { name: "Dr. Patel", value: 60 },
-    { name: "Dr. Cox", value: 90 },
-  ];
-  
-  const monthlyTrendData = [
-    { month: "Jan", audits: 200 },
-    { month: "Feb", audits: 240 },
-    { month: "Mar", audits: 300 },
-    { month: "Apr", audits: 260 },
-    { month: "May", audits: 320 },
-  ];
-
-  const complianceData = [
-    { provider: 'Dr. Clark', compliance: 80 },
-    { provider: 'Michael Tan', compliance: 100 },
-    { provider: 'Dr. Carson', compliance: 80 },
-  ];
-  
-  const auditTrendData = [
-    { month: 'Jan', audits: 20 },
-    { month: 'Feb', audits: 45 },
-    { month: 'Mar', audits: 30 },
-    { month: 'Apr', audits: 50 },
-    { month: 'May', audits: 40 },
-  ];
+  const [showRegisterButton, setShowRegisterButton] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
 
   const testimonials = [
     {
@@ -100,62 +61,33 @@ export default function Home() {
     },
   ];
 
-  const plans = [
-    {
-      name: "Starter",
-      price: "$99",
-      features: [
-        "Up to 50 chart audits/month",
-        "1 provider license",
-        "Access to MAC-based LCD/NCD audits",
-        "Audit reports in PDF",
-        "Email Support",
-      ],
-      buttonStyle: "border border-blue-600 text-blue-600",
-      cardStyle: "bg-blue-50",
-    },
-    {
-      name: "Professional",
-      price: "$249",
-      features: [
-        "Up to 200 chart audits/month",
-        "3 provider licenses",
-        "MAC & Medicare rules engine",
-        "Real-time audit feedback",
-        "Dashboard analytics",
-        "Priority support",
-      ],
-      buttonStyle: "bg-blue-100 text-blue-900",
-      cardStyle: "bg-blue-900 text-white",
-      highlight: true,
-    },
-    {
-      name: "Enterprise",
-      price: "$100",
-      features: [
-        "Unlimited audits",
-        "Unlimited provider licenses",
-        "Dedicated account manager",
-        "Custom compliance reporting",
-        "API access",
-        "SLA backed support",
-      ],
-      buttonStyle: "border border-blue-600 text-blue-600",
-      cardStyle: "bg-blue-100",
-    },
-  ];
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("user_name");
+    setUsername(storedUsername);
+    const token = sessionStorage.getItem("token");
+    setShowRegisterButton(!token);
+  });
 
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen text-slate-900">
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-8 py-4 bg-white shadow-sm">
-        <img src="logo_asset.svg" style={{width: "200px" }} />
+      <button onClick={() => window.location.href="/"}><img src="logo_asset.svg" style={{width: "200px" }} /></button>
         <Navbar />
         {/* Register Button */}
-        <button className="register-button" onClick={() => window.location.href = '/sign-up'}>
-          <span>Register</span>
-          <img src="nextBtn.svg" />
-        </button>
+        { showRegisterButton &&
+          <button className="register-button" onClick={() => window.location.href = '/sign-up'}>
+            <span>Register</span>
+            <img src="nextBtn.svg" />
+          </button>
+        }
+        {/* Dashboard Button */}
+        { !showRegisterButton &&
+          <button className="register-button" onClick={() => window.location.href = '/dashboard'}>
+            <span>{username}</span>
+            <img src="nextBtn.svg" />
+          </button>
+        }
       </nav>
       <section id="home" className="pt-20">
         {/* Hero Section */}

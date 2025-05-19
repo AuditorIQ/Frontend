@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BellIcon, Search } from "lucide-react";
 import axios from "axios";
+import { useEffect, useState } from 'react';
+import { useRouter } from "next/navigation";
+import Sidebar from "@/components/Sidebar/Sidebar";
+import UploadModal from "@/app/dashboard/UploadModal";
 import {
   BarChart,
   Bar,
@@ -17,42 +21,15 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { useEffect, useState } from 'react';
 import { errorToast, successToast } from "@/lib/toast";
-import Sidebar from "@/components/Sidebar";
-import UploadModal from "@/components/UploadModal";
+import { LockClosedIcon } from '@heroicons/react/24/solid';
 
 
 let providerData: { name: string; value: number }[];
 let monthlyTrendData: { month: string; audits: number}[];
-
-
-//Upload Charts
-const uploadCharts = async (e: any) => {
-  e.preventDefault();
-  const formData = new FormData();
-  for ( let i = 0; i < e.target.files.length; i++)
-    formData.append('files', e.target.files[i]);
-  
-  try
-  {
-    const res = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/openai/generate`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
-      }
-    });
-    window.location.reload();
-    setTimeout(() => {
-      successToast("Completed!");
-    }, 1000);
-  }
-  catch(err)
-  {
-    errorToast("Not Completed.");
-  }
-};
+let isDisabled: boolean;
+let allCount: number, lowCount: number, lowRate: number, nonLowCount: number;
+const recordsPerPage = 5;
 
 const viewpdf = async (e: any) => {
   e.preventDefault();
@@ -78,22 +55,13 @@ const viewpdf = async (e: any) => {
 
 export default function DashboardPage() {
 
-// prevent unauthorized attempt
-// const router = useRouter();
-// useEffect(() => {
-//   const token = sessionStorage.getItem('token');
-//   if (!token) {
-//     router.push('/sign-in');
-//   }
-// }, []);
-
 // Report List
-const [dataset, setDataset] = useState<[number, string, string, string, string, string, string, string][]>([]);
+const [dataset, setDataset] = useState<[number, string, string, string, string, string, string][]>([]);
 const [currentPage, setCurrentPage] = useState(1);
 const [searchkey, setSearchKey] = useState('');
 const [userName, setUserName] = useState<string | null>(null);
 const [isModalOpen, setIsModalOpen] = useState(false);
-const recordsPerPage = 5;
+const router = useRouter();
 
 const filteredDataset = dataset.filter(item =>
   Object.values(item).some(
@@ -113,18 +81,36 @@ const SearchKeyChange = (e: any) => {
 }
 
 useEffect(() => {
+  // set session part & go to dashboard
   const params = new URLSearchParams(window.location.search);
   const token = params.get("token");
   const name = params.get("name");
   const email = params.get("email");
+  const subscription = params.get("subscriptionType");
 
-  if (token && name && email) {
+  if (token && name && email && subscription) {
     sessionStorage.setItem("token", token);
     sessionStorage.setItem("user_name", name);
     sessionStorage.setItem("user_email", email);
+    sessionStorage.setItem("subscriptionType", subscription);
+    successToast("Successfully Signed In");
+    setTimeout(() => {
+      window.history.replaceState({}, document.title, "/dashboard");
+    }, 100);
+  }
+  
+  // prevent unauthorized attempt
+  const authtoken = sessionStorage.getItem('token');
+  if (!authtoken) {  
+    errorToast("Unauthorized Attempt");
+    setTimeout(() => {
+      router.push('/sign-in');
+    }, 100);
   }
 
-  window.history.replaceState({}, document.title, "/dashboard");
+  // check subscription
+  const subscriptionType = sessionStorage.getItem("subscriptionType");
+  isDisabled = subscriptionType === 'FREE' || subscriptionType === null;
 
   setUserName(sessionStorage.getItem("user_name"));
   const fetchData = async () => {
@@ -136,26 +122,31 @@ useEffect(() => {
           }
       });
       
-      const result: [number, string, string, string, string, string, string, string][] = list.data.list.slice().reverse().map((file: string, index: number) => {
+      // Set dataset
+      const baseresult: [number, string, string, string, string, string, string][] = list.data.list.slice().reverse().map((file: string, index: number) => {
         const nameWithoutExtension = file.replace('.pdf', '').replace('reports/', '');
         const [date, cur_time, patient, provider, risk, userid] = nameWithoutExtension.split('_');
         return [index + 1, patient, provider, `${date.slice(0, 4)}/${date.slice(4, 6)}/${date.slice(6, 8)}`, risk.split(' ')[0], file, userid];
       }).filter((item: any) => item[6] === sessionStorage.getItem("user_email"));
-
+      const result: [number, string, string, string, string, string, string][] = baseresult.map(
+        (item, index) => [index + 1, item[1], item[2], item[3], item[4], item[5], item[6]]
+      );
       setDataset(result);
 
-      const providers: [] = list.data.list.map((file: string, index: number) => {
-        const nameWithoutExtension = file.replace('.pdf', '').replace('reports/', '');
-        const [date, cur_time, patient, provider, risk, userid] = nameWithoutExtension.split('_');
-        return [provider];
-      });
+      // Compliant vs Non-Compliant
+      const risks: string[] = result.map(item => item[4]);
+      allCount = risks.length;
+      lowCount = risks.filter(risk => risk === "Low").length;
+      lowRate = lowCount*100/allCount;
+      lowRate = parseFloat(lowRate.toFixed(2));
+      nonLowCount = allCount - lowCount;
 
+      // Provider compliance rates
+      const providers: string[] = result.map(item => item[2]);
       const frequencyMap: Record<string, number> = {};
-
       providers.forEach(item => {
         frequencyMap[item] = (frequencyMap[item] || 0) + 1;
       });
-
       const providerrank: { name: string; value: number }[] = Object.entries(frequencyMap).map(
         ([key, value]) => ({
           name: key,
@@ -164,27 +155,20 @@ useEffect(() => {
       );
       providerData = providerrank;
 
-      const monthlytrend: [] = list.data.list.map((file: string, index: number) => {
-        const nameWithoutExtension = file.replace('.pdf', '').replace('reports/', '');
-        const [date, curtime, patient, provider ] = nameWithoutExtension.split('_');
-        return [date.slice(4,6)];
-      });
-
+      // Monthly audit trends
+      const monthlytrend: string[] = result.map(item => item[3].slice(4,6));
       const monthlymap: Record<string, number> = {};
-
       monthlytrend.forEach(item => {
         monthlymap[item] = (monthlymap[item] || 0) + 1;
       });
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
       const monthylrank: { month: string; audits: number }[] = Object.entries(monthlymap).map(
         ([month, value]) => ({
           month: monthNames[parseInt(month, 10) - 1],
           audits: value,
         })
       );
-
       monthlyTrendData = monthylrank;
     }
     catch (error) {
@@ -215,18 +199,25 @@ useEffect(() => {
             {userName}
           </div>
         </div>
+        
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold">Overview</h1>
           <div className="flex gap-2 items-center">
             <div>
             <div>
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="bg-blue-500 text-white px-6 py-3 rounded-lg"
-      >
-        + Upload Charts
-      </button>
+            {/* <LockClosedIcon className="h-6 w-6 text-gray-500" /> */}
+            <button
+            onClick={() => setIsModalOpen(true)}
+            className={`px-6 py-3 rounded-lg ${
+              isDisabled
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600'
+            } text-white`}
+            disabled={isDisabled} title={isDisabled ? 'You need to purchase plan' : ''}
+          >
+            + Upload Charts
+          </button>
 
       <UploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
@@ -242,22 +233,22 @@ useEffect(() => {
           <Card>
             <CardContent className="p-4">
               <p>Total chart audited</p>
-              <h2 className="text-2xl font-bold">{dataset.length}</h2>
-              <span className="text-green-600">↑ 1.5% vs last month</span>
+              <h2 className="text-2xl font-bold">{allCount}</h2>
+              <span className="text-green-600">↑ 100% vs last month</span>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
               <p>% Clinic compliance rate</p>
-              <h2 className="text-2xl font-bold">0%</h2>
-              <span className="text-green-600">↑ 0% vs last month</span>
+              <h2 className="text-2xl font-bold">{lowRate}%</h2>
+              <span className="text-green-600">↑ {lowRate}% vs last month</span>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
               <p>Non-Compliant chart</p>
-              <h2 className="text-2xl font-bold">0</h2>
-              <span className="text-red-600">↓ 0% vs last month</span>
+              <h2 className="text-2xl font-bold">{nonLowCount}</h2>
+              <span className="text-red-600">↓ 100% vs last month</span>
             </CardContent>
           </Card>
         </div>
