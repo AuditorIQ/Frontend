@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export default function SuccessPage() {
   successToast("Thank you for purchasing!");
   useEffect(() => {
-    if (sessionStorage.getItem("user_email") === undefined || sessionStorage.getItem("user_email") === "")
+    if (sessionStorage.getItem("user_email") === null || sessionStorage.getItem("user_email") === "")
     {
     const raw = sessionStorage.getItem("formData");
     if (!raw) return; // Avoid parsing null
