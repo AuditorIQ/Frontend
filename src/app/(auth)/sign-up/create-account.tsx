@@ -121,6 +121,8 @@ export function CreateAccount({
           </Button>
         </div>
       <form onSubmit={handleSubmit} className="space-y-4">
+        
+
         <div className="flex items-center justify-center my-4">
           <div className="border-t border-gray-300 flex-grow"></div>
           <div className="mx-4 text-gray-500 text-sm">or</div>

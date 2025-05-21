@@ -25,60 +25,62 @@ export function ChooseSubscription({
     formData.subscriptionType || "FREE"
   );
 
-  const [isYearly, setIsYearly] = useState(false);
+  const [yearly, setYearly] = useState(false);
   
-    const plans = [
-      {
-        name: "Starter",
-        price: "$99",
-        yearlyPrice: "$1,000",
-        cardStyle: "bg-white",
-        buttonStyle: "bg-blue-500 text-white",
-        highlight: true,
-        features: [
-          "Up to 50 chart audits/month",
-          "1 provider license",
-          "Access to MAC-based LCD/NCD audits",
-          "Audit reports in PDF",
-          "Email Support",
-        ],
-      },
-      {
-        name: "Professional",
-        price: "$249",
-        yearlyPrice: "$2,500",
-        cardStyle: "bg-white",
-        buttonStyle: "bg-blue-700 text-white",
-        highlight: true,
-        features: [
-          "Up to 200 chart audits/month",
-          "3 provider licenses",
-          "MAC & Medicare rules engine",
-          "Real-time audit feedback",
-          "Dashboard analytics",
-          "Priority support",
-        ],
-      },
-      {
-        name: "Enterprise",
-        price: "$500",
-        yearlyPrice: "$5,000",
-        cardStyle: "bg-white",
-        buttonStyle: "bg-blue-900 text-white",
-        highlight: true,
-        features: [
-          "Unlimited audits",
-          "Unlimited provider licenses",
-          "Dedicated account manager",
-          "Custom compliance reporting",
-          "API access",
-          "SLA backed support",
-        ],
-      },
-    ];
+  const plans = [
+    {
+      name: "Starter",
+      price: "$99",
+      yearlyPrice: "$1,000",
+      cardStyle: "bg-white",
+      buttonStyle: "bg-blue-500 text-white",
+      highlight: true,
+      features: [
+        "Up to 50 chart audits/month",
+        "1 provider license",
+        "Access to MAC-based LCD/NCD audits",
+        "Audit reports in PDF",
+        "Email Support",
+      ],
+    },
+    {
+      name: "Professional",
+      price: "$249",
+      yearlyPrice: "$2,500",
+      cardStyle: "bg-white",
+      buttonStyle: "bg-blue-700 text-white",
+      highlight: true,
+      features: [
+        "Up to 200 chart audits/month",
+        "3 provider licenses",
+        "MAC & Medicare rules engine",
+        "Real-time audit feedback",
+        "Dashboard analytics",
+        "Priority support",
+      ],
+    },
+    {
+      name: "Enterprise",
+      price: "$500",
+      yearlyPrice: "$5,000",
+      cardStyle: "bg-white",
+      buttonStyle: "bg-blue-900 text-white",
+      highlight: true,
+      features: [
+        "Unlimited audits",
+        "Unlimited provider licenses",
+        "Dedicated account manager",
+        "Custom compliance reporting",
+        "API access",
+        "SLA backed support",
+      ],
+    },
+  ];
   
   const {
     setSubscriptionType,
+    setisYearly,
+    setsubscribedAt,
     name,
     email,
     password,
@@ -88,19 +90,34 @@ export function ChooseSubscription({
     subscriptionType,
     profilePicUrl,
     providers,
+    isYearly,
+    subscribedAt,
   } = useSignupFormStore();
   
   const router = useRouter();
 
   const handleSelectPlan = (plan: string) => {
-    setSelectedPlan(plan);
     updateFormData({ subscriptionType: plan });
+    setSelectedPlan(plan);
   };
 
   const connectStripe = async () => {
-    sessionStorage.setItem("formData",JSON.stringify(formData));
+
+    const isoString = new Date(Date.now()).toISOString();
+    const updatedData = {
+      ...formData,
+      isYearly: yearly,
+      subscribedAt: isoString,
+    };
+    sessionStorage.setItem("formData",JSON.stringify(updatedData));
+    await updateFormData(updatedData);
+
+    setisYearly(yearly);
+    setsubscribedAt(isoString);    
+    
     const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`, { plan: selectedPlan.toLowerCase(), isYearly });
     window.location.href = res.data.checkoutUrl;
+
   }
 
   const handleSubmit = async () => {
@@ -113,6 +130,8 @@ export function ChooseSubscription({
         zipCode,
         providerLicenseNo,
         subscriptionType: "FREE",
+        isYearly,
+        subscribedAt: null,
         providers: { create: providers.map((provider: any, index: number) => ({
           id: (Date.now()+index),
           name: provider.name,
@@ -138,18 +157,18 @@ export function ChooseSubscription({
       </div>
       <div className="flex justify-center items-center mb-10">
         <div className="flex items-center gap-4">
-          <span className={isYearly ? "text-gray-400" : "text-blue-900 font-semibold"}>Pay Monthly</span>
+          <span className={yearly ? "text-gray-400" : "text-blue-900 font-semibold"}>Pay Monthly</span>
           <div
             className="w-16 h-8 bg-blue-200 rounded-full p-1 cursor-pointer flex items-center transition duration-300"
-            onClick={() => setIsYearly(!isYearly)}
+            onClick={() => setYearly(!yearly)}
           >
             <div
               className={`w-6 h-6 bg-blue-900 rounded-full shadow-md transform transition-transform duration-300 ${
-                isYearly ? "translate-x-8" : "translate-x-0"
+                yearly ? "translate-x-8" : "translate-x-0"
               }`}
             />
           </div>
-          <span className={isYearly ? "text-blue-900 font-semibold" : "text-gray-400"}>Pay Yearly</span>
+          <span className={yearly ? "text-blue-900 font-semibold" : "text-gray-400"}>Pay Yearly</span>
         </div>
       </div>
 
@@ -170,8 +189,8 @@ export function ChooseSubscription({
 
           <div className="p-3">
             <div className="flex items-end mb-4">
-              <span className="text-3xl font-bold">${isYearly ? "999" : "99" }</span>
-              <span className="text-gray-500 text-sm">{isYearly ? "/Year" : "/Month"}</span>
+              <span className="text-3xl font-bold">${yearly ? "999" : "99" }</span>
+              <span className="text-gray-500 text-sm">{yearly ? "/Year" : "/Month"}</span>
             </div>
 
             <ul className="space-y-4">
@@ -243,8 +262,8 @@ export function ChooseSubscription({
           <div className="p-3">
             <div className="flex items-end mb-4">
               
-            <span className="text-3xl font-bold">${isYearly ? "2,499" : "249" }</span>
-              <span className="text-gray-500 text-sm">{isYearly ? "/Year" : "/Month"}</span>
+            <span className="text-3xl font-bold">${yearly ? "2,499" : "249" }</span>
+              <span className="text-gray-500 text-sm">{yearly ? "/Year" : "/Month"}</span>
             </div>
 
             <ul className="space-y-4">
@@ -334,8 +353,8 @@ export function ChooseSubscription({
 
           <div className="p-3">
             <div className="flex items-end mb-4">
-            <span className="text-3xl font-bold">${isYearly ? "5,000" : "500" }</span>
-            <span className="text-gray-500 text-sm">{isYearly ? "/Year" : "/Month"}</span>
+            <span className="text-3xl font-bold">${yearly ? "5,000" : "500" }</span>
+            <span className="text-gray-500 text-sm">{yearly ? "/Year" : "/Month"}</span>
             </div>
 
             <ul className="space-y-4">

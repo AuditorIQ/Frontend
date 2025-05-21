@@ -54,6 +54,10 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     }
   };  
 
+  const handleRemoveFile = (indexToRemove: number) => {
+    setFileList((prevList) => prevList.filter((_, idx) => idx !== indexToRemove));
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -66,25 +70,38 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${
             isDragActive ? "bg-blue-100" : "bg-gray-100"
-          }`} style={{marginTop: "25px", border: "1px solid black"}}
+          }`}
+          style={{ marginTop: "25px", border: "1px solid black" }}
         >
           <input {...getInputProps()} />
-          {fileList.length > 0 ? (
-            <ul className="text-left">
-              {fileList.map((file, idx) => (
-                <li key={idx}>{file.name}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>Drag & drop files here, or click to select</p>
-          )}
+          <p>Drag & drop files here, or click to select</p>
         </div>
+        {fileList.length > 0 && (
+        <div className="mt-4 max-h-40 overflow-y-auto bg-white border border-gray-300 rounded-lg p-3">
+          <ul className="space-y-2">
+            {fileList.map((file: File, idx: number) => (
+              <li
+                key={idx}
+                className="flex justify-between items-center text-sm border-b pb-1"
+              >
+                <span className="truncate max-w-[80%]">{file.name}</span>
+                <button
+                  onClick={() => handleRemoveFile(idx)}
+                  className="text-red-500 hover:text-red-700"
+                  title="Remove file"
+                >
+                  ✕
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div> )}
         <button
           onClick={handleUpload}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
           disabled={!fileList || uploading}
         >
-          {uploading ? "Uploading..." : "Upload"}
+          {uploading ? "Auditing..." : "Audit"}
         </button>
         {message && <p className="mt-2 text-sm text-green-600">{message}</p>}
       </div>

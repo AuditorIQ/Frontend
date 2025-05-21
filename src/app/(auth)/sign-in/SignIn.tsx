@@ -39,6 +39,8 @@ export default function SignIn() {
       sessionStorage.setItem('user_email', res?.data?.data.user.email);
       sessionStorage.setItem('user_name', res?.data?.data.user.name);
       sessionStorage.setItem('subscriptionType', res?.data?.data.user.subscriptionType);
+      sessionStorage.setItem('subscribedAt', res?.data?.data.user.subscribedAt);
+      sessionStorage.setItem('isYearly', res?.data?.data.user.isYearly);
       
       // move to dashboard
       router.push("/dashboard");

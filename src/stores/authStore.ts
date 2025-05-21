@@ -15,6 +15,8 @@ interface SignupFormState {
   subscriptionType: string;
   profilePicUrl: string;
   providers: Provider[];
+  isYearly: boolean;
+  subscribedAt: string;
   setName: (name: string) => void;
   setEmail: (email: string) => void;
   setPassword: (password: string) => void;
@@ -24,6 +26,8 @@ interface SignupFormState {
   setSubscriptionType: (subscriptionType: string) => void;
   setProfilePicUrl: (profilePicUrl: string) => void;
   setProviders: (providers: Provider[]) => void;
+  setisYearly: (isYearly: boolean) => void;
+  setsubscribedAt: (subscribedAt: string) => void;
   resetForm: () => void;
 }
 
@@ -37,6 +41,8 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
   subscriptionType: "",
   profilePicUrl: "",
   providers: [],
+  isYearly: false,
+  subscribedAt: "",
 
   setName: (name) => set({ name }),
   setEmail: (email) => set({ email }),
@@ -47,6 +53,8 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
   setSubscriptionType: (subscriptionType) => set({ subscriptionType }),
   setProfilePicUrl: (profilePicUrl) => set({ profilePicUrl }),
   setProviders: (providers) => set({ providers }),
+  setisYearly: (isYearly) => set({ isYearly }),
+  setsubscribedAt: (subscribedAt) => set({ subscribedAt }),
 
   resetForm: () =>
     set({
@@ -59,6 +67,8 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
       subscriptionType: "",
       profilePicUrl: "",
       providers: [],
+      isYearly: false,
+      subscribedAt: "",
     }),
 }));
 

@@ -8,8 +8,6 @@ import Sidebar from '@/components/Sidebar/Sidebar';
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
-let isDisabled: boolean;
-
 const viewpdf = async (e: any) => {
   e.preventDefault();
   const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/openai/viewpdf`, {"url": e.target.value}, {

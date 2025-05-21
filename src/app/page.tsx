@@ -76,8 +76,8 @@ export default function Home() {
         <Navbar />
         {/* Register Button */}
         { showRegisterButton &&
-          <button className="register-button" onClick={() => window.location.href = '/sign-up'}>
-            <span>Register</span>
+          <button className="register-button" onClick={() => window.location.href = '/sign-in'}>
+            <span>Sign In</span>
             <img src="nextBtn.svg" />
           </button>
         }
@@ -103,7 +103,7 @@ export default function Home() {
             <span>Contact us</span>
             <img src = "dial.svg" />
           </a>
-          <button className="register-button" onClick={() => window.location.href = '/sign-in'}>
+          <button className="register-button" onClick={() => window.location.href = '/sign-up'}>
             <span>Get Started</span>
             <img src = "nextBtn.svg" />
           </button>
@@ -229,7 +229,7 @@ export default function Home() {
         {/* Right Section - Buttons */}
         <div className="flex gap-4">
           {/* Get Started Button */}
-          <button className="flex items-center gap-2 bg-blue-100 text-[#0A2463] font-semibold px-6 py-3 rounded-full hover:bg-blue-200 transition" onClick={() => window.location.href = '/sign-in'}>
+          <button className="flex items-center gap-2 bg-blue-100 text-[#0A2463] font-semibold px-6 py-3 rounded-full hover:bg-blue-200 transition" onClick={() => window.location.href = '/sign-up'}>
             Get Started
             <span className="bg-[#0A2463] text-white p-1 rounded-full">
               <img src="nextBtn.svg" />
@@ -244,7 +244,7 @@ export default function Home() {
         </div>
       </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 p-10">
-          <div>
+          <div style={{ marginRight: "125px"}}>
             <img src = "logo_footer.svg" style={{ height:"125px"}}/>
           </div>
           <div>

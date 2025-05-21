@@ -87,12 +87,16 @@ useEffect(() => {
   const name = params.get("name");
   const email = params.get("email");
   const subscription = params.get("subscriptionType");
+  const subscribedAt = params.get("subscribedAt");
+  const isYearly = params.get("isYearly");
 
-  if (token && name && email && subscription) {
+  if (token && name && email && subscription && subscribedAt && isYearly) {
     sessionStorage.setItem("token", token);
     sessionStorage.setItem("user_name", name);
     sessionStorage.setItem("user_email", email);
     sessionStorage.setItem("subscriptionType", subscription);
+    sessionStorage.setItem('subscribedAt', subscribedAt);
+    sessionStorage.setItem('isYearly', isYearly);
     successToast("Successfully Signed In");
     setTimeout(() => {
       window.history.replaceState({}, document.title, "/dashboard");
@@ -222,9 +226,9 @@ useEffect(() => {
       <UploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
               </div>
-            <select className="border rounded px-2 py-1">
+            {/* <select className="border rounded px-2 py-1">
               <option>This month</option>
-            </select>
+            </select> */}
           </div>
         </div>
 
