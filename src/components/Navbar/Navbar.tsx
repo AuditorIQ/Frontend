@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
     { id: 'about', label: 'About' },
     { id: 'features', label: 'Features' },
     { id: 'pricing', label: 'Pricing' },
-    { id: 'contactus', label: 'Contact Us' },
+    { id: 'contactus', label: 'Contact' },
   ];
 
   const [activeLink, setActiveLink] = useState<string>('home');

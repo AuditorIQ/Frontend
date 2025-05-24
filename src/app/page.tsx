@@ -99,7 +99,7 @@ export default function Home() {
             Get accurate, LCD/NCD driven chart audits for wound care and beyond – no guesswork, no delays.
           </p>
           <div className="flex justify-center space-x-4">
-          <a className="contact-button" href="#contactus">
+          <a className="contact-button" href="/contact">
             <span>Contact us</span>
             <img src = "dial.svg" />
           </a>
@@ -259,7 +259,7 @@ export default function Home() {
           <div>
             <h4 className="font-semibold">Legal</h4>
             <ul className="space-y-1 mt-2">
-              <li><a href="#contactus">Contact Us</a></li>
+              <li><a href="/contact">Contact Us</a></li>
               <li>Terms & Conditions</li>
               <li>Privacy Policy</li>
             </ul>
