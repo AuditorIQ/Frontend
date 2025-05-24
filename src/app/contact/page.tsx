@@ -12,7 +12,7 @@ export default function page() {
         <h1 className="text-3xl font-bold text-center mb-2">Connect with  <button style={{marginLeft: "15px"}} onClick={() => window.location.href="/"}><img src="logo_asset.svg" style={{width: "200px" }} /></button></h1>
         <p className="text-center">What are you waiting for; Click that submit button!</p>
       </div>
-      <main className="min-h-screen flex items-center justify-center to-blue-50 p-6">
+      <main className="flex items-center justify-center to-blue-50 p-6">
         <div className="max-w-6xl w-full flex flex-col md:flex-row items-center gap-8">
           <div className="w-full md:w-1/2">
             <Image
@@ -28,7 +28,7 @@ export default function page() {
           </div>
         </div>  
       </main>
-      <div className="flex flex-col md:flex-row justify-between items-center gap-8 p-8 bg-white shadow rounded-2xl space-x-4">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-8 p-8 bg-white shadow rounded-2xl space-x-4" style={{paddingLeft: "10%", paddingRight: "10%"}}>
       <div className="flex items-center gap-4">
         <MapPin className="text-blue-600" />
         <div>
