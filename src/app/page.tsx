@@ -310,7 +310,7 @@ export default function Home() {
             <ul className="space-y-1 mt-2">
               <li><a href="/contact">Contact Us</a></li>
               <li><a href="#" onClick={() => setShowModal(true)}>Terms & Conditions</a></li>
-              <li>Privacy Policy</li>
+              <li><a href="#" onClick={() => setShowModal(true)}>Privacy Policy</a></li>
             </ul>
             {showModal && (
               <div style={overlayStyle}>
