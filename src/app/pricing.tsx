@@ -74,7 +74,7 @@ const Pricing = () => {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid md:grid-cols-3 gap-6 px-6 mx-auto" style={{ paddingLeft: "11%", paddingRight: "11%" }}>
+      <div className="grid md:grid-cols-3 gap-6 px-6 mx-auto" style={{ paddingLeft: "20%", paddingRight: "20%" }}>
         {plans.map((plan, i) => (
           <div
             key={i}
