@@ -56,7 +56,7 @@ export default function SignIn() {
         {/* Left side - Form */}
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
           <div className="text-center mb-28">
-          <button onClick={() => window.location.href="/"}><img style={{ width: "200px"}} src= "logo_asset.svg" /></button>
+          <button onClick={() => window.location.href="/"}><img style={{ width: "200px", cursor: "pointer"}} src= "logo_asset.svg" /></button>
           </div>
 
           <div className="flex-grow flex flex-col justify-center max-w-md mx-auto w-full">

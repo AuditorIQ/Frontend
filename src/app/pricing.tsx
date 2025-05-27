@@ -54,7 +54,7 @@ const Pricing = () => {
   ];
 
   return (
-    <div className="py-12">
+    <div className="pt-12">
       {/* Billing Toggle */}
       <div className="flex justify-center items-center mb-10">
         <div className="flex items-center gap-4">
