@@ -151,7 +151,7 @@ export default function reports() {
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
-                  onClick={() => setCurrentPage(i + 1)}
+                  onClick={() => setCurrentPage(i + 1)} style={{cursor: "pointer"}}
                   className={`px-3 py-1 border rounded ${
                     currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'
                   }`}

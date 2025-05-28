@@ -48,7 +48,7 @@ const FaqAccordion: React.FC = () => {
         >
           <button
             onClick={() => toggle(index)}
-            className="w-full flex justify-between items-center p-4 font-medium text-left"
+            className="w-full flex justify-between items-center p-4 font-medium text-left" style={{cursor: "pointer"}}
           >
             <span>{faq.question}</span>
             {openIndex === index ? (

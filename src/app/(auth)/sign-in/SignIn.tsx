@@ -135,8 +135,8 @@ export default function SignIn() {
                       required
                     />
                     <button
-                      type="button"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      type="button" style={{cursor: "pointer"}}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"  style={{cursor: "pointer"}}
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
@@ -153,7 +153,7 @@ export default function SignIn() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <Checkbox
+                    {/* <Checkbox
                       id="remember-me"
                       checked={rememberMe}
                       onCheckedChange={(checked) =>
@@ -165,7 +165,7 @@ export default function SignIn() {
                       className="ml-2 text-sm text-gray-600"
                     >
                       Remember me
-                    </label>
+                    </label> */}
                   </div>
                   <Link
                     href="/forgot-password"

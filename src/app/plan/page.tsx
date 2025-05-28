@@ -198,10 +198,10 @@ const page = () => {
           >
             <h3>Are you sure you want to cancel?</h3>
             <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-around' }}>
-              <button onClick={cancelSubscription} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" style={{width: "40%"}}>
+              <button onClick={cancelSubscription} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" style={{width: "40%", cursor: "pointer"}}>
                 Yes
               </button>
-              <button onClick={() => setShowModal(false)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" style={{width: "40%"}}>
+              <button onClick={() => setShowModal(false)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" style={{width: "40%", cursor: "pointer"}}>
                 No
               </button>
             </div>

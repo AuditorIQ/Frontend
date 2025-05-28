@@ -55,7 +55,7 @@ export default function surgery() {
         />
       </div>
 
-      <button onClick={runAudit} className="bg-blue-600 text-white px-4 py-2 rounded">
+      <button onClick={runAudit} className="bg-blue-600 text-white px-4 py-2 rounded" style={{cursor: "pointer"}}>
         Run Audit
       </button>
 

@@ -221,7 +221,7 @@ useEffect(() => {
               isDisabled
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-500 hover:bg-blue-600'
-            } text-white`}
+            } text-white`} style={{cursor: "pointer"}}
             disabled={isDisabled} title={isDisabled ? 'You need to purchase plan' : ''}
           >
             + Upload Charts
@@ -354,7 +354,7 @@ useEffect(() => {
                   onClick={() => setCurrentPage(i + 1)}
                   className={`px-3 py-1 border rounded ${
                     currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'
-                  }`}
+                  }`}  style={{cursor: "pointer"}}
                 >
                   {i + 1}
                 </button>

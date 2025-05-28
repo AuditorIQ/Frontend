@@ -93,7 +93,7 @@ export default function ResetPasswordForm() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition"  style={{cursor: "pointer"}}
         >
           Reset Password
         </button>

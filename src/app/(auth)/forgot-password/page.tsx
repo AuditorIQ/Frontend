@@ -39,7 +39,7 @@ export default function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" style={{alignItems: "center"}}>
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" style={{alignItems: "center", cursor: "pointer"}}>
             Check your email to reset password
           </button>
         </form>

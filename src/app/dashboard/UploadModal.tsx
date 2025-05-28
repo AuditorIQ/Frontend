@@ -63,7 +63,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-white/50 flex items-center justify-center z-50">
       <div className="bg-gray-50 rounded-xl p-6 shadow-lg w-[480px] h-[320px] relative" style={{border: "2px solid blue"}}>
-        <button onClick={onClose} className="absolute right-4 top-4 text-gray-600 hover:text-black">
+        <button onClick={onClose} className="absolute right-4 top-4 text-gray-600 hover:text-black" style={{cursor: "pointer"}}>
           ✕
         </button>
         <div
@@ -87,7 +87,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
                 <span className="truncate max-w-[80%]">{file.name}</span>
                 <button
                   onClick={() => handleRemoveFile(idx)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-red-500 hover:text-red-700" style={{cursor: "pointer"}}
                   title="Remove file"
                 >
                   ✕
@@ -98,7 +98,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
         </div> )}
         <button
           onClick={handleUpload}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" style={{cursor: "pointer"}}
           disabled={!fileList || uploading}
         >
           {uploading ? "Auditing..." : "Audit"}

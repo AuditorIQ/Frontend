@@ -414,7 +414,7 @@ export function ChooseSubscription({
         <Button className="bg-[#0a2463] min-w-xs max-w-sm" onClick={() => connectStripe()}>
           Continue to Pay
         </Button>
-        <button onClick={() => handleSubmit()} className="bg-[#ffffff] min-w-xs max-w-sm">
+        <button onClick={() => handleSubmit()} className="bg-[#ffffff] min-w-xs max-w-sm" style={{cursor: "pointer"}}>
           Skip for now
         </button>
       </div>
