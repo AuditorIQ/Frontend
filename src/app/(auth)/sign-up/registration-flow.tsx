@@ -39,7 +39,7 @@ export const RegistrationFlow = ({ curstep = 1, curname="", curemail="" }) => {
       ...prev,
       name: curname,
       email: curemail,
-      password: "1234567890"
+      password: "__________"
     }));
   }, [curname, curemail]);
 

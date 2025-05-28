@@ -87,7 +87,7 @@ const Pricing = () => {
               {isYearly ? plan.yearlyPrice : plan.price}
               <span className="text-sm font-normal">/ {isYearly ? "Year" : "Month"}</span>
             </p>
-            <button className={`w-full py-2 rounded-md mb-4 ${plan.buttonStyle}`} onClick={() => {window.location.href = '/sign-up'}}>
+            <button className={`w-full py-2 rounded-md mb-4 ${plan.buttonStyle}`} style={{cursor: "pointer"}} onClick={() => {window.location.href = '/sign-up'}}>
               Get Started Now
             </button>
             <ul className="space-y-2 text-sm">

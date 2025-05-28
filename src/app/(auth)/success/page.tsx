@@ -29,7 +29,12 @@ export default function SuccessPage() {
         },
       };
       axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`, JSON.parse(JSON.stringify(formatted)));
-      window.location.href="/sign-in";
+
+      successToast("Successfully signed Up");
+      setTimeout(() => {
+        window.location.href="/sign-in";
+      }, 100);
+
     } catch (e) {
       console.error("Failed to parse sessionStorage formData:", e);
     }

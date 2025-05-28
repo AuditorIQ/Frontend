@@ -103,6 +103,10 @@ export function ChooseSubscription({
 
   const connectStripe = async () => {
 
+    if (selectedPlan === "FREE")
+      errorToast("Choose a plan!");
+    else
+    {
     const isoString = new Date(Date.now()).toISOString();
     const updatedData = {
       ...formData,
@@ -117,6 +121,7 @@ export function ChooseSubscription({
     
     const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`, { plan: selectedPlan.toLowerCase(), isYearly });
     window.location.href = res.data.checkoutUrl;
+  }
 
   }
 

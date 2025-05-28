@@ -96,7 +96,7 @@ export function CreateAccount({
       <div className="flex justify-center mb-4">
           <Button
             variant="outline"
-            className="w-full mb-6 relative"
+            className="w-full mb-6 relative" style={{cursor: "pointer"}}
             onClick={() => {window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;}}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -413,7 +413,7 @@ export function CreateAccount({
         {errors.terms && <p className="text-red-500 text-xs">{errors.terms}</p>}
 
         <Button
-          type="submit"
+          type="submit" style={{cursor: "pointer"}}
           className="w-full bg-[#0a2463] min-w-xs max-w-sm mx-auto"
         >
           Next

@@ -18,6 +18,7 @@ let mysubscriptionType =
 
 const page = () => {
   const [isYearly, setIsYearly] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const plans = [
     {
@@ -97,6 +98,7 @@ const page = () => {
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
     }
+    setShowModal(false);
   };
 
   useEffect(() => {
@@ -169,7 +171,43 @@ const page = () => {
               </td>
               <td className="p-3">{mysubscriptionType.startDate}</td>
               <td className="p-3">{mysubscriptionType.endDate}</td>
-              <td><button className="btn btn-danger" style={{ color: "red"}} onClick={cancelSubscription}>Cancel</button></td>
+              <td><button className="btn btn-danger" style={{ color: "red", cursor: "pointer"}} onClick={() => setShowModal(true)}>Cancel</button></td>
+              {showModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: 30,
+              borderRadius: 10,
+              width: '400px',
+              textAlign: 'center',
+            }}
+          >
+            <h3>Are you sure you want to cancel?</h3>
+            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-around' }}>
+              <button onClick={cancelSubscription} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" style={{width: "40%"}}>
+                Yes
+              </button>
+              <button onClick={() => setShowModal(false)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" style={{width: "40%"}}>
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+              )}
             </tr>
         </tbody>
       </table>
@@ -206,6 +244,16 @@ const page = () => {
               {isYearly ? plan.yearlyPrice : plan.price}
               <span className="text-sm font-normal">/ {isYearly ? "Year" : "Month"}</span>
             </p>
+            <button style={{cursor: "pointer"}}
+            disabled={mysubscriptionType.isEnabled === true}
+            className={`mb-4 w-full py-2 rounded-md text-white transition ${
+          mysubscriptionType.isEnabled === false
+                ? 'bg-blue-600 hover:bg-blue-700'
+                : 'bg-gray-400 cursor-not-allowed'
+            }`} onClick={() => subscribePlan(plan.name)}
+          >
+            Subscribe
+          </button>
             <ul className="space-y-2 text-sm">
               {plan.features.map((f, j) => (
                 <li key={j} className="flex items-start gap-2">
@@ -214,16 +262,7 @@ const page = () => {
                 </li>
               ))}
             </ul>
-            <button
-  disabled={mysubscriptionType.isEnabled === true}
-  className={`mt-4 w-full py-2 rounded-md text-white transition ${
-mysubscriptionType.isEnabled === false
-      ? 'bg-blue-600 hover:bg-blue-700'
-      : 'bg-gray-400 cursor-not-allowed'
-  }`} onClick={() => subscribePlan(plan.name)}
->
-  Subscribe
-</button>
+            
           </div>
         ))}
       </div>

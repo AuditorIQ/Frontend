@@ -189,6 +189,10 @@ useEffect(() => {
 
       {/* Main Content */}
       <main className="flex-1 p-4 grid gap-4">
+        {/* isActivated */}
+        { isDisabled && (
+          <div style={{width: "100%", paddingTop: "20px", paddingBottom: "20px", fontSize: "25px", backgroundColor: "grey", color: "white", textAlign: "center"}}>Your subscription is disabled.</div>
+        )}
         {/* Over the line */}
         <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">

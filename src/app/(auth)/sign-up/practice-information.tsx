@@ -96,7 +96,7 @@ export function PracticeInformation({
           )}
         </div>
 
-        <Button type="submit" className="w-full bg-[#0a2463]">
+        <Button type="submit" className="w-full bg-[#0a2463]" style={{cursor: "pointer"}}>
           Next
         </Button>
       </form>

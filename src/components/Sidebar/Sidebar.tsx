@@ -30,7 +30,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 h-full bg-white border-r p-4 text-sm">
-    <button onClick={() => window.location.href="/"}><img style={{ width: "200px", marginBottom: "15px"}} src= "logo_asset.svg" /></button>
+    <button onClick={() => window.location.href="/"} style={{cursor: "pointer"}}><img style={{ width: "200px", marginBottom: "15px"}} src= "logo_asset.svg" /></button>
       {navItems.map((section, index) => (
         <div key={index} className="mb-6">
           <h4 className="uppercase text-xs text-gray-400 mb-2">{section.section}</h4>
