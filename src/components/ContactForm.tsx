@@ -1,5 +1,6 @@
 'use client';
 
+import { successToast } from '@/lib/toast';
 import { useState } from 'react';
 import React from 'react';
 
@@ -23,6 +24,7 @@ const ContactForm = () => {
 
     const result = await res.json();
     setStatus(result.message);
+    successToast("Message received! We'll get back to you");
   };
 
   return (
@@ -52,7 +54,6 @@ const ContactForm = () => {
           <button type="submit" className="w-full bg-blue-900 text-white py-2 rounded-md hover:bg-blue-800" style={{cursor: "pointer"}}>
             Submit
           </button>
-          {status && <p className="text-sm text-gray-600">{status}</p>}
         </div>
       </form>
     </div>

@@ -100,8 +100,8 @@ export default function page() {
       <div className="flex items-center gap-4">
         <MapPin className="text-blue-600" />
         <div>
-          <p className="text-lg font-medium">695 Jerry Street, xxx 221</p>
-          <p className="text-lg">xxx, xxx xxxxxx</p>
+          <p className="text-lg font-medium">18142 Regents Square Drive</p>
+          <p className="text-lg">Tampa, FL 33647</p>
           <p className="text-lg text-gray-500">United States</p>
         </div>
       </div>
