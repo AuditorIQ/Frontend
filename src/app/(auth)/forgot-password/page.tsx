@@ -20,8 +20,12 @@ export default function ForgotPassword() {
   
       if (res.ok) {
         setIsSent(true);
-      } else {
+      } else if(res.status === 400) {
         errorToast("Email not found!");
+      }
+      else if(res.status === 401)
+      {
+        errorToast("You can't change your account password.");
       }
     };
   

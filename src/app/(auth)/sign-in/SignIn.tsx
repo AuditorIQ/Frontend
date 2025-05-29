@@ -178,7 +178,7 @@ export default function SignIn() {
                 <Button
                   type="submit"
                   className="w-full bg-navy-800 hover:bg-navy-900 cursor-pointer"
-                  style={{ backgroundColor: "#0a2463" }}
+                  style={{ backgroundColor: "#0a2463", cursor: "pointer" }}
                 >
                   Sign in
                 </Button>

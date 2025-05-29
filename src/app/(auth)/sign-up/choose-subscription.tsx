@@ -411,7 +411,7 @@ export function ChooseSubscription({
       </div>
       
       <div className="flex justify-center gap-4">
-        <Button className="bg-[#0a2463] min-w-xs max-w-sm" onClick={() => connectStripe()}>
+        <Button className="bg-[#0a2463] min-w-xs max-w-sm" onClick={() => connectStripe()} style={{cursor: "pointer"}}>
           Continue to Pay
         </Button>
         <button onClick={() => handleSubmit()} className="bg-[#ffffff] min-w-xs max-w-sm" style={{cursor: "pointer"}}>

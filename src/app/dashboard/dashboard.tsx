@@ -339,7 +339,7 @@ useEffect(() => {
                     </span>
                     </td>
                     <td className="py-3 px-6 text-center">
-                      <Button variant="outline" size="sm" className="text-blue-600 hover:bg-blue-100" value={url} onClick={viewpdf}>
+                      <Button variant="outline" size="sm" className="text-blue-600 hover:bg-blue-100 cursor-pointer" value={url} onClick={viewpdf}>
                         View Result
                       </Button>
                     </td>
