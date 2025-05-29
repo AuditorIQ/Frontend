@@ -5,7 +5,7 @@ import { useState } from 'react';
 import React from 'react';
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', postcode: '', message: '' });
   const [status, setStatus] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -40,11 +40,11 @@ const ContactForm = () => {
         </div>
         <div>
           <label className="block text-sm font-medium">Phone</label>
-          <input type="tel" className="w-full border rounded-md p-2" placeholder="Type your phone..."/>
+          <input type="tel" className="w-full border rounded-md p-2" placeholder="Type your phone..." name="phone" value={formData.phone} onChange={handleChange}/>
         </div>
         <div>
           <label className="block text-sm font-medium">Postcode</label>
-          <input type="text" className="w-full border rounded-md p-2" placeholder="Type your postcode..." />
+          <input type="text" className="w-full border rounded-md p-2" placeholder="Type your postcode..." name="postcode" value={formData.postcode} onChange={handleChange} />
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-medium">Message</label>
