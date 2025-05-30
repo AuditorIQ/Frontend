@@ -100,7 +100,7 @@ useEffect(() => {
     successToast("Successfully Signed In");
     setTimeout(() => {
       window.history.replaceState({}, document.title, "/dashboard");
-    }, 100);
+    }, 1000);
   }
   
   // prevent unauthorized attempt
@@ -109,7 +109,7 @@ useEffect(() => {
     errorToast("Unauthorized Attempt");
     setTimeout(() => {
       router.push('/sign-in');
-    }, 100);
+    }, 1000);
   }
 
   // check subscription

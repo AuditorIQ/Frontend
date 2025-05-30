@@ -22,10 +22,16 @@ export default function ForgotPassword() {
         setIsSent(true);
       } else if(res.status === 400) {
         errorToast("Email not found!");
+        setTimeout(() => {
+          ;
+        }, 1000);
       }
       else if(res.status === 401)
       {
         errorToast("You can't change your account password.");
+        setTimeout(() => {
+          ;
+        }, 1000);
       }
     };
   

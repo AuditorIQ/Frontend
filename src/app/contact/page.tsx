@@ -107,7 +107,7 @@ export default function page() {
       </div>
       <div className="flex items-center gap-4">
         <Phone className="text-blue-600" />
-        <p className="text-lg font-medium">1 xxx xxx xxx</p>
+        <p className="text-lg font-medium">1 234 567 890</p>
       </div>
       <div className="flex items-center gap-4">
         <Mail className="text-blue-600" />

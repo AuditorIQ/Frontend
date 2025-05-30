@@ -6,6 +6,9 @@ import { useEffect } from 'react';
 
 export default function SuccessPage() {
   successToast("Thank you for purchasing!");
+  setTimeout(() => {
+    ;
+  }, 1000);
   useEffect(() => {
     if (sessionStorage.getItem("user_email") === null || sessionStorage.getItem("user_email") === "")
     {
@@ -33,7 +36,7 @@ export default function SuccessPage() {
       successToast("Successfully signed Up");
       setTimeout(() => {
         window.location.href="/sign-in";
-      }, 100);
+      }, 1000);
 
     } catch (e) {
       console.error("Failed to parse sessionStorage formData:", e);

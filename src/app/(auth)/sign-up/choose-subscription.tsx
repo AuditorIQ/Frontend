@@ -104,7 +104,12 @@ export function ChooseSubscription({
   const connectStripe = async () => {
 
     if (selectedPlan === "FREE")
+    {
       errorToast("Choose a plan!");
+      setTimeout(() => {
+        ;
+      }, 1000);
+    }
     else
     {
     const isoString = new Date(Date.now()).toISOString();
@@ -148,10 +153,13 @@ export function ChooseSubscription({
         successToast("Successfully signed up");
         setTimeout(() => {
           router.push('/sign-in');
-        }, 100); // small delay just in case
+        }, 1000); // small delay just in case
       }
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
+      setTimeout(() => {
+        ;
+      }, 1000);
     }
   };
   

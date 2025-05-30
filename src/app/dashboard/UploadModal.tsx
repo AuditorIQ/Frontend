@@ -45,10 +45,13 @@ export default function UploadModal({ isOpen, onClose }: Props) {
       successToast("Completed!");
       setTimeout(() => {
         window.location.reload();
-      }, 100);
+      }, 1000);
     } catch (err) {
       setMessage("Upload failed.");
       errorToast("Not Completed.");
+      setTimeout(() => {
+        ;
+      }, 1000);
     } finally {
       setUploading(false);
     }

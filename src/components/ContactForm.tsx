@@ -25,6 +25,9 @@ const ContactForm = () => {
     const result = await res.json();
     setStatus(result.message);
     successToast("Message received! We'll get back to you");
+    setTimeout(() => {
+      ;
+    }, 1000);
   };
 
   return (

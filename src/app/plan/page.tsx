@@ -90,13 +90,16 @@ const page = () => {
     });
       setTimeout(() => {
         window.location.reload();
-      }, 100);
+      }, 1000);
       sessionStorage.setItem('subscriptionType', "FREE");
       sessionStorage.setItem('isYearly', "false");
       sessionStorage.setItem('subscribedAt', "");
 
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
+      setTimeout(() => {
+        ;
+      }, 1000);
     }
     setShowModal(false);
   };

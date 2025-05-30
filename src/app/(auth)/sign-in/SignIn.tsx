@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSearchParams } from 'next/navigation';
 
 export default function SignIn() {
   
@@ -19,6 +20,19 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
+
+  useEffect(() => {
+  if (error === 'not_google_account')
+  {
+    errorToast("You can't sign in using Google Account");
+    setTimeout(() => {
+      router.push('/sign-in');
+    }, 1000);
+  }
+  }, [error]);
 
   // Handle form submission and registration process
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +47,13 @@ export default function SignIn() {
           password,
         }
       );
-      if (res?.data?.success) successToast("Successfully signed In");
+      if (res?.data?.success)
+        {
+          successToast("Successfully signed In");
+          setTimeout(() => {
+            ;
+          }, 1000);
+        }
       // save token to the storage
       sessionStorage.setItem('token', res?.data?.data.accessToken);
       sessionStorage.setItem('user_email', res?.data?.data.user.email);
@@ -46,6 +66,9 @@ export default function SignIn() {
       router.push("/dashboard");
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
+      setTimeout(() => {
+        ;
+      }, 1000);
     }
     // Redirect to dashboard or confirmation page
   };
