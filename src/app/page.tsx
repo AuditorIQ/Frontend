@@ -128,7 +128,7 @@ export default function Home() {
           </button>
         }
       </nav>
-      <section id="home" className="pt-10" style={{background: "linear-gradient(to bottom,white,rgb(200,225,255))"}}>
+      <section id="home" className="pt-10" style={{background: "linear-gradient(to bottom, white 0%, rgb(200, 225, 255) 50%, white 100%)"}}>
         {/* Hero Section */}
         <section className="text-center py-20 px-6">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">

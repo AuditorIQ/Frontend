@@ -76,6 +76,7 @@ export default function page() {
           </button>
         }
       </nav>
+      <div style={{background: "linear-gradient(to bottom, white 0%, rgb(200, 225, 255) 50%, white 100%)"}}>
       <div className="justify-center pt-20 pb-20 space-x-4 m-6">
         <h1 className="text-3xl font-bold text-center mb-2">Connect with  <button style={{marginLeft: "15px"}}><img src="logo_asset.svg" style={{width: "200px" }} /></button></h1>
         <p className="text-center">What are you waiting for; Click that submit button!</p>
@@ -96,6 +97,7 @@ export default function page() {
           </div>
         </div>  
       </main>
+      </div>
       <div className="flex flex-col md:flex-row justify-between items-center gap-8 p-8 bg-white shadow rounded-2xl space-x-4" style={{paddingLeft: "20%", paddingRight: "20%"}}>
       <div className="flex items-center gap-4">
         <MapPin className="text-blue-600" />
