@@ -26,7 +26,7 @@ export function ChooseSubscription({
   );
 
   const [yearly, setYearly] = useState(false);
-  
+
   const plans = [
     {
       name: "Starter",
@@ -76,7 +76,7 @@ export function ChooseSubscription({
       ],
     },
   ];
-  
+
   const {
     setSubscriptionType,
     setisYearly,
@@ -93,7 +93,7 @@ export function ChooseSubscription({
     isYearly,
     subscribedAt,
   } = useSignupFormStore();
-  
+
   const router = useRouter();
 
   const handleSelectPlan = (plan: string) => {
@@ -102,67 +102,66 @@ export function ChooseSubscription({
   };
 
   const connectStripe = async () => {
-
-    if (selectedPlan === "FREE")
-    {
+    if (selectedPlan === "FREE") {
       errorToast("Choose a plan!");
-      setTimeout(() => {
-        ;
-      }, 1000);
+      setTimeout(() => {}, 1000);
+    } else {
+      const isoString = new Date(Date.now()).toISOString();
+      const updatedData = {
+        ...formData,
+        isYearly: yearly,
+        subscribedAt: isoString,
+      };
+      sessionStorage.setItem("formData", JSON.stringify(updatedData));
+      await updateFormData(updatedData);
+
+      setisYearly(yearly);
+      setsubscribedAt(isoString);
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
+        { plan: selectedPlan.toLowerCase(), isYearly }
+      );
+      window.location.href = res.data.checkoutUrl;
     }
-    else
-    {
-    const isoString = new Date(Date.now()).toISOString();
-    const updatedData = {
-      ...formData,
-      isYearly: yearly,
-      subscribedAt: isoString,
-    };
-    sessionStorage.setItem("formData",JSON.stringify(updatedData));
-    await updateFormData(updatedData);
-
-    setisYearly(yearly);
-    setsubscribedAt(isoString);    
-    
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`, { plan: selectedPlan.toLowerCase(), isYearly });
-    window.location.href = res.data.checkoutUrl;
-  }
-
-  }
+  };
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`, {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        practiceName,
-        zipCode,
-        providerLicenseNo,
-        subscriptionType: "FREE",
-        isYearly,
-        subscribedAt: null,
-        providers: { create: providers.map((provider: any, index: number) => ({
-          id: (Date.now()+index),
-          name: provider.name,
-          npiNumber: provider.npiNumber,
-        }))},
-      });
-  
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`,
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          practiceName,
+          zipCode,
+          providerLicenseNo,
+          subscriptionType: "FREE",
+          isYearly,
+          subscribedAt: null,
+          providers: {
+            create: providers.map((provider: any, index: number) => ({
+              id: Date.now() + index,
+              name: provider.name,
+              npiNumber: provider.npiNumber,
+            })),
+          },
+        }
+      );
+
       if (res?.data?.success) {
         successToast("Successfully signed up");
         setTimeout(() => {
-          router.push('/sign-in');
+          router.push("/sign-in");
         }, 1000); // small delay just in case
       }
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
-      setTimeout(() => {
-        ;
-      }, 1000);
+      setTimeout(() => {}, 1000);
     }
   };
-  
+
   return (
     <div className="bg-white p-6 rounded-lg max-w-4xl mx-auto">
       <div className="text-center mb-6">
@@ -170,7 +169,11 @@ export function ChooseSubscription({
       </div>
       <div className="flex justify-center items-center mb-10">
         <div className="flex items-center gap-4">
-          <span className={yearly ? "text-gray-400" : "text-blue-900 font-semibold"}>Pay Monthly</span>
+          <span
+            className={yearly ? "text-gray-400" : "text-blue-900 font-semibold"}
+          >
+            Pay Monthly
+          </span>
           <div
             className="w-16 h-8 bg-blue-200 rounded-full p-1 cursor-pointer flex items-center transition duration-300"
             onClick={() => setYearly(!yearly)}
@@ -181,7 +184,11 @@ export function ChooseSubscription({
               }`}
             />
           </div>
-          <span className={yearly ? "text-blue-900 font-semibold" : "text-gray-400"}>Pay Yearly</span>
+          <span
+            className={yearly ? "text-blue-900 font-semibold" : "text-gray-400"}
+          >
+            Pay Yearly
+          </span>
         </div>
       </div>
 
@@ -189,7 +196,9 @@ export function ChooseSubscription({
         {/* Starter Plan */}
         <div
           className={` rounded-lg p-4 ${
-            selectedPlan === "STARTER" ? "bg-primary ring-2 ring-[#0a2463]" : "bg-[#EBF9FF]"
+            selectedPlan === "STARTER"
+              ? "bg-primary ring-2 ring-[#0a2463]"
+              : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("STARTER")}
         >
@@ -202,8 +211,12 @@ export function ChooseSubscription({
 
           <div className="p-3">
             <div className="flex items-end mb-4">
-              <span className="text-3xl font-bold">${yearly ? "999" : "99" }</span>
-              <span className="text-gray-500 text-sm">{yearly ? "/Year" : "/Month"}</span>
+              <span className="text-3xl font-bold">
+                ${yearly ? "999" : "99"}
+              </span>
+              <span className="text-gray-500 text-sm">
+                {yearly ? "/Year" : "/Month"}
+              </span>
             </div>
 
             <ul className="space-y-4">
@@ -251,7 +264,9 @@ export function ChooseSubscription({
         {/* Professional Plan */}
         <div
           className={` rounded-lg p-4 ${
-            selectedPlan === "PROFESSIONAL" ? "bg-primary ring-2 ring-[#0a2463]" : "bg-[#EBF9FF]"
+            selectedPlan === "PROFESSIONAL"
+              ? "bg-primary ring-2 ring-[#0a2463]"
+              : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("PROFESSIONAL")}
         >
@@ -274,9 +289,12 @@ export function ChooseSubscription({
 
           <div className="p-3">
             <div className="flex items-end mb-4">
-              
-            <span className="text-3xl font-bold">${yearly ? "2,499" : "249" }</span>
-              <span className="text-gray-500 text-sm">{yearly ? "/Year" : "/Month"}</span>
+              <span className="text-3xl font-bold">
+                ${yearly ? "2,499" : "249"}
+              </span>
+              <span className="text-gray-500 text-sm">
+                {yearly ? "/Year" : "/Month"}
+              </span>
             </div>
 
             <ul className="space-y-4">
@@ -353,7 +371,9 @@ export function ChooseSubscription({
         {/* Enterprise Plan */}
         <div
           className={` rounded-lg p-4 ${
-            selectedPlan === "ENTERPRISE" ? "bg-primary ring-2 ring-[#0a2463]" : "bg-[#EBF9FF]"
+            selectedPlan === "ENTERPRISE"
+              ? "bg-primary ring-2 ring-[#0a2463]"
+              : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("ENTERPRISE")}
         >
@@ -366,8 +386,12 @@ export function ChooseSubscription({
 
           <div className="p-3">
             <div className="flex items-end mb-4">
-            <span className="text-3xl font-bold">${yearly ? "5,000" : "500" }</span>
-            <span className="text-gray-500 text-sm">{yearly ? "/Year" : "/Month"}</span>
+              <span className="text-3xl font-bold">
+                ${yearly ? "5,000" : "500"}
+              </span>
+              <span className="text-gray-500 text-sm">
+                {yearly ? "/Year" : "/Month"}
+              </span>
             </div>
 
             <ul className="space-y-4">
@@ -417,12 +441,20 @@ export function ChooseSubscription({
           </div>
         </div>
       </div>
-      
+
       <div className="flex justify-center gap-4">
-        <Button className="bg-[#0a2463] min-w-xs max-w-sm" onClick={() => connectStripe()} style={{cursor: "pointer"}}>
+        <Button
+          className="bg-[#0a2463] min-w-xs max-w-sm"
+          onClick={() => connectStripe()}
+          style={{ cursor: "pointer" }}
+        >
           Continue to Pay
         </Button>
-        <button onClick={() => handleSubmit()} className="bg-[#ffffff] min-w-xs max-w-sm" style={{cursor: "pointer"}}>
+        <button
+          onClick={() => handleSubmit()}
+          className="bg-[#ffffff] min-w-xs max-w-sm"
+          style={{ cursor: "pointer" }}
+        >
           Skip for now
         </button>
       </div>

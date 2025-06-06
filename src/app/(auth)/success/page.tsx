@@ -1,53 +1,62 @@
-'use client';
+"use client";
 
 import { successToast } from "@/lib/toast";
 import axios from "axios";
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function SuccessPage() {
   successToast("Thank you for purchasing!");
-  setTimeout(() => {
-    ;
-  }, 1000);
+  setTimeout(() => {}, 1000);
   useEffect(() => {
-    if (sessionStorage.getItem("user_email") === null || sessionStorage.getItem("user_email") === "")
-    {
-    const raw = sessionStorage.getItem("formData");
-    if (!raw) return; // Avoid parsing null
-  
-    try {
-      const data = JSON.parse(raw);
+    if (
+      sessionStorage.getItem("user_email") === null ||
+      sessionStorage.getItem("user_email") === ""
+    ) {
+      const raw = sessionStorage.getItem("formData");
+      if (!raw) return; // Avoid parsing null
 
-      const providersArray = Array.isArray(data.providers)
-        ? data.providers
-        : data.providers?.create || [];
-      
-      const formatted = {
-        ...data,
-        providers: {
-          create: providersArray.map((provider: any) => ({
-            ...provider,
-            id: parseInt(provider.id, 10)
-          })),
-        },
-      };
-      axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`, JSON.parse(JSON.stringify(formatted)));
+      try {
+        const data = JSON.parse(raw);
 
-      successToast("Successfully signed Up");
-      setTimeout(() => {
-        window.location.href="/sign-in";
-      }, 1000);
+        const providersArray = Array.isArray(data.providers)
+          ? data.providers
+          : data.providers?.create || [];
 
-    } catch (e) {
-      console.error("Failed to parse sessionStorage formData:", e);
+        const formatted = {
+          ...data,
+          providers: {
+            create: providersArray.map((provider: any) => ({
+              ...provider,
+              id: parseInt(provider.id, 10),
+            })),
+          },
+        };
+        axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`,
+          JSON.parse(JSON.stringify(formatted))
+        );
+
+        successToast("Successfully signed Up");
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 1000);
+      } catch (e) {
+        console.error("Failed to parse sessionStorage formData:", e);
+      }
+    } else {
+      axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/subscribe-plan`,
+        {
+          email: sessionStorage.getItem("user_email"),
+          subscriptionType: sessionStorage
+            .getItem("subscriptionType")
+            ?.toUpperCase(),
+          isYearly: sessionStorage.getItem("isYearly") === "true",
+        }
+      );
+      window.location.href = "/plan";
     }
-  }
-  else
-  {
-    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/subscribe-plan`, {email: sessionStorage.getItem("user_email"),subscriptionType: sessionStorage.getItem("subscriptionType")?.toUpperCase(), isYearly: sessionStorage.getItem("isYearly") === "true"});
-    window.location.href="/plan";
-  }
   }, []);
-  
+
   return <p>Redirecting...</p>;
 }

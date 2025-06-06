@@ -11,10 +11,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 
 export default function SignIn() {
-  
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,16 +21,15 @@ export default function SignIn() {
   const router = useRouter();
 
   const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const error = searchParams.get("error");
 
   useEffect(() => {
-  if (error === 'not_google_account')
-  {
-    errorToast("You can't sign in using Google Account");
-    setTimeout(() => {
-      router.push('/sign-in');
-    }, 1000);
-  }
+    if (error === "not_google_account") {
+      errorToast("You can't sign in using Google Account");
+      setTimeout(() => {
+        router.push("/sign-in");
+      }, 1000);
+    }
   }, [error]);
 
   // Handle form submission and registration process
@@ -47,28 +45,26 @@ export default function SignIn() {
           password,
         }
       );
-      if (res?.data?.success)
-        {
-          successToast("Successfully signed In");
-          setTimeout(() => {
-            ;
-          }, 1000);
-        }
+      if (res?.data?.success) {
+        successToast("Successfully signed In");
+        setTimeout(() => {}, 1000);
+      }
       // save token to the storage
-      sessionStorage.setItem('token', res?.data?.data.accessToken);
-      sessionStorage.setItem('user_email', res?.data?.data.user.email);
-      sessionStorage.setItem('user_name', res?.data?.data.user.name);
-      sessionStorage.setItem('subscriptionType', res?.data?.data.user.subscriptionType);
-      sessionStorage.setItem('subscribedAt', res?.data?.data.user.subscribedAt);
-      sessionStorage.setItem('isYearly', res?.data?.data.user.isYearly);
-      
+      sessionStorage.setItem("token", res?.data?.data.accessToken);
+      sessionStorage.setItem("user_email", res?.data?.data.user.email);
+      sessionStorage.setItem("user_name", res?.data?.data.user.name);
+      sessionStorage.setItem(
+        "subscriptionType",
+        res?.data?.data.user.subscriptionType
+      );
+      sessionStorage.setItem("subscribedAt", res?.data?.data.user.subscribedAt);
+      sessionStorage.setItem("isYearly", res?.data?.data.user.isYearly);
+
       // move to dashboard
       router.push("/dashboard");
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
-      setTimeout(() => {
-        ;
-      }, 1000);
+      setTimeout(() => {}, 1000);
     }
     // Redirect to dashboard or confirmation page
   };
@@ -79,9 +75,13 @@ export default function SignIn() {
         {/* Left side - Form */}
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
           <div className="text-center mb-28">
-          <button onClick={() => window.location.href="/"}><img style={{ width: "200px", cursor: "pointer"}} src= "logo_asset.svg" /></button>
+            <button onClick={() => (window.location.href = "/")}>
+              <img
+                style={{ width: "200px", cursor: "pointer" }}
+                src="logo_asset.svg"
+              />
+            </button>
           </div>
-
           <div className="flex-grow flex flex-col justify-center max-w-md mx-auto w-full">
             <h2 className="text-3xl font-bold text-center mb-2">
               Get Started!
@@ -92,8 +92,11 @@ export default function SignIn() {
 
             <Button
               variant="outline"
-              className="w-full mb-6 relative" style={{cursor: "pointer"}}
-              onClick={() => {window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`}}
+              className="w-full mb-6 relative"
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+              }}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
@@ -158,7 +161,8 @@ export default function SignIn() {
                       required
                     />
                     <button
-                      type="button" style={{cursor: "pointer"}}
+                      type="button"
+                      style={{ cursor: "pointer" }}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={
@@ -219,11 +223,11 @@ export default function SignIn() {
             </p>
           </div>
         </div>
-
         {/* Right side - Image */}
         <div className="#hidden md:block md:w-1/2 bg-gray-100">
           <Image
-            src="firstscreen.svg" alt="Healthcare professional with patient"
+            src="firstscreen.svg"
+            alt="Healthcare professional with patient"
             width={800}
             height={900}
             className="w-full h-full object-cover"

@@ -17,7 +17,9 @@
   color: #333;
   padding: 8px 16px;
   border-radius: 20px;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .nav-link:hover {

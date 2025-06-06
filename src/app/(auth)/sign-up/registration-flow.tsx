@@ -13,7 +13,11 @@ type RegistrationFlowProps = {
   curemail?: string;
 };
 
-export const RegistrationFlow = ({ curstep = 1, curname="", curemail="" }) => {
+export const RegistrationFlow = ({
+  curstep = 1,
+  curname = "",
+  curemail = "",
+}) => {
   const [step, setStep] = useState(curstep);
 
   const [formData, setFormData] = useState({
@@ -39,16 +43,25 @@ export const RegistrationFlow = ({ curstep = 1, curname="", curemail="" }) => {
       ...prev,
       name: curname,
       email: curemail,
-      password: "__________"
+      password: "__________",
     }));
   }, [curname, curemail]);
 
   return (
     <>
       <div className="bg-[url('/register-background.jpg')] w-full  mx-auto p-6 flex flex-col items-center justify-center h-screen">
-        <div className="bg-white" style={{border: "1px solid black"}}>
+        <div className="bg-white" style={{ border: "1px solid black" }}>
           <div className="text-center mb-6">
-          <button onClick={() => window.location.href="/"}><img style={{ width: "200px", paddingTop: "50px", cursor: "pointer"}} src= "logo_asset.svg" /></button>
+            <button onClick={() => (window.location.href = "/")}>
+              <img
+                style={{
+                  width: "200px",
+                  paddingTop: "50px",
+                  cursor: "pointer",
+                }}
+                src="logo_asset.svg"
+              />
+            </button>
           </div>
 
           {step === 1 && (

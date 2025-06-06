@@ -6,7 +6,9 @@ export default function reports() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <Card className="flex-1 p-4 grid gap-4">This page will be comming soon.</Card>
+      <Card className="flex-1 p-4 grid gap-4">
+        This page will be comming soon.
+      </Card>
     </div>
   );
 }

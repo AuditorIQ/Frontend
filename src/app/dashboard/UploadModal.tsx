@@ -5,10 +5,11 @@ import axios from "axios";
 
 type Props = {
   isOpen: boolean;
+  speciality: string;
   onClose: () => void;
 };
 
-export default function UploadModal({ isOpen, onClose }: Props) {
+export default function UploadModal({ isOpen, speciality, onClose }: Props) {
   const [fileList, setFileList] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
@@ -18,7 +19,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     setFileList((prev) => [...prev, ...acceptedFiles]);
     setMessage("");
   }, []);
-  
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: true,
@@ -30,16 +31,17 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     setUploadProgress(0);
     const formData = new FormData();
     fileList.forEach((file) => formData.append("files", file));
-  
+    formData.append("specialty", speciality);
+
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/openai/generate`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${sessionStorage.getItem("token")}`
-          }
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         }
       );
       successToast("Completed!");
@@ -49,63 +51,94 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     } catch (err) {
       setMessage("Upload failed.");
       errorToast("Not Completed.");
-      setTimeout(() => {
-        ;
-      }, 1000);
+      setTimeout(() => {}, 1000);
     } finally {
       setUploading(false);
     }
-  };  
+  };
 
   const handleRemoveFile = (indexToRemove: number) => {
-    setFileList((prevList) => prevList.filter((_, idx) => idx !== indexToRemove));
+    setFileList((prevList) =>
+      prevList.filter((_, idx) => idx !== indexToRemove)
+    );
   };
 
   if (!isOpen) return null;
+  //  if (!speciality) return null;
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-white/50 flex items-center justify-center z-50">
-      <div className="bg-gray-50 rounded-xl p-6 shadow-lg w-[480px] h-[320px] relative" style={{border: "2px solid blue"}}>
-        <button onClick={onClose} className="absolute right-4 top-4 text-gray-600 hover:text-black" style={{cursor: "pointer"}}>
+      <div className="bg-gray-50 rounded-xl p-6 shadow-lg w-[480px] max-h-[90vh] flex flex-col relative border-2 border-blue-500">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-600 hover:text-black"
+          style={{ cursor: "pointer" }}
+        >
           ✕
         </button>
+
+        {/* File Drop Zone */}
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${
+          className={`mt-10 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${
             isDragActive ? "bg-blue-100" : "bg-gray-100"
           }`}
-          style={{ marginTop: "25px", border: "1px solid black" }}
         >
           <input {...getInputProps()} />
           <p>Drag & drop files here, or click to select</p>
         </div>
+
+        {/* File List */}
         {fileList.length > 0 && (
-        <div className="mt-4 max-h-40 overflow-y-auto bg-white border border-gray-300 rounded-lg p-3">
-          <ul className="space-y-2">
-            {fileList.map((file: File, idx: number) => (
-              <li
-                key={idx}
-                className="flex justify-between items-center text-sm border-b pb-1"
-              >
-                <span className="truncate max-w-[80%]">{file.name}</span>
-                <button
-                  onClick={() => handleRemoveFile(idx)}
-                  className="text-red-500 hover:text-red-700" style={{cursor: "pointer"}}
-                  title="Remove file"
+          <div className="mt-4 flex-grow overflow-y-auto bg-white border border-gray-300 rounded-lg p-3">
+            <ul className="space-y-2">
+              {fileList.map((file: File, idx: number) => (
+                <li
+                  key={idx}
+                  className="flex justify-between items-center text-sm border-b pb-1 p-2"
                 >
-                  ✕
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div> )}
-        <button
-          onClick={handleUpload}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" style={{cursor: "pointer"}}
-          disabled={!fileList || uploading}
-        >
-          {uploading ? "Auditing..." : "Audit"}
-        </button>
+                  <span className="truncate max-w-[80%]">{file.name}</span>
+                  <button
+                    onClick={() => handleRemoveFile(idx)}
+                    className="text-red-500 hover:text-red-700"
+                    style={{ cursor: "pointer" }}
+                    title="Remove file"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-4 0h14"
+                      />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Upload Button */}
+        <div className="mt-4">
+          <button
+            onClick={handleUpload}
+            className="bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
+            style={{ cursor: "pointer" }}
+            disabled={!fileList || uploading}
+          >
+            {uploading ? "Auditing..." : "Audit"}
+          </button>
+        </div>
+
+        {/* Message */}
         {message && <p className="mt-2 text-sm text-green-600">{message}</p>}
       </div>
     </div>

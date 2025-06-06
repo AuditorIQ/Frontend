@@ -201,14 +201,16 @@ export function AddProviders({
                         <button
                           onClick={() => {
                             setIsEdit(provider.id);
-                          }}  style={{cursor: "pointer"}}
+                          }}
+                          style={{ cursor: "pointer" }}
                           className="text-green-500 hover:text-green-700"
                         >
                           <Edit size={16} />
                         </button>
                         <button
                           className="text-red-500 hover:text-red-700"
-                          onClick={() => removeProvider(provider.id)}  style={{cursor: "pointer"}}
+                          onClick={() => removeProvider(provider.id)}
+                          style={{ cursor: "pointer" }}
                         >
                           <Trash2 size={16} />
                         </button>

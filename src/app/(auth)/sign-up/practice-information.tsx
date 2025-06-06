@@ -89,14 +89,20 @@ export function PracticeInformation({
             type="text"
             placeholder="Enter your license number"
             value={formData.providerLicenseNo}
-            onChange={(e) => updateFormData({ providerLicenseNo: e.target.value })}
+            onChange={(e) =>
+              updateFormData({ providerLicenseNo: e.target.value })
+            }
           />
           {errors.providerLicenseNo && (
             <p className="text-red-500 text-xs">{errors.providerLicenseNo}</p>
           )}
         </div>
 
-        <Button type="submit" className="w-full bg-[#0a2463]" style={{cursor: "pointer"}}>
+        <Button
+          type="submit"
+          className="w-full bg-[#0a2463]"
+          style={{ cursor: "pointer" }}
+        >
           Next
         </Button>
       </form>

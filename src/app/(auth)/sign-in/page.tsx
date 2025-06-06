@@ -5,7 +5,11 @@ import { Suspense } from "react";
 type Props = {};
 
 const page = (props: Props) => {
-  return <Suspense fallback={<div>Loading...</div>}><SignIn /></Suspense>;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignIn />
+    </Suspense>
+  );
 };
 
 export default page;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaPlus, FaMinus } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FaPlus, FaMinus } from "react-icons/fa";
 
 type FaqItem = {
   question: string;
@@ -14,19 +14,23 @@ const faqs: FaqItem[] = [
   },
   {
     question: "What happens if my MAC doesn’t have an applicable LCD?",
-    answer: "We’ll notify you of any discrepancies and provide guidance accordingly.",
+    answer:
+      "We’ll notify you of any discrepancies and provide guidance accordingly.",
   },
   {
     question: "Can I audit charts for multiple providers?",
-    answer: "Yes, you can audit charts across multiple providers within your account.",
+    answer:
+      "Yes, you can audit charts across multiple providers within your account.",
   },
   {
     question: "What if I only upload one date of service?",
-    answer: "You can audit even a single date of service. We support flexibility.",
+    answer:
+      "You can audit even a single date of service. We support flexibility.",
   },
   {
     question: "How many charts can I upload at once?",
-    answer: "There is no strict limit, but we recommend batch uploads of up to 100 for optimal performance.",
+    answer:
+      "There is no strict limit, but we recommend batch uploads of up to 100 for optimal performance.",
   },
 ];
 
@@ -43,12 +47,15 @@ const FaqAccordion: React.FC = () => {
         <div
           key={index}
           className={`rounded-xl border ${
-            openIndex === index ? 'bg-blue-900 text-white' : 'bg-white text-black'
+            openIndex === index
+              ? "bg-blue-900 text-white"
+              : "bg-white text-black"
           } transition duration-300`}
         >
           <button
             onClick={() => toggle(index)}
-            className="w-full flex justify-between items-center p-4 font-medium text-left" style={{cursor: "pointer"}}
+            className="w-full flex justify-between items-center p-4 font-medium text-left"
+            style={{ cursor: "pointer" }}
           >
             <span>{faq.question}</span>
             {openIndex === index ? (
@@ -58,9 +65,7 @@ const FaqAccordion: React.FC = () => {
             )}
           </button>
           {openIndex === index && (
-            <div className="px-4 pb-4 text-sm text-white">
-              {faq.answer}
-            </div>
+            <div className="px-4 pb-4 text-sm text-white">{faq.answer}</div>
           )}
         </div>
       ))}
