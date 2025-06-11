@@ -1,19 +1,34 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { successToast, errorToast } from "@/lib/toast";
 import axios from "axios";
 
 type Props = {
   isOpen: boolean;
-  speciality: string;
   onClose: () => void;
 };
 
-export default function UploadModal({ isOpen, speciality, onClose }: Props) {
+const specialties = ["Podiatry", "Vascular Surgery", "Cardiology"];
+
+export default function UploadModal({ isOpen, onClose }: Props) {
   const [fileList, setFileList] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [selectedSpecialty, setSelectedSpecialty] = useState("Podiatry");
+
+  useEffect(() => {
+    // fetch profiles list
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: sessionStorage.getItem("user_email"),
+      }),
+    }).then((res) => res.json());
+  }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFileList((prev) => [...prev, ...acceptedFiles]);
@@ -31,7 +46,7 @@ export default function UploadModal({ isOpen, speciality, onClose }: Props) {
     setUploadProgress(0);
     const formData = new FormData();
     fileList.forEach((file) => formData.append("files", file));
-    formData.append("specialty", speciality);
+    formData.append("specialty", selectedSpecialty);
 
     try {
       const res = await axios.post(
@@ -49,6 +64,7 @@ export default function UploadModal({ isOpen, speciality, onClose }: Props) {
         window.location.reload();
       }, 1000);
     } catch (err) {
+      console.log(err);
       setMessage("Upload failed.");
       errorToast("Not Completed.");
       setTimeout(() => {}, 1000);
@@ -77,7 +93,20 @@ export default function UploadModal({ isOpen, speciality, onClose }: Props) {
         >
           ✕
         </button>
-
+        <div className="p-4">
+          <label className="block mb-2 font-medium">Select Specialty:</label>
+          <select
+            value={selectedSpecialty}
+            onChange={(e) => setSelectedSpecialty(e.target.value)}
+            className="border rounded p-2 mb-4"
+          >
+            {specialties.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
         {/* File Drop Zone */}
         <div
           {...getRootProps()}

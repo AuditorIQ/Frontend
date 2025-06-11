@@ -53,7 +53,6 @@ const viewpdf = async (e: any) => {
 
   popup.location.href = res.data.url;
 };
-const specialties = ["Podiatry", "Vascular Surgery", "Cardiology"];
 
 export default function DashboardPage() {
   // Report List
@@ -65,8 +64,6 @@ export default function DashboardPage() {
   const [userName, setUserName] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-  const [selectedSpecialty, setSelectedSpecialty] = useState("");
-  const [defaultSpecialty, setDefaultSpecialty] = useState("");
   const [analyseChart, setAnalyseChart] = useState<any[]>([]);
 
   const filteredDataset = dataset.filter((item) =>
@@ -284,21 +281,6 @@ export default function DashboardPage() {
       }
     };
     fetchData();
-    // fetch profiles list
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: sessionStorage.getItem("user_email"),
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setDefaultSpecialty(data.defaultSpecialty);
-        setSelectedSpecialty(data.defaultSpecialty);
-      });
   }, []);
 
   return (
@@ -343,22 +325,6 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold">Overview</h1>
           <div className="flex gap-2 items-center">
-            <div className="p-4">
-              <label className="block mb-2 font-medium">
-                Select Specialty:
-              </label>
-              <select
-                value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
-                className="border rounded p-2 mb-4"
-              >
-                {specialties.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
             <div>
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -375,7 +341,6 @@ export default function DashboardPage() {
               </button>
               <UploadModal
                 isOpen={isModalOpen}
-                speciality={selectedSpecialty}
                 onClose={() => setIsModalOpen(false)}
               />
             </div>
