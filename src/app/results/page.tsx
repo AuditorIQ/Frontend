@@ -161,9 +161,7 @@ export default function reports() {
                   Patient Name
                 </th>
                 <th className="py-3 px-6 text-left font-medium">Provider</th>
-                <th className="py-3 px-6 text-left font-medium">
-                  Date of Service
-                </th>
+                <th className="py-3 px-6 text-left font-medium">Audit Date</th>
                 <th className="py-3 px-6 text-left font-medium">Status</th>
                 <th className="py-3 px-6 text-left font-medium">View</th>
               </tr>

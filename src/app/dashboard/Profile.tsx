@@ -26,7 +26,7 @@ export default function Profile() {
       >
         <option>Podiatry</option>
         <option>Vascular Surgery</option>
-        <option>Cardiology</option>
+        <option>Wound Care</option>
       </select>
 
       <button

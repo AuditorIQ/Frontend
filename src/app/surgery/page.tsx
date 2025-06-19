@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import axios from "axios";
 
 export default function surgery() {
-  const [specialty, setSpecialty] = useState('podiatry');
+  const [specialty, setSpecialty] = useState("podiatry");
   const [form, setForm] = useState({
-    diagnosisCodes: [''],
-    procedureCodes: [''],
-    modifiers: ['']
+    diagnosisCodes: [""],
+    procedureCodes: [""],
+    modifiers: [""],
   });
   const [result, setResult] = useState<any>(null);
 
   const handleChange = (field: string, value: string[]) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const runAudit = async () => {
@@ -32,42 +32,60 @@ export default function surgery() {
       >
         <option value="podiatry">Podiatry</option>
         <option value="vascular">Vascular Surgery</option>
+        <option value="vascular">Wound Care</option>
       </select>
 
       <div>
         <label className="block">Diagnosis Codes</label>
         <input
           className="w-full p-2 border mb-2"
-          value={form.diagnosisCodes.join(',')}
-          onChange={(e) => handleChange('diagnosisCodes', e.target.value.split(','))}
+          value={form.diagnosisCodes.join(",")}
+          onChange={(e) =>
+            handleChange("diagnosisCodes", e.target.value.split(","))
+          }
         />
         <label className="block">Procedure Codes</label>
         <input
           className="w-full p-2 border mb-2"
-          value={form.procedureCodes.join(',')}
-          onChange={(e) => handleChange('procedureCodes', e.target.value.split(','))}
+          value={form.procedureCodes.join(",")}
+          onChange={(e) =>
+            handleChange("procedureCodes", e.target.value.split(","))
+          }
         />
         <label className="block">Modifiers</label>
         <input
           className="w-full p-2 border mb-4"
-          value={form.modifiers.join(',')}
-          onChange={(e) => handleChange('modifiers', e.target.value.split(','))}
+          value={form.modifiers.join(",")}
+          onChange={(e) => handleChange("modifiers", e.target.value.split(","))}
         />
       </div>
 
-      <button onClick={runAudit} className="bg-blue-600 text-white px-4 py-2 rounded" style={{cursor: "pointer"}}>
+      <button
+        onClick={runAudit}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+        style={{ cursor: "pointer" }}
+      >
         Run Audit
       </button>
 
       {result && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold">Audit Result</h2>
-          <p><strong>Specialty:</strong> {result.specialty}</p>
-          <p><strong>LCD:</strong> {result.lcd}</p>
-          <p><strong>Status:</strong> {result.isCompliant ? 'Compliant ✅' : 'Issues found ❌'}</p>
+          <p>
+            <strong>Specialty:</strong> {result.specialty}
+          </p>
+          <p>
+            <strong>LCD:</strong> {result.lcd}
+          </p>
+          <p>
+            <strong>Status:</strong>{" "}
+            {result.isCompliant ? "Compliant ✅" : "Issues found ❌"}
+          </p>
           {result.issues.length > 0 && (
             <ul className="list-disc list-inside text-red-600">
-              {result.issues.map((i: string, idx: number) => <li key={idx}>{i}</li>)}
+              {result.issues.map((i: string, idx: number) => (
+                <li key={idx}>{i}</li>
+              ))}
             </ul>
           )}
         </div>

@@ -451,7 +451,7 @@ export default function DashboardPage() {
                   </th>
                   <th className="py-3 px-6 text-left font-medium">Provider</th>
                   <th className="py-3 px-6 text-left font-medium">
-                    Date of Service
+                    Audit Date
                   </th>
                   <th className="py-3 px-6 text-left font-medium">Status</th>
                   <th className="py-3 px-6 text-left font-medium">View</th>
