@@ -65,7 +65,15 @@ export default function UploadModal({ isOpen, onClose }: Props) {
       }, 1000);
     } catch (err) {
       console.log(err);
-      setMessage("Upload failed.");
+      let errorMessage = "Unknown error";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      } else {
+        errorMessage = JSON.stringify(err);
+      }
+      setMessage(`Upload failed: ${errorMessage}`);
       errorToast("Not Completed.");
       setTimeout(() => {}, 1000);
     } finally {
