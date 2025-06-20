@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export default function Profile() {
-  const [defaultSpecialty, setDefaultSpecialty] = useState("Podiatry");
+  const [defaultSpecialty, setDefaultSpecialty] = useState("Wound Care");
 
   const saveDefault = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {

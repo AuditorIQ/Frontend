@@ -15,7 +15,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [selectedSpecialty, setSelectedSpecialty] = useState("Podiatry");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
 
   useEffect(() => {
     // fetch profiles list
