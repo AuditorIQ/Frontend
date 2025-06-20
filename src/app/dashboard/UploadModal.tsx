@@ -65,16 +65,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
       }, 1000);
     } catch (err) {
       console.log(err);
-      let errorMessage = "Unknown error";
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else if (typeof err === "string") {
-        errorMessage = err;
-      } else {
-        errorMessage = JSON.stringify(err);
-      }
-      setMessage(`Upload failed: ${errorMessage}`);
-      errorToast("Not Completed.");
+      errorToast("Upload too many files");
       setTimeout(() => {}, 1000);
     } finally {
       setUploading(false);
