@@ -24,9 +24,9 @@ export default function Profile() {
         onChange={(e) => setDefaultSpecialty(e.target.value)}
         className="border rounded p-2 mb-4"
       >
+        <option>Wound Care</option>
         <option>Podiatry</option>
         <option>Vascular Surgery</option>
-        <option>Wound Care</option>
       </select>
 
       <button

@@ -30,9 +30,9 @@ export default function surgery() {
         value={specialty}
         onChange={(e) => setSpecialty(e.target.value)}
       >
+        <option value="Wound Care">Wound Care</option>
         <option value="Podiatry">Podiatry</option>
         <option value="Vascular">Vascular Surgery</option>
-        <option value="Wound Care">Wound Care</option>
       </select>
 
       <div>

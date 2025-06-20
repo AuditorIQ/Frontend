@@ -8,7 +8,7 @@ type Props = {
   onClose: () => void;
 };
 
-const specialties = ["Podiatry", "Vascular Surgery", "Wound Care"];
+const specialties = ["Wound Care", "Podiatry", "Vascular Surgery"];
 
 export default function UploadModal({ isOpen, onClose }: Props) {
   const [fileList, setFileList] = useState<File[]>([]);
