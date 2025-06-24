@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function logoutPage() {
+export default function Page() {
   useEffect(() => {
     sessionStorage.setItem("token", "");
     sessionStorage.setItem("user_email", "");

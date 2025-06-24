@@ -166,7 +166,7 @@ export default function DashboardPage() {
               index + 1,
               patient,
               provider,
-              `${date.slice(0, 4)}/${date.slice(4, 6)}/${date.slice(6, 8)}`,
+              `${date.slice(4, 6)}/${date.slice(6, 8)}/${date.slice(0, 4)}`,
               risk.split(" ")[0],
               file,
               userid,
@@ -219,7 +219,7 @@ export default function DashboardPage() {
 
         // Monthly audit trends
         const monthlytrend = result.map((item) => {
-          const month = item[3].slice(5, 7);
+          const month = item[3].slice(0, 2);
           const severity = item[4];
           return { [month]: severity };
         });
@@ -496,7 +496,7 @@ export default function DashboardPage() {
                           value={url}
                           onClick={viewpdf}
                         >
-                          View Result
+                          Open
                         </Button>
                       </td>
                     </tr>

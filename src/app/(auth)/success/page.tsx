@@ -4,7 +4,7 @@ import { successToast } from "@/lib/toast";
 import axios from "axios";
 import { useEffect } from "react";
 
-export default function SuccessPage() {
+export default function Page() {
   successToast("Thank you for purchasing!");
   setTimeout(() => {}, 1000);
   useEffect(() => {

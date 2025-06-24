@@ -99,7 +99,7 @@ export default function reports() {
               index + 1,
               patient,
               provider,
-              `${date.slice(0, 4)}/${date.slice(4, 6)}/${date.slice(6, 8)}`,
+              `${date.slice(4, 6)}/${date.slice(6, 8)}/${date.slice(0, 4)}`,
               risk.split(" ")[0],
               file,
               userid,
@@ -141,7 +141,7 @@ export default function reports() {
       <Card className="flex-1 p-4 grid gap-4">
         <CardContent className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-800">Audit List</h3>
+            <h3 className="text-xl font-semibold text-gray-800">Results</h3>
             <div className="flex items-center gap-3">
               <Search className="w-5 h-5 text-gray-600" />
               <Input
@@ -200,7 +200,7 @@ export default function reports() {
                         value={url}
                         onClick={viewpdf}
                       >
-                        View Result
+                        Open
                       </Button>
                     </td>
                   </tr>

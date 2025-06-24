@@ -3,7 +3,7 @@
 import { errorToast } from "@/lib/toast";
 import { useState } from "react";
 
-export default function ForgotPassword() {
+export default function Page() {
   const [email, setEmail] = useState("");
   const [isSent, setIsSent] = useState(false);
 
