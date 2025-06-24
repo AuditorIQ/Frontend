@@ -165,12 +165,12 @@ export function AddProviders({
         </div>
 
         <div className="md:w-1/2">
-          <div className="mb-2">
+          {/* <div className="mb-2">
             <h3 className="font-medium">Provider List</h3>
             <p className="text-xs text-gray-500 my-2">
               Up to 3 providers. Your subscription will be based on this count.
             </p>
-          </div>
+          </div> */}
 
           <div className="border rounded-md overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
@@ -224,14 +224,18 @@ export function AddProviders({
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="mx-auto w-full flex ">
-        <Button
-          type="submit"
-          className="#w-full bg-[#0a2463] mx-auto cursor-pointer"
-        >
-          Continue to subscription
-        </Button>
-      </form>
+      <div className="flex flex-col w-full">
+        <form onSubmit={onBack} className="w-full mb-2">
+          <Button type="submit" className="w-full bg-[#0a2463] cursor-pointer">
+            Back
+          </Button>
+        </form>
+        <form onSubmit={handleSubmit} className="w-full">
+          <Button type="submit" className="w-full bg-[#0a2463] cursor-pointer">
+            Next
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

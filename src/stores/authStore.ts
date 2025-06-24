@@ -11,7 +11,6 @@ interface SignupFormState {
   password: string;
   practiceName: string;
   zipCode: string;
-  providerLicenseNo: string;
   subscriptionType: string;
   profilePicUrl: string;
   providers: Provider[];
@@ -22,7 +21,6 @@ interface SignupFormState {
   setPassword: (password: string) => void;
   setPracticeName: (practiceName: string) => void;
   setZipCode: (zipCode: string) => void;
-  setProviderLicenseNo: (providerLicenseNo: string) => void;
   setSubscriptionType: (subscriptionType: string) => void;
   setProfilePicUrl: (profilePicUrl: string) => void;
   setProviders: (providers: Provider[]) => void;
@@ -37,7 +35,6 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
   password: "",
   practiceName: "",
   zipCode: "",
-  providerLicenseNo: "",
   subscriptionType: "",
   profilePicUrl: "",
   providers: [],
@@ -49,7 +46,6 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
   setPassword: (password) => set({ password }),
   setPracticeName: (practiceName) => set({ practiceName }),
   setZipCode: (zipCode) => set({ zipCode }),
-  setProviderLicenseNo: (providerLicenseNo) => set({ providerLicenseNo }),
   setSubscriptionType: (subscriptionType) => set({ subscriptionType }),
   setProfilePicUrl: (profilePicUrl) => set({ profilePicUrl }),
   setProviders: (providers) => set({ providers }),
@@ -63,7 +59,6 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
       password: "",
       practiceName: "",
       zipCode: "",
-      providerLicenseNo: "",
       subscriptionType: "",
       profilePicUrl: "",
       providers: [],

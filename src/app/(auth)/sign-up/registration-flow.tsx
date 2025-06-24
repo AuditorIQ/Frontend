@@ -26,7 +26,6 @@ export const RegistrationFlow = ({
     password: "",
     practiceName: "",
     zipCode: "",
-    providerLicenseNo: "",
     providers: [],
     subscriptionType: "",
   });

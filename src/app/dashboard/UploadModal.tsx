@@ -93,7 +93,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           ✕
         </button>
         <div className="p-4">
-          <label className="block mb-2 font-medium">Select Specialty:</label>
+          <label className="block mb-2 font-medium">Rendering Provider</label>
           <select
             value={selectedSpecialty}
             onChange={(e) => setSelectedSpecialty(e.target.value)}

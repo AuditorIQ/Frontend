@@ -22,8 +22,7 @@ export function PracticeInformation({
   onBack,
 }: PracticeInformationProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { setPracticeName, setZipCode, setProviderLicenseNo } =
-    useSignupFormStore();
+  const { setPracticeName, setZipCode } = useSignupFormStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,15 +33,12 @@ export function PracticeInformation({
     if (!formData.practiceName)
       newErrors.practiceName = "Practice name is required";
     if (!formData.zipCode) newErrors.zipCode = "ZIP code is required";
-    if (!formData.providerLicenseNo)
-      newErrors.providerLicenseNo = "License number is required";
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       setZipCode(formData.zipCode);
       setPracticeName(formData.practiceName);
-      setProviderLicenseNo(formData.providerLicenseNo);
       onNext();
     }
   };
@@ -50,12 +46,12 @@ export function PracticeInformation({
   return (
     <div className="bg-white p-6 rounded-lg max-w-md mx-auto ">
       <div className="text-center mb-6">
-        <h2 className="text-4xl font-bold">Enter Your Practice Information</h2>
+        <h2 className="text-4xl font-bold">Add Practice</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="practiceName">Practice name</Label>
+          <Label htmlFor="practiceName">Practice Name</Label>
           <Input
             id="practiceName"
             type="text"
@@ -69,7 +65,7 @@ export function PracticeInformation({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="zipCode">ZIP code</Label>
+          <Label htmlFor="zipCode">Zip Code</Label>
           <Input
             id="zipCode"
             type="text"
@@ -82,7 +78,7 @@ export function PracticeInformation({
           )}
         </div>
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label htmlFor="providerLicenseNo">Number of provider license</Label>
           <Input
             id="providerLicenseNo"
@@ -96,7 +92,7 @@ export function PracticeInformation({
           {errors.providerLicenseNo && (
             <p className="text-red-500 text-xs">{errors.providerLicenseNo}</p>
           )}
-        </div>
+        </div> */}
 
         <Button
           type="submit"

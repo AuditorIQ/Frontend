@@ -25,7 +25,11 @@ import { errorToast, successToast } from "@/lib/toast";
 
 let providerData: { name: string; value: number }[];
 let isDisabled: boolean;
-let allCount: number, lowCount: number, lowRate: number, nonLowCount: number;
+let allCount: number,
+  lowCount: number,
+  moderateCount: number,
+  lowRate: number,
+  nonLowCount: number;
 const recordsPerPage = 5;
 
 const viewpdf = async (e: any) => {
@@ -194,9 +198,10 @@ export default function DashboardPage() {
         const risks: string[] = result.map((item) => item[4]);
         allCount = risks.length;
         lowCount = risks.filter((risk) => risk === "Low").length;
-        lowRate = (lowCount * 100) / allCount;
+        moderateCount = risks.filter((risk) => risk === "Moderate").length;
+        lowRate = (lowCount * 100 + moderateCount * 100) / allCount;
         lowRate = parseFloat(lowRate.toFixed(2));
-        nonLowCount = allCount - lowCount;
+        nonLowCount = allCount - lowCount - moderateCount;
 
         // Provider compliance rates
         const providers: string[] = result.map((item) => item[2]);
