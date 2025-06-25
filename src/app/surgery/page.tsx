@@ -32,7 +32,6 @@ export default function surgery() {
       >
         <option value="Wound Care">Wound Care</option>
         <option value="Podiatry">Podiatry</option>
-        <option value="Vascular">Vascular Surgery</option>
       </select>
 
       <div>
