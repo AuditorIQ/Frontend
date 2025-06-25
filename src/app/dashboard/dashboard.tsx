@@ -332,7 +332,9 @@ export default function DashboardPage() {
           <div className="flex gap-2 items-center">
             <div>
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
                 className={`px-6 py-3 rounded-lg ${
                   isDisabled
                     ? "bg-gray-400 cursor-not-allowed"
@@ -346,7 +348,12 @@ export default function DashboardPage() {
               </button>
               <UploadModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 100);
+                }}
               />
             </div>
             {/* <select className="border rounded px-2 py-1">
