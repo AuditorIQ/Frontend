@@ -11,12 +11,14 @@ type RegistrationFlowProps = {
   curstep?: string | number;
   curname?: string;
   curemail?: string;
+  curpass?: string;
 };
 
 export const RegistrationFlow = ({
   curstep = 1,
   curname = "",
   curemail = "",
+  curpass = "",
 }) => {
   const [step, setStep] = useState(curstep);
 
@@ -42,9 +44,9 @@ export const RegistrationFlow = ({
       ...prev,
       name: curname,
       email: curemail,
-      password: "__________",
+      password: curpass,
     }));
-  }, [curname, curemail]);
+  }, [curname, curemail, curpass]);
 
   return (
     <>

@@ -94,13 +94,18 @@ export function PracticeInformation({
           )}
         </div> */}
 
-        <Button
-          type="submit"
-          className="w-full bg-[#0a2463]"
-          style={{ cursor: "pointer" }}
-        >
-          Next
-        </Button>
+        <div className="flex flex-row justify-between gap-4 w-full">
+          <Button
+            type="button"
+            onClick={onBack}
+            className="w-1/2 bg-[#0a2463] cursor-pointer"
+          >
+            Back
+          </Button>
+          <Button type="submit" className="w-1/2 bg-[#0a2463] cursor-pointer">
+            Next
+          </Button>
+        </div>
       </form>
     </div>
   );

@@ -8,8 +8,14 @@ export default function ClientWrapper() {
   const stepParam = Number(searchParams.get("step") || "1");
   const name = searchParams.get("name") || "";
   const email = searchParams.get("email") || "";
+  const pass = searchParams.get("password") || "";
 
   return (
-    <RegistrationFlow curstep={stepParam} curname={name} curemail={email} />
+    <RegistrationFlow
+      curstep={stepParam}
+      curname={name}
+      curemail={email}
+      curpass={pass}
+    />
   );
 }

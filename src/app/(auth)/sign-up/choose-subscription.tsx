@@ -141,8 +141,10 @@ export function ChooseSubscription({
           providers: {
             create: providers.map((provider: any, index: number) => ({
               id: Date.now() + index,
-              name: provider.name,
-              npiNumber: provider.npiNumber,
+              firstName: provider.firstName,
+              lastName: provider.lastName,
+              credentials: provider.credentials,
+              npiNumber: String(provider.npiNumber),
             })),
           },
         }

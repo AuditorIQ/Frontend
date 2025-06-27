@@ -44,18 +44,14 @@ const viewpdf = async (e: any) => {
     }
   );
 
-  const popup = window.open(
-    "",
-    "pdfPopup",
-    `width=${screen.availWidth},height=${screen.availHeight},top=0,left=0`
+  window.open(
+    res.data.url,
+    "Audit Result",
+    "toolbar=0,location=0,menubar=0,width=" +
+      window.screen.availWidth +
+      ",height=" +
+      window.screen.availHeight
   );
-
-  if (!popup) {
-    alert("Popup blocked. Please enable popups for this site.");
-    return;
-  }
-
-  popup.location.href = res.data.url;
 };
 
 export default function DashboardPage() {
@@ -160,6 +156,16 @@ export default function DashboardPage() {
             const nameWithoutExtension = file
               .replace(".pdf", "")
               .replace("reports/", "");
+            // var nameWithoutExtensionValue = { data: { value: "" } };
+            // const fetchData = async () => {
+            //   nameWithoutExtensionValue = await axios.post(
+            //     `${process.env.NEXT_PUBLIC_API_URL}/api/openai/decrypt`,
+            //     { filename: nameWithoutExtensionEncrypted }
+            //   );
+            // };
+            // fetchData();
+            // const nameWithoutExtension = nameWithoutExtensionValue.data.value;
+
             const [date, cur_time, patient, provider, risk, userid] =
               nameWithoutExtension.split("_");
             return [

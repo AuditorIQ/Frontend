@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +10,9 @@ import useSignupFormStore from "@/stores/authStore";
 
 interface Provider {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  credentials: "MD" | "DO" | "DPM";
   npiNumber: string;
 }
 
@@ -30,32 +31,32 @@ export function AddProviders({
 }: AddProvidersProps) {
   const { setProviders: setProvidersZustand } = useSignupFormStore();
 
-  const [providerName, setProviderName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [credentials, setCredentials] = useState<"MD" | "DO" | "DPM">("MD");
   const [npiNumber, setNpiNumber] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [providers, setProviders] = useState<Provider[]>(
-    formData.providers
-    // || [
-    //   { id: "1", name: "Dr. Williams", npiNumber: "123456" },
-    //   { id: "2", name: "Dr. Smith", npiNumber: "13579" },
-    //   { id: "3", name: "Dr. Robert", npiNumber: "24690" },
-    // ]
+    Array.isArray(formData?.providers) ? formData.providers : []
   );
   const [isEdit, setIsEdit] = useState<string | null>(null);
 
   const addProvider = () => {
-    // Validate
     const newErrors: Record<string, string> = {};
 
-    if (!providerName) newErrors.providerName = "Provider name is required";
+    if (!firstName) newErrors.firstName = "First name is required";
+    if (!lastName) newErrors.lastName = "Last name is required";
+    if (!credentials) newErrors.credentials = "Credentials are required";
     if (!npiNumber) newErrors.npiNumber = "NPI number is required";
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      const newProvider = {
+      const newProvider: Provider = {
         id: Date.now().toString(),
-        name: providerName,
+        firstName,
+        lastName,
+        credentials,
         npiNumber,
       };
 
@@ -63,17 +64,21 @@ export function AddProviders({
       setProviders(updatedProviders);
       updateFormData({ providers: updatedProviders });
 
-      // Reset form
-      setProviderName("");
+      setFirstName("");
+      setLastName("");
+      setCredentials("MD");
       setNpiNumber("");
     }
   };
+
   const updateProvider = () => {
     const updatedProviders = providers.map((provider) => {
       if (provider.id === isEdit) {
         return {
           ...provider,
-          name: providerName,
+          firstName,
+          lastName,
+          credentials,
           npiNumber,
         };
       }
@@ -81,7 +86,10 @@ export function AddProviders({
     });
     setProviders(updatedProviders);
     updateFormData({ providers: updatedProviders });
-    setProviderName("");
+
+    setFirstName("");
+    setLastName("");
+    setCredentials("MD");
     setNpiNumber("");
     setIsEdit(null);
   };
@@ -103,40 +111,78 @@ export function AddProviders({
     if (isEdit) {
       const provider = providers.find((provider) => provider.id === isEdit);
       if (provider) {
-        setProviderName(provider.name);
+        setFirstName(provider.firstName);
+        setLastName(provider.lastName);
+        setCredentials(provider.credentials);
         setNpiNumber(provider.npiNumber);
       }
     }
   }, [isEdit]);
 
   return (
-    <div className="bg-white p-6 rounded-lg max-w-4xl mx-auto ">
+    <div className="bg-white p-6 rounded-lg max-w-4xl mx-auto">
       <div className="text-center mb-6">
         <h2 className="text-4xl font-bold">Add Your Providers</h2>
       </div>
 
-      <div className=" rounded-lg p-4 mb-6 flex flex-col md:flex-row justify-center gap-y-20 md:gap-x-20">
+      <div className="rounded-lg p-4 mb-6 flex flex-col md:flex-row justify-center gap-y-20 md:gap-x-20">
         <div className="md:w-1/2 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="providerName">Provider name</Label>
+            <Label htmlFor="firstName">First Name</Label>
             <Input
-              id="providerName"
+              id="firstName"
               type="text"
-              placeholder="Enter your provider name"
-              value={providerName}
-              onChange={(e) => setProviderName(e.target.value)}
+              placeholder="Enter first name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
-            {errors.providerName && (
-              <p className="text-red-500 text-xs">{errors.providerName}</p>
+            {errors.firstName && (
+              <p className="text-red-500 text-xs">{errors.firstName}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="npiNumber">NPI number</Label>
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              id="lastName"
+              type="text"
+              placeholder="Enter last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            {errors.lastName && (
+              <p className="text-red-500 text-xs">{errors.lastName}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="credentials">Credentials</Label>
+            <select
+              id="credentials"
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              value={credentials}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "MD" || value === "DO" || value === "DPM") {
+                  setCredentials(value);
+                }
+              }}
+            >
+              <option value="MD">MD</option>
+              <option value="DO">DO</option>
+              <option value="DPM">DPM</option>
+            </select>
+            {errors.credentials && (
+              <p className="text-red-500 text-xs">{errors.credentials}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="npiNumber">NPI Number</Label>
             <Input
               id="npiNumber"
               type="text"
-              placeholder="Enter your provider NPI number"
+              placeholder="Enter NPI number"
               value={npiNumber}
               onChange={(e) => setNpiNumber(e.target.value)}
             />
@@ -165,24 +211,23 @@ export function AddProviders({
         </div>
 
         <div className="md:w-1/2">
-          {/* <div className="mb-2">
-            <h3 className="font-medium">Provider List</h3>
-            <p className="text-xs text-gray-500 my-2">
-              Up to 3 providers. Your subscription will be based on this count.
-            </p>
-          </div> */}
-
           <div className="border rounded-md overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    First Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    NPI number
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Last Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Credentials
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    NPI Number
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Action
                   </th>
                 </tr>
@@ -190,27 +235,23 @@ export function AddProviders({
               <tbody className="bg-white divide-y divide-gray-200">
                 {providers.map((provider) => (
                   <tr key={provider.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {provider.name}
+                    <td className="px-6 py-4 text-sm">{provider.firstName}</td>
+                    <td className="px-6 py-4 text-sm">{provider.lastName}</td>
+                    <td className="px-6 py-4 text-sm">
+                      {provider.credentials}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {provider.npiNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm">{provider.npiNumber}</td>
+                    <td className="px-6 py-4 text-sm">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => {
-                            setIsEdit(provider.id);
-                          }}
-                          style={{ cursor: "pointer" }}
+                          onClick={() => setIsEdit(provider.id)}
                           className="text-green-500 hover:text-green-700"
                         >
                           <Edit size={16} />
                         </button>
                         <button
-                          className="text-red-500 hover:text-red-700"
                           onClick={() => removeProvider(provider.id)}
-                          style={{ cursor: "pointer" }}
+                          className="text-red-500 hover:text-red-700"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -224,7 +265,7 @@ export function AddProviders({
         </div>
       </div>
 
-      <div className="flex flex-col w-full">
+      <div className="flex flex-row justify-between gap-4 w-full">
         <form onSubmit={onBack} className="w-full mb-2">
           <Button type="submit" className="w-full bg-[#0a2463] cursor-pointer">
             Back

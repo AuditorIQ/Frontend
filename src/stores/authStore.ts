@@ -1,7 +1,10 @@
 import { create } from "zustand";
 
 interface Provider {
-  name: string;
+  id: string;
+  firstName: string;
+  lastName: string;
+  credentials: "MD" | "DO" | "DPM";
   npiNumber: string;
 }
 
