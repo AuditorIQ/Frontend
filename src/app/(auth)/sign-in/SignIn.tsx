@@ -51,6 +51,7 @@ export default function SignIn() {
       }
       // save token to the storage
       sessionStorage.setItem("token", res?.data?.data.accessToken);
+      sessionStorage.setItem("user_id", res?.data?.data.user.id);
       sessionStorage.setItem("user_email", res?.data?.data.user.email);
       sessionStorage.setItem("user_name", res?.data?.data.user.name);
       sessionStorage.setItem(

@@ -87,14 +87,24 @@ export default function DashboardPage() {
     // set session part & go to dashboard
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    const id = params.get("id");
     const name = params.get("name");
     const email = params.get("email");
     const subscription = params.get("subscriptionType");
     const subscribedAt = params.get("subscribedAt");
     const isYearly = params.get("isYearly");
 
-    if (token && name && email && subscription && subscribedAt && isYearly) {
+    if (
+      token &&
+      id &&
+      name &&
+      email &&
+      subscription &&
+      subscribedAt &&
+      isYearly
+    ) {
       sessionStorage.setItem("token", token);
+      sessionStorage.setItem("user_id", id);
       sessionStorage.setItem("user_name", name);
       sessionStorage.setItem("user_email", email);
       sessionStorage.setItem("subscriptionType", subscription);

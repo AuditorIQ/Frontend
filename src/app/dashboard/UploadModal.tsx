@@ -14,20 +14,40 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   const [fileList, setFileList] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
+  const [providerList, setProviderList] = useState<any[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
 
   useEffect(() => {
-    // fetch profiles list
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: sessionStorage.getItem("user_email"),
-      }),
-    }).then((res) => res.json());
+    const fetchProviders = async () => {
+      // fetch profiles list
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: sessionStorage.getItem("user_email"),
+        }),
+      });
+
+      // fetch providers
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Id: sessionStorage.getItem("user_id"),
+          }),
+        }
+      );
+      const providerData = await res.json();
+      setProviderList(providerData.result);
+    };
+    fetchProviders();
   }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -79,7 +99,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   };
 
   if (!isOpen) return null;
-  //  if (!speciality) return null;
+  //  if (!specialty) return null;
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-white/50 flex items-center justify-center z-50">
@@ -93,18 +113,26 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           ✕
         </button>
         <div className="p-4">
-          <label className="block mb-2 font-medium">Rendering Provider</label>
-          <select
-            value={selectedSpecialty}
-            onChange={(e) => setSelectedSpecialty(e.target.value)}
-            className="border rounded p-2 mb-4"
-          >
-            {specialties.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-4">
+            <select className="border rounded p-2">
+              {providerList.map((p) => (
+                <option key={p} value={p}>
+                  {p.firstName + " " + p.lastName}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedSpecialty}
+              onChange={(e) => setSelectedSpecialty(e.target.value)}
+              className="border rounded p-2"
+            >
+              {specialties.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         {/* File Drop Zone */}
         <div
