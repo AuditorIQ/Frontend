@@ -192,7 +192,7 @@ export default function reports() {
                         {status}&nbsp;Risk
                       </span>
                     </td>
-                    <td className="py-3 px-6 text-center">
+                    <td className="py-3 px-6">
                       <Button
                         variant="outline"
                         size="sm"

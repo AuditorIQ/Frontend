@@ -114,24 +114,30 @@ export default function UploadModal({ isOpen, onClose }: Props) {
         </button>
         <div className="p-4">
           <div className="flex items-center gap-4">
-            <select className="border rounded p-2">
-              {providerList.map((p) => (
-                <option key={p} value={p}>
-                  {p.firstName + " " + p.lastName}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedSpecialty}
-              onChange={(e) => setSelectedSpecialty(e.target.value)}
-              className="border rounded p-2"
-            >
-              {specialties.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+            <div>
+              Rendering Provider
+              <select className="border rounded p-2">
+                {providerList.map((p) => (
+                  <option key={p} value={p}>
+                    {p.firstName + " " + p.lastName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              Specialty
+              <select
+                value={selectedSpecialty}
+                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                className="border rounded p-2"
+              >
+                {specialties.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
         {/* File Drop Zone */}
