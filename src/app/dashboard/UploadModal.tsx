@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { successToast, errorToast } from "@/lib/toast";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   isOpen: boolean;
@@ -192,11 +193,18 @@ export default function UploadModal({ isOpen, onClose }: Props) {
         <div className="mt-4">
           <button
             onClick={handleUpload}
-            className="bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ cursor: "pointer" }}
             disabled={!fileList || uploading}
           >
-            {uploading ? "Auditing..." : "Audit"}
+            {uploading ? (
+              <>
+                <Loader2 className="animate-spin h-4 w-4" />
+                Auditing...
+              </>
+            ) : (
+              <center>Audit</center>
+            )}
           </button>
         </div>
 
