@@ -2,47 +2,43 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { successToast, errorToast } from "@/lib/toast";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Trash2, CheckCircle2, Clock3, Loader2, XCircle } from "lucide-react";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
 };
 
+type FileWithStatus = {
+  file: File;
+  status: "pending" | "processing" | "done" | "error";
+};
+
 const specialties = ["Wound Care", "Podiatry"];
 
 export default function UploadModal({ isOpen, onClose }: Props) {
-  const [fileList, setFileList] = useState<File[]>([]);
+  const [fileList, setFileList] = useState<FileWithStatus[]>([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [providerList, setProviderList] = useState<any[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
 
   useEffect(() => {
     const fetchProviders = async () => {
-      // fetch profiles list
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: sessionStorage.getItem("user_email"),
         }),
       });
 
-      // fetch providers
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            Id: sessionStorage.getItem("user_id"),
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ Id: sessionStorage.getItem("user_id") }),
         }
       );
       const providerData = await res.json();
@@ -52,7 +48,11 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFileList((prev) => [...prev, ...acceptedFiles]);
+    const newFiles: FileWithStatus[] = acceptedFiles.map((file) => ({
+      file,
+      status: "pending",
+    }));
+    setFileList((prev) => [...prev, ...newFiles]);
     setMessage("");
   }, []);
 
@@ -61,36 +61,47 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     multiple: true,
   });
 
+  const updateFileStatus = (
+    index: number,
+    status: FileWithStatus["status"]
+  ) => {
+    setFileList((prev) =>
+      prev.map((f, i) => (i === index ? { ...f, status } : f))
+    );
+  };
+
   const handleUpload = async () => {
     if (fileList.length === 0) return;
     setUploading(true);
-    setUploadProgress(0);
-    const formData = new FormData();
-    fileList.forEach((file) => formData.append("files", file));
-    formData.append("specialty", selectedSpecialty);
 
-    try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/generate`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
-      successToast("Completed!");
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    } catch (err) {
-      console.log(err);
-      errorToast("Upload too many files");
-      setTimeout(() => {}, 1000);
-    } finally {
-      setUploading(false);
+    for (let i = 0; i < fileList.length; i++) {
+      updateFileStatus(i, "processing");
+
+      const formData = new FormData();
+      formData.append("files", fileList[i].file);
+      formData.append("specialty", selectedSpecialty);
+
+      try {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/generate`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          }
+        );
+        updateFileStatus(i, "done");
+      } catch (err) {
+        console.error(err);
+        updateFileStatus(i, "error");
+      }
     }
+
+    setUploading(false);
+    successToast("All files processed.");
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   const handleRemoveFile = (indexToRemove: number) => {
@@ -100,26 +111,24 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   };
 
   if (!isOpen) return null;
-  //  if (!specialty) return null;
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-white/50 flex items-center justify-center z-50">
       <div className="bg-gray-50 rounded-xl p-6 shadow-lg w-[480px] max-h-[90vh] flex flex-col relative border-2 border-blue-500">
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-600 hover:text-black"
-          style={{ cursor: "pointer" }}
         >
           ✕
         </button>
+
         <div className="p-4">
           <div className="flex items-center gap-4">
             <div>
               Rendering Provider
               <select className="border rounded p-2">
                 {providerList.map((p) => (
-                  <option key={p} value={p}>
+                  <option key={p.id} value={p.id}>
                     {p.firstName + " " + p.lastName}
                   </option>
                 ))}
@@ -141,7 +150,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
             </div>
           </div>
         </div>
-        {/* File Drop Zone */}
+
         <div
           {...getRootProps()}
           className={`mt-10 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${
@@ -152,50 +161,50 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           <p>Drag & drop files here, or click to select</p>
         </div>
 
-        {/* File List */}
         {fileList.length > 0 && (
           <div className="mt-4 flex-grow overflow-y-auto bg-white border border-gray-300 rounded-lg p-3">
             <ul className="space-y-2">
-              {fileList.map((file: File, idx: number) => (
+              {fileList.map((file, idx) => (
                 <li
                   key={idx}
                   className="flex justify-between items-center text-sm border-b pb-1 p-2"
                 >
-                  <span className="truncate max-w-[80%]">{file.name}</span>
-                  <button
-                    onClick={() => handleRemoveFile(idx)}
-                    className="text-red-500 hover:text-red-700"
-                    style={{ cursor: "pointer" }}
-                    title="Remove file"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                  <span className="truncate max-w-[60%]">{file.file.name}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1 text-xs font-medium">
+                      {file.status === "done" && (
+                        <CheckCircle2 className="text-green-600 w-4 h-4" />
+                      )}
+                      {file.status === "processing" && (
+                        <Loader2 className="animate-spin text-blue-500 w-4 h-4" />
+                      )}
+                      {file.status === "error" && (
+                        <XCircle className="text-red-500 w-4 h-4" />
+                      )}
+                      {file.status === "pending" && (
+                        <Clock3 className="text-gray-400 w-4 h-4" />
+                      )}
+                      <span className="capitalize">{file.status}</span>
+                    </span>
+                    <button
+                      onClick={() => handleRemoveFile(idx)}
+                      className="text-red-500 hover:text-red-700"
+                      title="Remove file"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-4 0h14"
-                      />
-                    </svg>
-                  </button>
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* Upload Button */}
         <div className="mt-4">
           <button
             onClick={handleUpload}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ cursor: "pointer" }}
-            disabled={!fileList || uploading}
+            disabled={!fileList.length || uploading}
           >
             {uploading ? (
               <>
@@ -203,12 +212,11 @@ export default function UploadModal({ isOpen, onClose }: Props) {
                 Auditing...
               </>
             ) : (
-              <center>Audit</center>
+              "Audit"
             )}
           </button>
         </div>
 
-        {/* Message */}
         {message && <p className="mt-2 text-sm text-green-600">{message}</p>}
       </div>
     </div>
