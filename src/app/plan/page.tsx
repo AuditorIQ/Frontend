@@ -91,6 +91,7 @@ const page = () => {
           headers: {
             token: sessionStorage.getItem("token"),
           },
+          withCredentials: true,
         }
       );
       setTimeout(() => {
