@@ -19,13 +19,14 @@ export default function ResetPasswordForm() {
     e.preventDefault();
     setMessage("");
     setError("");
-
+    // validation
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
     try {
+      // call reset-password enpoint
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/reset-password`,
         {
@@ -34,7 +35,6 @@ export default function ResetPasswordForm() {
           body: JSON.stringify({ token, password }),
         }
       );
-
       if (res.ok) {
         setMessage("✅ Password has been reset successfully!");
         setPassword("");
@@ -69,7 +69,6 @@ export default function ResetPasswordForm() {
             minLength={6}
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Confirm Password
@@ -83,7 +82,6 @@ export default function ResetPasswordForm() {
             minLength={6}
           />
         </div>
-
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -99,10 +97,8 @@ export default function ResetPasswordForm() {
             Show password
           </label>
         </div>
-
         {error && <p className="text-red-600 text-sm">{error}</p>}
         {message && <p className="text-green-600 text-sm">{message}</p>}
-
         <button
           type="submit"
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition"

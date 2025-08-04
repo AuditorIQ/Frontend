@@ -34,7 +34,7 @@ export default function Home() {
   ];
   const plans = [
     {
-      name: "Starter",
+      name: "STARTER",
       price: "$99",
       yearlyPrice: "$999",
       cardStyle: "bg-white",
@@ -49,7 +49,7 @@ export default function Home() {
       ],
     },
     {
-      name: "Professional",
+      name: "PROFESSIONAL",
       price: "$249",
       yearlyPrice: "$2,499",
       cardStyle: "bg-white",
@@ -65,7 +65,7 @@ export default function Home() {
       ],
     },
     {
-      name: "Enterprise",
+      name: "ENTERPRISE",
       price: "$500",
       yearlyPrice: "$5,000",
       cardStyle: "bg-white",

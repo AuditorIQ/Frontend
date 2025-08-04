@@ -292,10 +292,16 @@ export default function DashboardPage() {
         });
 
         setAnalyseChart(
-          Object.entries(monthlySummary).map(([month, values]) => ({
-            month,
-            ...values,
-          }))
+          Object.entries(monthlySummary)
+            .sort(([a], [b]) => parseInt(a) - parseInt(b)) // Sort by numeric month
+            .map(([month, values]) => {
+              const monthIndex = parseInt(month) - 1; // "07" → 6
+              const monthName = monthNames[monthIndex] || month;
+              return {
+                month: monthName,
+                ...values,
+              };
+            })
         );
       } catch (error) {
         console.error("Failed to fetch list", error);

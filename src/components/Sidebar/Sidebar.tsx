@@ -55,15 +55,28 @@ export default function Sidebar() {
           <nav className="space-y-1">
             {section.items.map(({ name, href, icon: Icon }) => {
               const isActive = usePathname() === href;
-              return (
-                <Link
-                  key={name}
-                  href={href}
-                  className={clsx(
-                    "flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors",
-                    isActive ? "bg-blue-900 text-white" : "text-gray-700"
-                  )}
-                >
+              const userEmail =
+                typeof window !== "undefined"
+                  ? sessionStorage.getItem("user_email")
+                  : null;
+              const isDisabled =
+                name === "Plan & Payments" && userEmail === "test_user";
+
+              const baseClasses =
+                "flex items-center gap-3 px-3 py-2 rounded-md transition-colors";
+              const activeClass = isActive
+                ? "bg-blue-900 text-white"
+                : "text-gray-700";
+              const disabledClass = isDisabled
+                ? "text-gray-400 cursor-not-allowed pointer-events-none"
+                : "hover:bg-gray-100";
+
+              const className = clsx(baseClasses, activeClass, disabledClass);
+
+              return isDisabled ? (
+                <></>
+              ) : (
+                <Link key={name} href={href} className={className}>
                   <Icon size={18} />
                   {name}
                 </Link>

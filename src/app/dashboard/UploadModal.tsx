@@ -74,34 +74,53 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     if (fileList.length === 0) return;
     setUploading(true);
 
-    for (let i = 0; i < fileList.length; i++) {
-      updateFileStatus(i, "processing");
+    if (
+      (sessionStorage.getItem("subscriptionType") === "STARTER" ||
+        sessionStorage.getItem("subscriptionType") === "STARTER") &&
+      fileList.length > 5
+    ) {
+      setUploading(false);
+      errorToast(
+        "You can't upload more than 5 charts. Please upgrade your plan."
+      );
+    } else if (
+      sessionStorage.getItem("subscriptionType") === "PROFESSIONAL" &&
+      fileList.length > 5
+    ) {
+      setUploading(false);
+      errorToast(
+        "You can't upload more than 10 charts. Please upgrade your plan."
+      );
+    } else {
+      for (let i = 0; i < fileList.length; i++) {
+        updateFileStatus(i, "processing");
 
-      const formData = new FormData();
-      formData.append("files", fileList[i].file);
-      formData.append("specialty", selectedSpecialty);
+        const formData = new FormData();
+        formData.append("files", fileList[i].file);
+        formData.append("specialty", selectedSpecialty);
 
-      try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/generate`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-          }
-        );
-        updateFileStatus(i, "done");
-      } catch (err) {
-        console.error(err);
-        updateFileStatus(i, "error");
+        try {
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/openai/generate`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+              },
+            }
+          );
+          updateFileStatus(i, "done");
+        } catch (err) {
+          console.error(err);
+          updateFileStatus(i, "error");
+        }
       }
-    }
 
-    setUploading(false);
-    successToast("All files processed.");
-    setTimeout(() => window.location.reload(), 1000);
+      setUploading(false);
+      successToast("All files processed.");
+      setTimeout(() => window.location.reload(), 1000);
+    }
   };
 
   const handleRemoveFile = (indexToRemove: number) => {
@@ -204,6 +223,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           <button
             onClick={handleUpload}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ cursor: "pointer" }}
             disabled={!fileList.length || uploading}
           >
             {uploading ? (

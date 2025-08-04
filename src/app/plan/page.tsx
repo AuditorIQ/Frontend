@@ -21,7 +21,7 @@ const page = () => {
 
   const plans = [
     {
-      name: "Starter",
+      name: "STARTER",
       price: "$99",
       yearlyPrice: "$999",
       cardStyle: "bg-white",
@@ -36,7 +36,7 @@ const page = () => {
       ],
     },
     {
-      name: "Professional",
+      name: "PROFESSIONAL",
       price: "$249",
       yearlyPrice: "$2,499",
       cardStyle: "bg-white",
@@ -52,7 +52,7 @@ const page = () => {
       ],
     },
     {
-      name: "Enterprise",
+      name: "ENTERPRISE",
       price: "$500",
       yearlyPrice: "$5,000",
       cardStyle: "bg-white",
@@ -115,7 +115,10 @@ const page = () => {
       const startDate = new Date(sessionStorage.getItem("subscribedAt") || "");
       mysubscriptionType.startDate = startDate.toISOString().split("T")[0];
       const isYearly = sessionStorage.getItem("isYearly");
-      if (isYearly === "true") {
+      if (sessionStorage.getItem("user_email") === "test_user") {
+        startDate.setFullYear(startDate.getFullYear() + 10);
+        mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
+      } else if (isYearly === "true") {
         startDate.setFullYear(startDate.getFullYear() + 1);
         mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
       } else {
@@ -276,7 +279,6 @@ const page = () => {
               </span>
             </div>
           </div>
-
           {/* Pricing Cards */}
           <div
             className="grid md:grid-cols-3 gap-6 px-6 mx-auto"
@@ -298,13 +300,29 @@ const page = () => {
                 </p>
                 <button
                   style={{ cursor: "pointer" }}
-                  disabled={mysubscriptionType.isEnabled === true}
+                  disabled={
+                    mysubscriptionType.licenseType.toLowerCase() ===
+                    plan.name.toLowerCase()
+                  }
                   className={`mb-4 w-full py-2 rounded-md text-white transition ${
-                    mysubscriptionType.isEnabled === false
+                    mysubscriptionType.licenseType.toLowerCase() !==
+                    plan.name.toLowerCase()
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-gray-400 cursor-not-allowed"
                   }`}
-                  onClick={() => subscribePlan(plan.name)}
+                  onClick={() => {
+                    if (
+                      mysubscriptionType.licenseType.toLowerCase() !==
+                      plan.name.toLowerCase()
+                    ) {
+                      const confirmed = window.confirm(
+                        "Are you sure you want to Upgrade?"
+                      );
+                      if (confirmed) {
+                        subscribePlan(plan.name);
+                      }
+                    }
+                  }}
                 >
                   Subscribe
                 </button>

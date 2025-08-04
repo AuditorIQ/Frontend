@@ -9,7 +9,7 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    // call forgot-password endpoint
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/forgot-password`,
       {
@@ -33,6 +33,7 @@ export default function Page() {
   return (
     <div className="bg-[url('/Billboards.jpg')] min-h-screen flex items-center justify-center p-4">
       <div className="h-full max-w-6xl bg-white rounded-lg overflow-hidden flex flex-col md:flex-row">
+        {/* Can't send */}
         {!isSent && (
           <div className="max-w-md mx-auto p-4 border rounded shadow">
             <h1 className="text-2xl mb-4">Forgot Password</h1>
@@ -55,6 +56,7 @@ export default function Page() {
             </form>
           </div>
         )}
+        {/* Already sent */}
         {isSent && (
           <>
             <div className="text-center space-y-4">

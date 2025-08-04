@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
@@ -29,7 +29,7 @@ export function ChooseSubscription({
 
   const plans = [
     {
-      name: "Starter",
+      name: "STARTER",
       price: "$99",
       yearlyPrice: "$1,000",
       cardStyle: "bg-white",
@@ -44,7 +44,7 @@ export function ChooseSubscription({
       ],
     },
     {
-      name: "Professional",
+      name: "PROFESSIONAL",
       price: "$249",
       yearlyPrice: "$2,500",
       cardStyle: "bg-white",
@@ -60,7 +60,7 @@ export function ChooseSubscription({
       ],
     },
     {
-      name: "Enterprise",
+      name: "ENTERPRISE",
       price: "$500",
       yearlyPrice: "$5,000",
       cardStyle: "bg-white",
@@ -203,7 +203,7 @@ export function ChooseSubscription({
           onClick={() => handleSelectPlan("STARTER")}
         >
           <div className="p-3 rounded-t-lg">
-            <h3 className="font-bold">Starter</h3>
+            <h3 className="font-bold">STARTER</h3>
             <p className="text-xs text-gray-600">
               For solo providers or small clinics
             </p>
@@ -261,7 +261,7 @@ export function ChooseSubscription({
           </div>
         </div>
 
-        {/* Professional Plan */}
+        {/* PROFESSIONAL Plan */}
         <div
           className={` rounded-lg p-4 ${
             selectedPlan === "PROFESSIONAL"
@@ -272,13 +272,13 @@ export function ChooseSubscription({
         >
           <div
             className={`#${
-              selectedPlan === "professional" ? "bg-[#1a3573]" : "bg-[#f0f7ff]"
+              selectedPlan === "PROFESSIONAL" ? "bg-[#1a3573]" : "bg-[#f0f7ff]"
             } p-3 rounded-t-lg`}
           >
-            <h3 className="font-bold">Professional</h3>
+            <h3 className="font-bold">PROFESSIONAL</h3>
             <p
               className={`text-xs #${
-                selectedPlan === "professional"
+                selectedPlan === "PROFESSIONAL"
                   ? "text-gray-300"
                   : "text-gray-600"
               }`}
@@ -302,7 +302,7 @@ export function ChooseSubscription({
                 <Check
                   size={30}
                   className={`bg-[#C9F0FF] #${
-                    selectedPlan === "professional"
+                    selectedPlan === "PROFESSIONAL"
                       ? "text-white"
                       : "text-[#0a2463] "
                   } mr-2 mt-0.5 rounded-full p-1 text-[#0a2463]`}
@@ -313,7 +313,7 @@ export function ChooseSubscription({
                 <Check
                   size={30}
                   className={` bg-[#C9F0FF] #${
-                    selectedPlan === "professional"
+                    selectedPlan === "PROFESSIONAL"
                       ? "text-white"
                       : "text-[#0a2463]"
                   } mr-2 mt-0.5 rounded-full p-1 text-[#0a2463]`}
@@ -324,7 +324,7 @@ export function ChooseSubscription({
                 <Check
                   size={30}
                   className={` bg-[#C9F0FF] #${
-                    selectedPlan === "professional"
+                    selectedPlan === "PROFESSIONAL"
                       ? "text-white"
                       : "text-[#0a2463]"
                   } mr-2 mt-0.5 rounded-full p-1 text-[#0a2463]`}
@@ -335,7 +335,7 @@ export function ChooseSubscription({
                 <Check
                   size={30}
                   className={` bg-[#C9F0FF] #${
-                    selectedPlan === "professional"
+                    selectedPlan === "PROFESSIONAL"
                       ? "text-white"
                       : "text-[#0a2463]"
                   } mr-2 mt-0.5 rounded-full p-1 text-[#0a2463]`}
@@ -346,7 +346,7 @@ export function ChooseSubscription({
                 <Check
                   size={30}
                   className={` bg-[#C9F0FF] #${
-                    selectedPlan === "professional"
+                    selectedPlan === "PROFESSIONAL"
                       ? "text-white"
                       : "text-[#0a2463]"
                   } mr-2 mt-0.5 rounded-full p-1 text-[#0a2463]`}
@@ -357,7 +357,7 @@ export function ChooseSubscription({
                 <Check
                   size={30}
                   className={` bg-[#C9F0FF] #${
-                    selectedPlan === "professional"
+                    selectedPlan === "PROFESSIONAL"
                       ? "text-white"
                       : "text-[#0a2463]"
                   } mr-2 mt-0.5 rounded-full p-1 text-[#0a2463]`}
@@ -368,7 +368,7 @@ export function ChooseSubscription({
           </div>
         </div>
 
-        {/* Enterprise Plan */}
+        {/* ENTERPRISE Plan */}
         <div
           className={` rounded-lg p-4 ${
             selectedPlan === "ENTERPRISE"
@@ -378,7 +378,7 @@ export function ChooseSubscription({
           onClick={() => handleSelectPlan("ENTERPRISE")}
         >
           <div className="p-3 rounded-t-lg">
-            <h3 className="font-bold">Enterprise</h3>
+            <h3 className="font-bold">ENTERPRISE</h3>
             <p className="text-xs text-gray-600">
               For larger clinics or hospitals
             </p>

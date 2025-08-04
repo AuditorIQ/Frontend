@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export default function Page() {
   useEffect(() => {
+    // clear session
     sessionStorage.setItem("token", "");
     sessionStorage.setItem("user_email", "");
     sessionStorage.setItem("user_name", "");
