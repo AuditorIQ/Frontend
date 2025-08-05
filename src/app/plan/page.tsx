@@ -115,7 +115,7 @@ const page = () => {
       const startDate = new Date(sessionStorage.getItem("subscribedAt") || "");
       mysubscriptionType.startDate = startDate.toISOString().split("T")[0];
       const isYearly = sessionStorage.getItem("isYearly");
-      if (sessionStorage.getItem("user_email") === "test_user") {
+      if (sessionStorage.getItem("user_email") === "tsmith@auditoriq.ai") {
         startDate.setFullYear(startDate.getFullYear() + 10);
         mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
       } else if (isYearly === "true") {

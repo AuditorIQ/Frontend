@@ -60,7 +60,8 @@ export default function Sidebar() {
                   ? sessionStorage.getItem("user_email")
                   : null;
               const isDisabled =
-                name === "Plan & Payments" && userEmail === "test_user";
+                name === "Plan & Payments" &&
+                userEmail === "tsmith@auditoriq.ai";
 
               const baseClasses =
                 "flex items-center gap-3 px-3 py-2 rounded-md transition-colors";
