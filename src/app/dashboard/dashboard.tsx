@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BellIcon, Search } from "lucide-react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import UploadModal from "@/app/dashboard/UploadModal";
@@ -22,6 +22,7 @@ import {
   Line,
 } from "recharts";
 import { errorToast, successToast } from "@/lib/toast";
+import SubMenu from "@/components/SubMenu/SubMenu";
 
 let providerData: { name: string; value: number }[];
 let isDisabled: boolean;
@@ -61,10 +62,13 @@ export default function DashboardPage() {
   >([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchkey, setSearchKey] = useState("");
-  const [userName, setUserName] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const [analyseChart, setAnalyseChart] = useState<any[]>([]);
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const filteredDataset = dataset.filter((item) =>
     Object.values(item).some(
@@ -93,6 +97,7 @@ export default function DashboardPage() {
     const subscription = params.get("subscriptionType");
     const subscribedAt = params.get("subscribedAt");
     const isYearly = params.get("isYearly");
+    const zipCode = params.get("zipCode");
 
     if (
       token &&
@@ -101,7 +106,8 @@ export default function DashboardPage() {
       email &&
       subscription &&
       subscribedAt &&
-      isYearly
+      isYearly &&
+      zipCode
     ) {
       sessionStorage.setItem("token", token);
       sessionStorage.setItem("user_id", id);
@@ -110,6 +116,7 @@ export default function DashboardPage() {
       sessionStorage.setItem("subscriptionType", subscription);
       sessionStorage.setItem("subscribedAt", subscribedAt);
       sessionStorage.setItem("isYearly", isYearly);
+      sessionStorage.setItem("zipCode", zipCode);
       successToast("Successfully Signed In");
       setTimeout(() => {
         window.history.replaceState({}, document.title, "/dashboard");
@@ -138,7 +145,6 @@ export default function DashboardPage() {
     isDisabled = subscriptionType === "FREE" || subscriptionType === null;
     if (!isDisabled && current > expireDate) isDisabled = true;
 
-    setUserName(sessionStorage.getItem("user_name"));
     const fetchData = async () => {
       try {
         const list = await axios.get(
@@ -308,14 +314,33 @@ export default function DashboardPage() {
       }
     };
     fetchData();
-  }, []);
+
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+    }
+
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifications]);
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <Sidebar />
       {/* Main Content */}
-      <main className="flex-1 p-4 grid gap-4">
+      <Card className="flex-1 p-4 flex flex-col gap-4">
         {/* isActivated */}
         {isDisabled && (
           <div
@@ -332,21 +357,8 @@ export default function DashboardPage() {
             Your subscription is disabled.
           </div>
         )}
-        {/* Over the line */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Search className="w-5 h-5 text-gray-600" />
-            <Input
-              placeholder="Search"
-              value={searchkey}
-              onChange={SearchKeyChange}
-              className="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="flex gap-2 items-center">
-            <BellIcon />
-            {userName}
-          </div>
+        <div className="flex-none h-[10vh]">
+          <SubMenu />
         </div>
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -551,7 +563,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      </main>
+      </Card>
     </div>
   );
 }

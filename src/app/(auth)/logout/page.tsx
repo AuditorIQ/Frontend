@@ -12,6 +12,7 @@ export default function Page() {
     sessionStorage.setItem("subscriptionType", "");
     sessionStorage.setItem("subscribedAt", "");
     sessionStorage.setItem("isYearly", "");
+    sessionStorage.setItem("zipCode", "");
     window.location.href = "/";
   });
   return <></>;

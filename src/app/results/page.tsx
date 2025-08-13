@@ -7,6 +7,7 @@ import axios from "axios";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import SubMenu from "@/components/SubMenu/SubMenu";
 
 const viewpdf = async (e: any) => {
   e.preventDefault();
@@ -138,10 +139,10 @@ export default function reports() {
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <Sidebar />
-      <Card className="flex-1 p-4 grid gap-4">
-        <CardContent className="p-6">
+      <Card className="flex-1 p-4 flex flex-col">
+        <div className="flex-none h-[10vh]">
+          <SubMenu />
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-800">Results</h3>
             <div className="flex items-center gap-3">
               <Search className="w-5 h-5 text-gray-600" />
               <Input
@@ -224,7 +225,7 @@ export default function reports() {
               </button>
             ))}
           </div>
-        </CardContent>
+        </div>
       </Card>
     </div>
   );

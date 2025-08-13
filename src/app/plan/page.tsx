@@ -5,6 +5,7 @@ import axios from "axios";
 import { errorToast } from "@/lib/toast";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Card } from "@/components/ui/card";
+import SubMenu from "@/components/SubMenu/SubMenu";
 
 let mysubscriptionType = {
   isEnabled: false,
@@ -144,8 +145,11 @@ const page = () => {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <Card className="flex-1 p-4 grid gap-4">
-        <div className="py-12">
+      <Card className="flex-1 p-4 flex flex-col">
+        <div className="flex-none h-[10vh]">
+          <SubMenu />
+        </div>
+        <div className="flex-grow">
           {/* Current Plan */}
           {mysubscriptionType.licenseType !== "FREE" && (
             <div className="p-6 overflow-x-auto">
