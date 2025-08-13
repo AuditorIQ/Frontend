@@ -193,7 +193,6 @@ export default function settings() {
         return;
       }
       const userId = await sessionStorage.getItem("user_id");
-      console.log("File uploaded successfully. Viewable at:", url);
 
       setAvatar(url); // use the S3 URL as avatar source
       window.location.reload();

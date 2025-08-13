@@ -19,7 +19,8 @@ const SubMenu: React.FC = () => {
         `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
       );
       const { uploadURL, url } = await res.json();
-      setUserAvatar(url);
+      if (url === "NotFound") setUserAvatar("avatar.ico");
+      else setUserAvatar(url);
     };
 
     fetchProviders();
@@ -81,7 +82,7 @@ const SubMenu: React.FC = () => {
           {/* Notification Popup */}
           {showNotifications && (
             <div
-              className="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-30"
+              className="absolute top-full right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-30"
               onMouseLeave={() => setShowNotifications(false)}
             >
               <div className="p-4 text-center text-gray-500">

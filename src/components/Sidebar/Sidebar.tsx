@@ -70,7 +70,7 @@ export default function Sidebar() {
                 : "text-gray-700";
               const disabledClass = isDisabled
                 ? "text-gray-400 cursor-not-allowed pointer-events-none"
-                : "hover:bg-gray-100";
+                : "hover:bg-blue-800 hover:text-white";
 
               const className = clsx(baseClasses, activeClass, disabledClass);
 
