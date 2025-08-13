@@ -191,7 +191,7 @@ export default function settings() {
       const userId = await sessionStorage.getItem("user_id");
       console.log("File uploaded successfully. Viewable at:", getURL);
 
-      setAvatar(res_url.data.url); // use the S3 URL as avatar source
+      setAvatar(getURL); // use the S3 URL as avatar source
     } catch (err) {
       console.error("Error uploading file:", err);
     }
