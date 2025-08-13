@@ -14,10 +14,19 @@ const SubMenu: React.FC = () => {
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchProviders = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
+      );
+      const { uploadURL, url } = await res.json();
+      setUserAvatar(url);
+    };
+
+    fetchProviders();
+
     setUserName(sessionStorage.getItem("user_name"));
     setUserEmail(sessionStorage.getItem("user_email"));
-    setUserAvatar(sessionStorage.getItem("user_avatar"));
-  });
+  }, []);
 
   return (
     <div className="flex justify-end items-center">
@@ -48,9 +57,12 @@ const SubMenu: React.FC = () => {
           {/* User Dropdown */}
           <button
             onClick={() => setOpen((prev) => !prev)}
-            style={{ cursor: "pointer", maxWidth: "32px", maxHeight: "32px" }}
+            style={{ cursor: "pointer", maxWidth: "40px", maxHeight: "40px" }}
           >
-            <img src={userAvatar || "avatar.ico"} />
+            <img
+              src={userAvatar || "avatar.ico"}
+              className="w-10 h-10 object-cover rounded-full"
+            />
           </button>
           <svg
             className="w-3 h-3 text-gray-600"

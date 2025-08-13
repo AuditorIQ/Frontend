@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Card } from "@/components/ui/card";
-import { Trash2 } from "lucide-react";
+import { FileType, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { errorToast, successToast } from "@/lib/toast";
@@ -52,6 +52,11 @@ export default function settings() {
       );
       const providerData = await res.json();
       setProviderList(providerData.result);
+      const res_url = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
+      );
+      const { uploadURL, url } = await res_url.json();
+      setAvatar(url);
     };
     fetchProviders();
   }, []);
@@ -105,7 +110,6 @@ export default function settings() {
 
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Profile Updated:", profileData);
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -175,7 +179,7 @@ export default function settings() {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent(file.type)}`
       );
-      const { uploadURL, getURL } = await res.json();
+      const { uploadURL, url } = await res.json();
 
       // Step 2: Upload file directly to S3
       const uploadRes = await fetch(uploadURL, {
@@ -189,9 +193,10 @@ export default function settings() {
         return;
       }
       const userId = await sessionStorage.getItem("user_id");
-      console.log("File uploaded successfully. Viewable at:", getURL);
+      console.log("File uploaded successfully. Viewable at:", url);
 
-      setAvatar(getURL); // use the S3 URL as avatar source
+      setAvatar(url); // use the S3 URL as avatar source
+      window.location.reload();
     } catch (err) {
       console.error("Error uploading file:", err);
     }
