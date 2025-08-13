@@ -18,6 +18,7 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -35,6 +36,7 @@ export default function SignIn() {
   // Handle form submission and registration process
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     // Here you would typically submit the complete registration data
     try {
@@ -64,9 +66,12 @@ export default function SignIn() {
 
       // move to dashboard
       router.push("/dashboard");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
       setTimeout(() => {}, 1000);
+    } finally {
+      setLoading(false);
     }
     // Redirect to dashboard or confirmation page
   };
@@ -206,10 +211,11 @@ export default function SignIn() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-navy-800 hover:bg-navy-900 cursor-pointer"
+                  className={`w-full bg-navy-800 hover:bg-navy-900 cursor-pointer button ${loading ? "loading" : ""}`}
                   style={{ backgroundColor: "#0a2463", cursor: "pointer" }}
+                  disabled={loading}
                 >
-                  Sign in
+                  {loading ? "Signing in..." : "Sign in"}
                 </Button>
               </div>
             </form>

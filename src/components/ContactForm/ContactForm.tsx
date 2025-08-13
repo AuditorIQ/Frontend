@@ -3,6 +3,7 @@
 import { successToast } from "@/lib/toast";
 import { useState } from "react";
 import React from "react";
+import { Button } from "../ui/button";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const ContactForm = () => {
     message: "",
   });
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -23,6 +25,7 @@ const ContactForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("Sending...");
+    setLoading(true);
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/contact`,
@@ -34,6 +37,8 @@ const ContactForm = () => {
     );
 
     const result = await res.json();
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setLoading(false);
     setStatus(result.message);
     successToast("Message received! We'll get back to you");
     setTimeout(() => {}, 1000);
@@ -102,13 +107,14 @@ const ContactForm = () => {
           ></textarea>
         </div>
         <div className="md:col-span-2">
-          <button
+          <Button
             type="submit"
-            className="w-full bg-blue-900 text-white py-2 rounded-md hover:bg-blue-800"
-            style={{ cursor: "pointer" }}
+            className={`w-full bg-navy-800 hover:bg-navy-900 cursor-pointer button ${loading ? "loading" : ""}`}
+            style={{ backgroundColor: "#0a2463", cursor: "pointer" }}
+            disabled={loading}
           >
             Submit
-          </button>
+          </Button>
         </div>
       </form>
     </div>

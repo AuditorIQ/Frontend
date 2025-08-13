@@ -13,10 +13,12 @@ export default function ResetPasswordForm() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setMessage("");
     setError("");
     // validation
@@ -44,8 +46,11 @@ export default function ResetPasswordForm() {
         const data = await res.json();
         setError(data.message || "❌ Failed to reset password.");
       }
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } catch (err) {
       setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,7 +106,7 @@ export default function ResetPasswordForm() {
         {message && <p className="text-green-600 text-sm">{message}</p>}
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition"
+          className={`w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition" button ${loading ? "loading" : ""}`}
           style={{ cursor: "pointer" }}
         >
           Reset Password

@@ -20,7 +20,7 @@ export default function settings() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [activeTab, setActiveTab] = useState<"Account" | "Provider">("Account");
-  const [avatar, setAvatar] = useState<string>("/avatar-placeholder.png");
+  const [avatar, setAvatar] = useState<string>("avatar.ico");
 
   const [enableFlg, setEnableFlg] = useState(false);
 
@@ -161,26 +161,40 @@ export default function settings() {
   };
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
+    if (!file) {
+      setAvatar("avatar.ico");
+      return;
+    }
+    // Local preview
     const reader = new FileReader();
     reader.onloadend = () => setAvatar(reader.result as string);
     reader.readAsDataURL(file);
 
-    // Get signed URL
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/presign-avatar?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}`
-    );
-    const { uploadURL } = await res.json();
+    try {
+      // Step 1: Get pre-signed URLs from backend
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent(file.type)}`
+      );
+      const { uploadURL, getURL } = await res.json();
 
-    console.log(uploadURL);
+      // Step 2: Upload file directly to S3
+      const uploadRes = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
 
-    // Upload to S3
-    await fetch(uploadURL, {
-      method: "PUT",
-      headers: { "Content-Type": file.type },
-      body: file,
-    });
+      if (uploadRes.status !== 200) {
+        console.error("Upload failed", uploadRes);
+        return;
+      }
+      const userId = await sessionStorage.getItem("user_id");
+      console.log("File uploaded successfully. Viewable at:", getURL);
+
+      setAvatar(res_url.data.url); // use the S3 URL as avatar source
+    } catch (err) {
+      console.error("Error uploading file:", err);
+    }
   };
 
   return (

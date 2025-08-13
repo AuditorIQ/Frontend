@@ -1,14 +1,17 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { errorToast } from "@/lib/toast";
 import { useState } from "react";
 
 export default function Page() {
   const [email, setEmail] = useState("");
   const [isSent, setIsSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     // call forgot-password endpoint
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/forgot-password`,
@@ -18,6 +21,7 @@ export default function Page() {
         body: JSON.stringify({ email }),
       }
     );
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     if (res.ok) {
       setIsSent(true);
@@ -28,6 +32,7 @@ export default function Page() {
       errorToast("You can't change your account password.");
       setTimeout(() => {}, 1000);
     }
+    setLoading(false);
   };
 
   return (
@@ -46,13 +51,14 @@ export default function Page() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <button
+              <Button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-                style={{ alignItems: "center", cursor: "pointer" }}
+                className={`w-full bg-navy-800 hover:bg-navy-900 cursor-pointer button ${loading ? "loading" : ""}`}
+                style={{ backgroundColor: "#0a2463", cursor: "pointer" }}
+                disabled={loading}
               >
                 Check your email to reset password
-              </button>
+              </Button>
             </form>
           </div>
         )}
