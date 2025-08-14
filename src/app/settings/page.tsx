@@ -108,8 +108,22 @@ export default function settings() {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
   };
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleProfileSubmit = async () => {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/update`,
+      {
+        id: sessionStorage.getItem("user_id"),
+        profileData,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      }
+    );
+    sessionStorage.setItem("user_name", profileData.FullName);
+    sessionStorage.setItem("zipCode", profileData.ZipCode);
+    window.location.reload();
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -234,10 +248,7 @@ export default function settings() {
           {/* Account Tab */}
           {activeTab === "Account" && (
             <div className="w-full">
-              <form
-                onSubmit={handleProfileSubmit}
-                className="bg-white p-6 rounded-lg shadow w-2/3"
-              >
+              <form className="bg-white p-6 rounded-lg shadow w-2/3">
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-3">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -298,7 +309,6 @@ export default function settings() {
                       />
                       <div className="flex items-center gap-4">
                         <button
-                          type="submit"
                           className="bg-blue-900 text-white py-2 px-4 rounded mt-6 hover:bg-blue-800"
                           style={{ cursor: "pointer" }}
                           disabled={enableFlg}
@@ -311,7 +321,10 @@ export default function settings() {
                             type="submit"
                             className="bg-green-900 text-white py-2 px-4 rounded mt-6 hover:bg-green-800"
                             style={{ cursor: "pointer" }}
-                            onClick={() => setEnableFlg(false)}
+                            onClick={() => {
+                              setEnableFlg(false);
+                              handleProfileSubmit();
+                            }}
                           >
                             Save
                           </button>
