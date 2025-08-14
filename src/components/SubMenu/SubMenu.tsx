@@ -14,18 +14,16 @@ const SubMenu: React.FC = () => {
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   useEffect(() => {
-    // const fetchProviders = async () => {
-    //   const res = await fetch(
-    //     `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
-    //   );
-    //   const { uploadURL, url } = await res.json();
-    //   if (url === "NotFound") setUserAvatar("avatar.ico");
-    //   else setUserAvatar(url);
-    // };
+    const fetchProviders = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
+      );
+      const { uploadURL, url } = await res.json();
+      if (url === "NotFound") setUserAvatar("avatar.ico");
+      else setUserAvatar(url);
+    };
 
-    // fetchProviders();
-
-    setUserAvatar("avatar.ico");
+    fetchProviders();
 
     setUserName(sessionStorage.getItem("user_name"));
     setUserEmail(sessionStorage.getItem("user_email"));
