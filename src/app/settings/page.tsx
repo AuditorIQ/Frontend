@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { errorToast, successToast } from "@/lib/toast";
 import SubMenu from "@/components/SubMenu/SubMenu";
+import { spec } from "node:test/reporters";
 
 export default function settings() {
   const [providerList, setProviderList] = useState<any[]>([]);
@@ -16,7 +17,11 @@ export default function settings() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [credentials, setCredentials] = useState<"MD" | "DO" | "DPM">("MD");
+  const [specialty, setSpecialty] = useState<"Woundcare" | "Podiatry">(
+    "Woundcare"
+  );
   const [npiNumber, setNpiNumber] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [activeTab, setActiveTab] = useState<"Account" | "Provider">("Account");
@@ -35,36 +40,42 @@ export default function settings() {
     confirmPassword: "",
   });
 
+  const fetchProviders = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Id: sessionStorage.getItem("user_id"),
+          specialty: "All",
+        }),
+      }
+    );
+    const providerData = await res.json();
+    setProviderList(providerData.result);
+    const res_url = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
+    );
+    const { uploadURL, url } = await res_url.json();
+    setAvatar(url);
+  };
+
   useEffect(() => {
     const initialData = {
       FullName: sessionStorage.getItem("user_name") || "",
       ZipCode: sessionStorage.getItem("zipCode") || "",
     };
     setProfileData(initialData);
-    const fetchProviders = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ Id: sessionStorage.getItem("user_id") }),
-        }
-      );
-      const providerData = await res.json();
-      setProviderList(providerData.result);
-      const res_url = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
-      );
-      const { uploadURL, url } = await res_url.json();
-      setAvatar(url);
-    };
     fetchProviders();
   }, []);
+
   const removeProvider = async (id: number) => {
     const res = await axios.delete(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider/${id}`
     );
-    window.location.reload();
+    fetchProviders();
+    successToast("Successfully removed a Provider");
   };
   const handleAdd = async () => {
     const newErrors: Record<string, string> = {};
@@ -72,6 +83,8 @@ export default function settings() {
     if (!lastName) newErrors.lastName = "Last name is required";
     if (!credentials) newErrors.credentials = "Credentials are required";
     if (!npiNumber) newErrors.npiNumber = "NPI number is required";
+    if (!zipCode) newErrors.zipCode = "Zip code is required";
+    if (!specialty) newErrors.specialty = "Specialty is required";
 
     setErrors(newErrors);
 
@@ -89,6 +102,8 @@ export default function settings() {
           lastName,
           credentials,
           npiNumber,
+          zipCode,
+          specialty,
           userId: sessionStorage.getItem("user_id"),
         },
         {
@@ -97,8 +112,9 @@ export default function settings() {
           },
         }
       );
-      window.location.reload();
+      fetchProviders();
     }
+    successToast("Successfully added a new Provider");
   };
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
@@ -487,6 +503,12 @@ export default function settings() {
                           NPI Number
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Zip Code
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Specialty
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                           Action
                         </th>
                       </tr>
@@ -505,6 +527,12 @@ export default function settings() {
                           </td>
                           <td className="px-6 py-4 text-sm">
                             {provider.npiNumber}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {provider.zipCode}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {provider.specialty}
                           </td>
                           <td className="px-6 py-4 text-sm">
                             <div className="flex space-x-2">
@@ -615,6 +643,36 @@ export default function settings() {
                             className="mt-1 w-full border border-gray-300 rounded-md p-2"
                           />
                         </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Zip Code
+                          </label>
+                          <input
+                            type="text"
+                            value={zipCode}
+                            onChange={(e) => setZipCode(e.target.value)}
+                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Specialty
+                          </label>
+                          <select
+                            value={specialty}
+                            onChange={(e) =>
+                              setSpecialty(
+                                e.target.value as "Woundcare" | "Podiatry"
+                              )
+                            }
+                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
+                          >
+                            <option value="Woundcare">Woundcare</option>
+                            <option value="Podiatry">Podiatry</option>
+                          </select>
+                        </div>
                       </div>
 
                       <div className="mt-6 flex justify-end space-x-2">
@@ -628,6 +686,7 @@ export default function settings() {
                         <Button
                           onClick={() => {
                             handleAdd();
+                            setShowModal(false);
                           }}
                           style={{ cursor: "pointer" }}
                         >

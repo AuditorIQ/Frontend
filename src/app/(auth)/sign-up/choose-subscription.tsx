@@ -197,7 +197,7 @@ export function ChooseSubscription({
         <div
           className={` rounded-lg p-4 ${
             selectedPlan === "STARTER"
-              ? "bg-primary ring-2 ring-[#0a2463]"
+              ? "bg-white ring-2 ring-[#0a2463] border-blue-500"
               : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("STARTER")}
@@ -265,7 +265,7 @@ export function ChooseSubscription({
         <div
           className={` rounded-lg p-4 ${
             selectedPlan === "PROFESSIONAL"
-              ? "bg-primary ring-2 ring-[#0a2463]"
+              ? "bg-white border-blue-500 ring-2 ring-[#0a2463]"
               : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("PROFESSIONAL")}
@@ -372,7 +372,7 @@ export function ChooseSubscription({
         <div
           className={` rounded-lg p-4 ${
             selectedPlan === "ENTERPRISE"
-              ? "bg-primary ring-2 ring-[#0a2463]"
+              ? "bg-white border-blue-500 ring-2 ring-[#0a2463]"
               : "bg-[#EBF9FF]"
           }`}
           onClick={() => handleSelectPlan("ENTERPRISE")}

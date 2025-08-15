@@ -23,8 +23,25 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   const [providerList, setProviderList] = useState<any[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
 
+  const fetchProviders = async (myspecialty: string) => {
+    console.log(myspecialty);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Id: sessionStorage.getItem("user_id"),
+          specialty: myspecialty,
+        }),
+      }
+    );
+    const providerData = await res.json();
+    setProviderList(providerData.result);
+  };
+
   useEffect(() => {
-    const fetchProviders = async () => {
+    const fetchProfiles = async () => {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,19 +49,10 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           email: sessionStorage.getItem("user_email"),
         }),
       });
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ Id: sessionStorage.getItem("user_id") }),
-        }
-      );
-      const providerData = await res.json();
-      setProviderList(providerData.result);
     };
-    fetchProviders();
+
+    fetchProfiles();
+    fetchProviders("Woundcare");
   }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -70,6 +78,12 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     );
   };
 
+  const updateProviderList = async (specialty: string) => {
+    let myspecialty = "";
+    if (specialty === "Wound Care") myspecialty = "Woundcare";
+    else if (specialty === "Podiatry") myspecialty = "Podiatry";
+    fetchProviders(myspecialty);
+  };
   const handleUpload = async () => {
     if (fileList.length === 0) return;
     setUploading(true);
@@ -144,25 +158,28 @@ export default function UploadModal({ isOpen, onClose }: Props) {
         <div className="p-4">
           <div className="flex items-center gap-4">
             <div>
-              Rendering Provider
-              <select className="border rounded p-2">
-                {providerList.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.firstName + " " + p.lastName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
               Specialty
               <select
                 value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                onChange={(e) => {
+                  setSelectedSpecialty(e.target.value);
+                  updateProviderList(e.target.value);
+                }}
                 className="border rounded p-2"
               >
                 {specialties.map((s) => (
                   <option key={s} value={s}>
                     {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              Rendering Provider
+              <select className="border rounded p-2">
+                {providerList.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.firstName + " " + p.lastName}
                   </option>
                 ))}
               </select>

@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { successToast } from "@/lib/toast";
 
 export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -51,6 +52,7 @@ export default function ResetPasswordForm() {
       setError("An unexpected error occurred.");
     } finally {
       setLoading(false);
+      successToast("Reset password successfully.");
     }
   };
 
