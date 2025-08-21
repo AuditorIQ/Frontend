@@ -24,7 +24,6 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
 
   const fetchProviders = async (myspecialty: string) => {
-    console.log(myspecialty);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
       {

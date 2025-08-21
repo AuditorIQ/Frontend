@@ -63,8 +63,16 @@ export default function prompt() {
     toggleLabels.reduce((acc, label) => ({ ...acc, [label]: true }), {})
   );
 
-  const handleToggle = (label: string) => {
-    setToggles((prev) => ({ ...prev, [label]: !prev[label] }));
+  const handleToggle = async (label: string) => {
+    setToggles((prev) => {
+      const updated = { ...prev, [label]: !prev[label] };
+      return updated;
+    });
+    const updated = { ...toggles, [label]: !toggles[label] };
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/openai/update-outputsections`,
+      { sections: updated, specialty: activeTab }
+    );
   };
 
   const handleSave = async () => {
@@ -90,6 +98,11 @@ export default function prompt() {
         { specialty: activeTab }
       );
       setText(res.data.prompt);
+      const res_sections = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-sections`,
+        { specialty: activeTab }
+      );
+      setToggles(JSON.parse(res_sections.data.sections));
     };
     fetchData();
   }, [activeTab, isReset, showModal]);
