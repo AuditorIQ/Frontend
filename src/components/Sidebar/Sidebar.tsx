@@ -63,8 +63,11 @@ export default function Sidebar() {
                   : null;
               const isDisabled =
                 (name === "Plan & Payments" &&
-                  userEmail === "zkruegerflair@gmail.com") ||
-                (name === "Prompt" && userEmail !== "zkruegerflair@gmail.com");
+                  (userEmail === "zkruegerflair@gmail.com" ||
+                    userEmail === "tsmith@auditoriq.ai")) ||
+                (name === "Prompt" &&
+                  userEmail !== "zkruegerflair@gmail.com" &&
+                  userEmail !== "tsmith@auditoriq.ai");
 
               const baseClasses =
                 "flex items-center gap-3 px-3 py-2 rounded-md transition-colors";
