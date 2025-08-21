@@ -8,6 +8,7 @@ import {
   Settings,
   HelpCircle,
   LogOut,
+  Edit,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -25,6 +26,7 @@ const navItems = [
   {
     section: "Others",
     items: [
+      { name: "Prompt", href: "/prompt", icon: Edit },
       { name: "Plan & Payments", href: "/plan", icon: CreditCard },
       { name: "Settings", href: "/settings", icon: Settings },
       { name: "Help", href: "/help", icon: HelpCircle },
@@ -60,8 +62,9 @@ export default function Sidebar() {
                   ? sessionStorage.getItem("user_email")
                   : null;
               const isDisabled =
-                name === "Plan & Payments" &&
-                userEmail === "tsmith@auditoriq.ai";
+                (name === "Plan & Payments" &&
+                  userEmail === "zkruegerflair@gmail.com") ||
+                (name === "Prompt" && userEmail !== "zkruegerflair@gmail.com");
 
               const baseClasses =
                 "flex items-center gap-3 px-3 py-2 rounded-md transition-colors";

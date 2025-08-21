@@ -19,6 +19,8 @@ let mysubscriptionType = {
 const page = () => {
   const [isYearly, setIsYearly] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showModalPlan, setShowModalPlan] = useState(false);
+  const [upgradePlan, setUpgradePlan] = useState("");
 
   const plans = [
     {
@@ -319,12 +321,8 @@ const page = () => {
                       mysubscriptionType.licenseType.toLowerCase() !==
                       plan.name.toLowerCase()
                     ) {
-                      const confirmed = window.confirm(
-                        "Are you sure you want to Upgrade?"
-                      );
-                      if (confirmed) {
-                        subscribePlan(plan.name);
-                      }
+                      setUpgradePlan(plan.name);
+                      setShowModalPlan(true);
                     }
                   }}
                 >
@@ -341,6 +339,59 @@ const page = () => {
               </div>
             ))}
           </div>
+          {showModalPlan && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1000,
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: "white",
+                  padding: 30,
+                  borderRadius: 10,
+                  width: "400px",
+                  textAlign: "center",
+                }}
+              >
+                <h3>Are you sure you want to upgrade?</h3>
+                <div
+                  style={{
+                    marginTop: 20,
+                    display: "flex",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <button
+                    onClick={() => {
+                      setShowModalPlan(false);
+                      subscribePlan(upgradePlan);
+                    }}
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    style={{ width: "40%", cursor: "pointer" }}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => setShowModalPlan(false)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    style={{ width: "40%", cursor: "pointer" }}
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     </div>

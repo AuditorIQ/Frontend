@@ -264,7 +264,10 @@ export default function settings() {
           {/* Account Tab */}
           {activeTab === "Account" && (
             <div className="w-full">
-              <form className="bg-white p-6 rounded-lg shadow w-2/3">
+              <form
+                className="bg-white p-6 rounded-lg w-2/3"
+                style={{ border: "none" }}
+              >
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-3">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -353,7 +356,8 @@ export default function settings() {
               <div className="border-b"></div>
               <form
                 onSubmit={handlePasswordSubmit}
-                className="bg-white p-6 rounded-lg shadow w-2/3"
+                className="bg-white p-6 rounded-lg w-2/3"
+                style={{ border: "none" }}
               >
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-3">
@@ -404,7 +408,8 @@ export default function settings() {
               <div className="border-b"></div>
               <form
                 onSubmit={handleDeleteAccount}
-                className="bg-white p-6 rounded-lg shadow w-2/3"
+                className="bg-white p-6 rounded-lg w-2/3"
+                style={{ border: "none" }}
               >
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-3">
