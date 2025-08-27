@@ -57,7 +57,7 @@ export default function prompt() {
     "Standard of Care (SOC)",
     "Compliance Review Table",
     "Auditor’s Note",
-    "Key Recommendations",
+    "Recommendations Based on Policy",
   ];
   const [toggles, setToggles] = useState<Record<string, boolean>>(
     toggleLabels.reduce((acc, label) => ({ ...acc, [label]: true }), {})
