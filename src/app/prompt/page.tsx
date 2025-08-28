@@ -51,13 +51,13 @@ export default function prompt() {
   const [showModal, setShowModal] = useState(false);
 
   const toggleLabels = [
-    "Diagnosis & Coverage",
-    "Compliance Table",
+    "Wound Overview",
+    "Standard of Care (SOC) Requirements",
     "Healing Trends",
-    "Standard of Care (SOC)",
-    "Compliance Review Table",
+    "Compliance Table",
     "Auditor’s Note",
     "Recommendations Based on Policy",
+    "Summary",
   ];
   const [toggles, setToggles] = useState<Record<string, boolean>>(
     toggleLabels.reduce((acc, label) => ({ ...acc, [label]: true }), {})
