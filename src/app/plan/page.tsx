@@ -109,7 +109,10 @@ const page = () => {
     }
     setShowModal(false);
   };
-
+  const isAdmin =
+    typeof window !== "undefined"
+      ? sessionStorage.getItem("isAdmin") === "true"
+      : false;
   useEffect(() => {
     mysubscriptionType.name = sessionStorage.getItem("user_name") || "";
     mysubscriptionType.licenseType =
@@ -118,7 +121,7 @@ const page = () => {
       const startDate = new Date(sessionStorage.getItem("subscribedAt") || "");
       mysubscriptionType.startDate = startDate.toISOString().split("T")[0];
       const isYearly = sessionStorage.getItem("isYearly");
-      if (sessionStorage.getItem("user_email") === "tsmith@auditoriq.ai") {
+      if (!isAdmin) {
         startDate.setFullYear(startDate.getFullYear() + 10);
         mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
       } else if (isYearly === "true") {

@@ -49,6 +49,7 @@ export default function prompt() {
   const [isEdit, setIsEdit] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleLabels = [
     "Wound Overview",
@@ -93,19 +94,29 @@ export default function prompt() {
   };
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-prompt`,
-        { specialty: activeTab }
-      );
-      setText(res.data.prompt);
-      const res_sections = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-sections`,
-        { specialty: activeTab }
-      );
-      setToggles(JSON.parse(res_sections.data.sections));
+      if (isLoading) return; // Prevent multiple simultaneous calls
+
+      setIsLoading(true);
+      try {
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-prompt`,
+          { specialty: activeTab }
+        );
+        setText(res.data.prompt);
+
+        const res_sections = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-sections`,
+          { specialty: activeTab }
+        );
+        setToggles(JSON.parse(res_sections.data.sections));
+      } catch (error) {
+        console.error("Error fetching prompt data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchData();
-  }, [activeTab, isReset, showModal]);
+  }, [activeTab, isReset]); // Removed showModal dependency
   return (
     <div className="flex min-h-screen">
       <Sidebar />

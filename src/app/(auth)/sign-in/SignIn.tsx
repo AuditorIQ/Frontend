@@ -63,7 +63,7 @@ export default function SignIn() {
       sessionStorage.setItem("subscribedAt", res?.data?.data.user.subscribedAt);
       sessionStorage.setItem("isYearly", res?.data?.data.user.isYearly);
       sessionStorage.setItem("zipCode", res?.data?.data.user.zipCode);
-
+      sessionStorage.setItem("isAdmin", String(res?.data?.data.user.isAdmin));
       // move to dashboard
       router.push("/dashboard");
       await new Promise((resolve) => setTimeout(resolve, 2000));

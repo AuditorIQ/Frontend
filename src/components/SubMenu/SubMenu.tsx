@@ -14,19 +14,58 @@ const SubMenu: React.FC = () => {
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProviders = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
-      );
-      const { uploadURL, url } = await res.json();
-      if (url === "NotFound") setUserAvatar("avatar.ico");
-      else setUserAvatar(url);
+    const fetchUserData = async () => {
+      // Set user data from session storage first
+      const userName = sessionStorage.getItem("user_name");
+      const userEmail = sessionStorage.getItem("user_email");
+      const cachedAvatar = sessionStorage.getItem("user_avatar");
+
+      setUserName(userName);
+      setUserEmail(userEmail);
+
+      // Only fetch avatar if not cached or if it's been more than 5 minutes
+      const lastAvatarFetch = sessionStorage.getItem("last_avatar_fetch");
+      const now = Date.now();
+      const fiveMinutes = 5 * 60 * 1000;
+
+      if (
+        cachedAvatar &&
+        lastAvatarFetch &&
+        now - parseInt(lastAvatarFetch) < fiveMinutes
+      ) {
+        setUserAvatar(cachedAvatar);
+        return;
+      }
+
+      try {
+        const userId = sessionStorage.getItem("user_id");
+        if (!userId) {
+          setUserAvatar("avatar.ico");
+          return;
+        }
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(userId)}&fileType=${encodeURIComponent("image/png")}`
+        );
+
+        if (res.ok) {
+          const { uploadURL, url } = await res.json();
+          const avatarUrl = url === "NotFound" ? "avatar.ico" : url;
+          setUserAvatar(avatarUrl);
+
+          // Cache the avatar URL and timestamp
+          sessionStorage.setItem("user_avatar", avatarUrl);
+          sessionStorage.setItem("last_avatar_fetch", now.toString());
+        } else {
+          setUserAvatar("avatar.ico");
+        }
+      } catch (error) {
+        console.error("Error fetching avatar:", error);
+        setUserAvatar("avatar.ico");
+      }
     };
 
-    fetchProviders();
-
-    setUserName(sessionStorage.getItem("user_name"));
-    setUserEmail(sessionStorage.getItem("user_email"));
+    fetchUserData();
   }, []);
 
   return (

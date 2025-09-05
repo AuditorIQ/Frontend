@@ -57,17 +57,13 @@ export default function Sidebar() {
           <nav className="space-y-1">
             {section.items.map(({ name, href, icon: Icon }) => {
               const isActive = usePathname() === href;
-              const userEmail =
+              const isAdmin =
                 typeof window !== "undefined"
-                  ? sessionStorage.getItem("user_email")
-                  : null;
+                  ? sessionStorage.getItem("isAdmin") === "true"
+                  : false;
               const isDisabled =
-                (name === "Plan & Payments" &&
-                  (userEmail === "zkruegerflair@gmail.com" ||
-                    userEmail === "tsmith@auditoriq.ai")) ||
-                (name === "Prompt" &&
-                  userEmail !== "zkruegerflair@gmail.com" &&
-                  userEmail !== "tsmith@auditoriq.ai");
+                (name === "Plan & Payments" && !isAdmin) ||
+                (name === "Prompt" && !isAdmin);
 
               const baseClasses =
                 "flex items-center gap-3 px-3 py-2 rounded-md transition-colors";

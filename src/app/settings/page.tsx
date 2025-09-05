@@ -41,24 +41,40 @@ export default function settings() {
   });
 
   const fetchProviders = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          Id: sessionStorage.getItem("user_id"),
-          specialty: "All",
-        }),
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            Id: sessionStorage.getItem("user_id"),
+            specialty: "All",
+          }),
+        }
+      );
+      const providerData = await res.json();
+      setProviderList(providerData.result);
+
+      // Only fetch avatar if not already cached
+      const cachedAvatar = sessionStorage.getItem("user_avatar");
+      if (cachedAvatar) {
+        setAvatar(cachedAvatar);
+      } else {
+        const userId = sessionStorage.getItem("user_id");
+        if (userId) {
+          const res_url = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(userId)}&fileType=${encodeURIComponent("image/png")}`
+          );
+          const { uploadURL, url } = await res_url.json();
+          const avatarUrl = url === "NotFound" ? "avatar.ico" : url;
+          setAvatar(avatarUrl);
+          sessionStorage.setItem("user_avatar", avatarUrl);
+        }
       }
-    );
-    const providerData = await res.json();
-    setProviderList(providerData.result);
-    const res_url = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent("image/png")}`
-    );
-    const { uploadURL, url } = await res_url.json();
-    setAvatar(url);
+    } catch (error) {
+      console.error("Error fetching providers:", error);
+    }
   };
 
   useEffect(() => {
@@ -225,6 +241,11 @@ export default function settings() {
       const userId = await sessionStorage.getItem("user_id");
 
       setAvatar(url); // use the S3 URL as avatar source
+
+      // Update cached avatar and timestamp
+      sessionStorage.setItem("user_avatar", url);
+      sessionStorage.setItem("last_avatar_fetch", Date.now().toString());
+
       window.location.reload();
     } catch (err) {
       console.error("Error uploading file:", err);
