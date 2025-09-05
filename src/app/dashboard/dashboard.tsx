@@ -370,7 +370,7 @@ export default function DashboardPage() {
                   setIsModalOpen(true);
                 }}
                 className={`px-6 py-3 rounded-lg ${
-                  isDisabled
+                  isDisabled && sessionStorage.getItem("isAdmin") != "true"
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-blue-500 hover:bg-blue-600"
                 } text-white`}
