@@ -1,17 +1,19 @@
 "use client";
 
+import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
 
 export default function Profile() {
   const [defaultSpecialty, setDefaultSpecialty] = useState("Wound Care");
 
   const saveDefault = async () => {
+    const email= useAuthStore().user?.email;
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         defaultSpecialty,
-        email: sessionStorage.getItem("user_email"),
+        email
       }),
     });
   };

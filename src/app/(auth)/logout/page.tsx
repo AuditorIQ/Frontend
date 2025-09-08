@@ -1,18 +1,13 @@
 "use client";
 
+import { useAuthStore } from "@/stores/useAuthStore";
 import { useEffect } from "react";
 
 export default function Page() {
   useEffect(() => {
     // clear session
-    sessionStorage.setItem("token", "");
-    sessionStorage.setItem("user_email", "");
-    sessionStorage.setItem("user_name", "");
-    sessionStorage.setItem("formData", "");
-    sessionStorage.setItem("subscriptionType", "");
-    sessionStorage.setItem("subscribedAt", "");
-    sessionStorage.setItem("isYearly", "");
-    sessionStorage.setItem("zipCode", "");
+  useAuthStore.getState().clearAuth();
+
     window.location.href = "/";
   });
   return <></>;

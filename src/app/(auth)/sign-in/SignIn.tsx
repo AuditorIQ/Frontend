@@ -12,6 +12,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useAuthStore } from "@/stores/useAuthStore";
+import {
+  useProvidersStore,
+  Provider as ProviderType,
+} from "@/stores/useProvidersStore";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -47,26 +52,58 @@ export default function SignIn() {
           password,
         }
       );
+
+      //   console.log("login korar por", res);
+
       if (res?.data?.success) {
         successToast("Successfully signed In");
-        setTimeout(() => {}, 1000);
+        setTimeout(() => {}, 200);
       }
-      // save token to the storage
+
+      const payload = res?.data?.data;
+      console.log("payloaD", payload);
+
+      // 1) Saved auth in Zustand
+      useAuthStore.getState().setAuth({
+        accessToken: payload.accessToken,
+        refreshToken: payload.refreshToken,
+        user: {
+          id: String(payload.user.id),
+          email: payload.user.email,
+          name: payload.user.name,
+          subscriptionType: payload.user.subscriptionType ?? null,
+          subscribedAt: payload.user.subscribedAt ?? null,
+          isYearly: Boolean(payload.user.isYearly),
+          zipCode: payload.user.zipCode ?? null,
+          isAdmin: Boolean(payload.user.isAdmin),
+        },
+      });
+
+      // 2) save token to the storage
       sessionStorage.setItem("token", res?.data?.data.accessToken);
-      sessionStorage.setItem("user_id", res?.data?.data.user.id);
-      sessionStorage.setItem("user_email", res?.data?.data.user.email);
-      sessionStorage.setItem("user_name", res?.data?.data.user.name);
-      sessionStorage.setItem(
-        "subscriptionType",
-        res?.data?.data.user.subscriptionType
-      );
-      sessionStorage.setItem("subscribedAt", res?.data?.data.user.subscribedAt);
-      sessionStorage.setItem("isYearly", res?.data?.data.user.isYearly);
-      sessionStorage.setItem("zipCode", res?.data?.data.user.zipCode);
-      sessionStorage.setItem("isAdmin", String(res?.data?.data.user.isAdmin));
-      // move to dashboard
+      sessionStorage.setItem("refreshToken", res?.data?.data.refreshToken);
+
+      // 3) Hydrate Providers store from payload (no extra API call)
+      const apiProviders = Array.isArray(payload.user?.providers)
+        ? (payload.user.providers as any[])
+        : [];
+
+      // Normalize to Providers store type
+      const normalizedProviders: ProviderType[] = apiProviders.map((p) => ({
+        id: Number(p.id),
+        firstName: String(p.firstName ?? ""),
+        lastName: String(p.lastName ?? ""),
+        credentials: (p.credentials ?? "MD") as "MD" | "DO" | "DPM",
+        npiNumber: String(p.npiNumber ?? ""),
+        zipCode: p.zipCode ? String(p.zipCode) : undefined,
+        specialty: p.specialty as "Woundcare" | "Podiatry" | undefined,
+      }));
+
+      useProvidersStore.getState().setProviders(normalizedProviders);
+
+      // 4) Navigate to dashboard
       router.push("/dashboard");
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
       setTimeout(() => {}, 1000);

@@ -44,7 +44,12 @@ const Footer: React.FC = () => {
   return (
     <footer
       className="bg-[#0A2463] text-white"
-      style={{ paddingLeft: "10%", paddingRight: "10%", marginTop: "50px" }}
+      style={{
+        paddingLeft: "10%",
+        paddingRight: "10%",
+        marginTop: "50px",
+        paddingBottom: "30px",
+      }}
     >
       <div
         className="text-white px-8 py-12 flex flex-col md:flex-row items-center justify-between"

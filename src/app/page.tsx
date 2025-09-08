@@ -6,10 +6,11 @@ import "@/components/RegisterButton.css";
 import "@/components/ContactButton.css";
 import FaqAccordion from "@/components/FaqAccordion/FaqAccordion";
 import Footer from "@/components/Footer/Footer";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function Home() {
-  const [showRegisterButton, setShowRegisterButton] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
+  // const [showRegisterButton, setShowRegisterButton] = useState(false);
+  // const [username, setUsername] = useState<string | null>(null);
   const [isYearly, setIsYearly] = useState(false);
 
   const features = [
@@ -82,12 +83,12 @@ export default function Home() {
     },
   ];
 
-  useEffect(() => {
-    const storedUsername = sessionStorage.getItem("user_name");
-    setUsername(storedUsername);
-    const token = sessionStorage.getItem("token");
-    setShowRegisterButton(!token);
-  });
+  const username = useAuthStore((s) => s.user?.name);
+  const token = useAuthStore((s) => s.accessToken);
+
+  //   console.log("haha", username, token);
+
+  const showRegisterButton = !token;
 
   return (
     <div className="min-h-screen text-slate-900">
@@ -102,7 +103,9 @@ export default function Home() {
           <img src="logo_asset.svg" style={{ width: "200px" }} />
         </button>
         <Navbar />
+
         {/* Register Button */}
+
         {showRegisterButton && (
           <button
             className="register-button"
@@ -118,7 +121,7 @@ export default function Home() {
             className="register-button"
             onClick={() => (window.location.href = "/dashboard")}
           >
-            <span>{username}</span>
+            <span>Dashboard</span>
             <img src="nextBtn.svg" />
           </button>
         )}
@@ -132,7 +135,7 @@ export default function Home() {
         }}
       >
         {/* Hero Section */}
-        <section className="text-center py-20 px-6">
+        <section className="text-center py-20 px-6 mt-16">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">
             <span className="gradient-text">AI-Powered</span> Medicare
             Compliance Audits, In Minutes

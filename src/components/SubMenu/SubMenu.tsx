@@ -4,27 +4,22 @@ import React, { useState, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input"; // Adjust path based on your project
 import { BellIcon } from "@heroicons/react/24/outline";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const SubMenu: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [userName, setUserName] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const user = useAuthStore((s) => s.user);
+  const updateUser = useAuthStore((s) => s.updateUser);
 
+  const userName = user?.name || null;
+  const userEmail = user?.email || null;
+  const cachedAvatar = user?.avatar;
+  const lastAvatarFetch = user?.lastAvatarFetch;
   useEffect(() => {
     const fetchUserData = async () => {
-      // Set user data from session storage first
-      const userName = sessionStorage.getItem("user_name");
-      const userEmail = sessionStorage.getItem("user_email");
-      const cachedAvatar = sessionStorage.getItem("user_avatar");
-
-      setUserName(userName);
-      setUserEmail(userEmail);
-
-      // Only fetch avatar if not cached or if it's been more than 5 minutes
-      const lastAvatarFetch = sessionStorage.getItem("last_avatar_fetch");
       const now = Date.now();
       const fiveMinutes = 5 * 60 * 1000;
 
@@ -38,24 +33,25 @@ const SubMenu: React.FC = () => {
       }
 
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) {
+        if (!user?.id) {
           setUserAvatar("avatar.ico");
           return;
         }
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(userId)}&fileType=${encodeURIComponent("image/png")}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(user.id)}&fileType=${encodeURIComponent("image/png")}`
         );
 
         if (res.ok) {
-          const { uploadURL, url } = await res.json();
+          const { url } = await res.json();
           const avatarUrl = url === "NotFound" ? "avatar.ico" : url;
           setUserAvatar(avatarUrl);
 
-          // Cache the avatar URL and timestamp
-          sessionStorage.setItem("user_avatar", avatarUrl);
-          sessionStorage.setItem("last_avatar_fetch", now.toString());
+          // ✅ update Zustand safely
+          updateUser({
+            avatar: avatarUrl,
+            lastAvatarFetch: Date.now().toString(),
+          });
         } else {
           setUserAvatar("avatar.ico");
         }
@@ -66,7 +62,7 @@ const SubMenu: React.FC = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [user?.id, cachedAvatar, lastAvatarFetch, updateUser]);
 
   return (
     <div className="flex justify-end items-center">

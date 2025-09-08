@@ -1,29 +1,33 @@
 "use client";
 
 import { successToast } from "@/lib/toast";
+import { useAuthStore } from "@/stores/useAuthStore";
 import axios from "axios";
 import { useEffect } from "react";
 
 export default function Page() {
+  // Zustand hooks at the top level
+  const userEmail = useAuthStore((s) => s.user?.email?.trim() ?? null);
+  const userIsYearly = useAuthStore((s) => s.user?.isYearly ?? false);
+  const userSubscriptionType = useAuthStore((s) =>
+    s.user?.subscriptionType?.toUpperCase()
+  );
+  const formData = useAuthStore((s) => s.formData);
+
   successToast("Thank you for purchasing!");
   setTimeout(() => {}, 1000);
+
   useEffect(() => {
-    if (
-      sessionStorage.getItem("user_email") === null ||
-      sessionStorage.getItem("user_email") === ""
-    ) {
-      const raw = sessionStorage.getItem("formData");
-      if (!raw) return; // Avoid parsing null
+    if (userEmail === null || userEmail === "") {
+      if (!formData) return; // Avoid parsing null
 
       try {
-        const data = JSON.parse(raw);
-
-        const providersArray = Array.isArray(data.providers)
-          ? data.providers
-          : data.providers?.create || [];
+        const providersArray = Array.isArray(formData.providers)
+          ? formData.providers
+          : formData.providers?.create || [];
 
         const formatted = {
-          ...data,
+          ...formData,
           providers: {
             create: providersArray.map((provider: any) => ({
               ...provider,
@@ -47,16 +51,14 @@ export default function Page() {
       axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/subscribe-plan`,
         {
-          email: sessionStorage.getItem("user_email"),
-          subscriptionType: sessionStorage
-            .getItem("subscriptionType")
-            ?.toUpperCase(),
-          isYearly: sessionStorage.getItem("isYearly") === "true",
+          email: userEmail,
+          subscriptionType: userSubscriptionType,
+          isYearly: userIsYearly,
         }
       );
       window.location.href = "/plan";
     }
-  }, []);
+  }, [userEmail, userIsYearly, userSubscriptionType, formData]);
 
   return <p>Redirecting...</p>;
 }

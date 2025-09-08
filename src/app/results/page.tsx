@@ -8,6 +8,7 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import SubMenu from "@/components/SubMenu/SubMenu";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const viewpdf = async (e: any) => {
   e.preventDefault();
@@ -36,6 +37,9 @@ const viewpdf = async (e: any) => {
 };
 
 export default function reports() {
+  // Zustand hook at the top level
+  const userEmail = useAuthStore((s) => s.user?.email);
+
   const [dataset, setDataset] = useState<
     [number, string, string, string, string, string, string][]
   >([]);
@@ -62,8 +66,8 @@ export default function reports() {
 
   useEffect(() => {
     // prevent unauthorized attempt
-    const authtoken = sessionStorage.getItem("token");
-    if (!authtoken) {
+    let isAuthenticated = useAuthStore.getState().isAuthenticated();
+    if (!isAuthenticated) {
       window.location.href = "/sign-in";
     }
 
@@ -106,9 +110,7 @@ export default function reports() {
               userid,
             ];
           })
-          .filter(
-            (item: any) => item[6] === sessionStorage.getItem("user_email")
-          );
+          .filter((item: any) => item[6] === userEmail);
 
         const result: [
           number,

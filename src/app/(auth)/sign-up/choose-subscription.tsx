@@ -9,6 +9,7 @@ import useSignupFormStore from "@/stores/authStore";
 import axios from "axios";
 import { errorToast, successToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 interface ChooseSubscriptionProps {
   formData: any;
@@ -111,7 +112,7 @@ export function ChooseSubscription({
         isYearly: yearly,
         subscribedAt: isoString,
       };
-      sessionStorage.setItem("formData", JSON.stringify(updatedData));
+      useAuthStore.getState().setFormData(updatedData);
       await updateFormData(updatedData);
 
       setisYearly(yearly);

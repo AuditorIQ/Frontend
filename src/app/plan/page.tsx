@@ -6,6 +6,7 @@ import { errorToast } from "@/lib/toast";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Card } from "@/components/ui/card";
 import SubMenu from "@/components/SubMenu/SubMenu";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 let mysubscriptionType = {
   isEnabled: false,
@@ -17,6 +18,14 @@ let mysubscriptionType = {
 };
 
 const page = () => {
+  // Zustand hooks at the top level
+  const updateUser = useAuthStore((s) => s.updateUser);
+  const userEmail = useAuthStore((s) => s.user?.email);
+  const userSubscriptionType = useAuthStore((s) => s.user?.subscriptionType);
+  const userSubscribedAt = useAuthStore((s) => s.user?.subscribedAt);
+  const userIsYearly = useAuthStore((s) => s.user?.isYearly);
+  const isAdmin = useAuthStore((s) => !!s.user?.isAdmin);
+
   const [isYearly, setIsYearly] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalPlan, setShowModalPlan] = useState(false);
@@ -75,9 +84,11 @@ const page = () => {
   const [subscriptionType, setSubscriptionType] = useState<string | null>(null);
 
   const subscribePlan = async (plan: string) => {
-    sessionStorage.setItem("subscriptionType", plan);
-    sessionStorage.setItem("isYearly", String(isYearly));
-    sessionStorage.setItem("subscribedAt", new Date(Date.now()).toISOString());
+    updateUser({
+      subscriptionType: plan,
+      isYearly, // keep as boolean
+      subscribedAt: new Date().toISOString(),
+    });
 
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
@@ -89,7 +100,7 @@ const page = () => {
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/cancelsubscription`,
-        { email: sessionStorage.getItem("user_email") },
+        { email: userEmail },
         {
           headers: {
             token: sessionStorage.getItem("token"),
@@ -100,31 +111,33 @@ const page = () => {
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-      sessionStorage.setItem("subscriptionType", "FREE");
-      sessionStorage.setItem("isYearly", "false");
-      sessionStorage.setItem("subscribedAt", "");
+
+      updateUser({
+        subscriptionType: "FREE",
+        isYearly: false, // keep as boolean
+        subscribedAt: "",
+      });
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
       setTimeout(() => {}, 1000);
     }
     setShowModal(false);
   };
-  const isAdmin =
-    typeof window !== "undefined"
-      ? sessionStorage.getItem("isAdmin") === "true"
-      : false;
+  const hasHydrated = useAuthStore.persist.hasHydrated?.() ?? true;
+
+  if (!hasHydrated) return null;
+
   useEffect(() => {
-    mysubscriptionType.name = sessionStorage.getItem("user_name") || "";
-    mysubscriptionType.licenseType =
-      sessionStorage.getItem("subscriptionType") || "FREE";
-    if (mysubscriptionType.licenseType !== "FREE") {
-      const startDate = new Date(sessionStorage.getItem("subscribedAt") || "");
+    mysubscriptionType.name = userSubscriptionType || "";
+    mysubscriptionType.licenseType = userSubscriptionType || "FREE";
+    let subscriptionType;
+    if (userSubscriptionType !== "FREE") {
+      const startDate = new Date(userSubscribedAt || "");
       mysubscriptionType.startDate = startDate.toISOString().split("T")[0];
-      const isYearly = sessionStorage.getItem("isYearly");
       if (!isAdmin) {
         startDate.setFullYear(startDate.getFullYear() + 10);
         mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
-      } else if (isYearly === "true") {
+      } else if (userIsYearly) {
         startDate.setFullYear(startDate.getFullYear() + 1);
         mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
       } else {
@@ -142,10 +155,9 @@ const page = () => {
     }
 
     if (typeof window !== "undefined") {
-      const stored = sessionStorage.getItem("subscriptionType");
-      setSubscriptionType(stored);
+      subscriptionType = userSubscriptionType ?? "";
     }
-  }, []);
+  }, [userSubscriptionType, userSubscribedAt, userIsYearly, isAdmin]);
 
   return (
     <div className="flex min-h-screen">

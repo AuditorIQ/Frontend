@@ -8,17 +8,12 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import "@/components/RegisterButton.css";
 import "@/components/ContactButton.css";
 import Footer from "@/components/Footer/Footer";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function page() {
-  const [showRegisterButton, setShowRegisterButton] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-
-  useEffect(() => {
-    const storedUsername = sessionStorage.getItem("user_name");
-    setUsername(storedUsername);
-    const token = sessionStorage.getItem("token");
-    setShowRegisterButton(!token);
-  });
+   const username = useAuthStore((s) => s.user?.name);
+  const token = useAuthStore((s) => s.accessToken);
+  const showRegisterButton = !token;
   return (
     <>
       <nav

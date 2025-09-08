@@ -1,137 +1,69 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Card } from "@/components/ui/card";
-import { FileType, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { errorToast, successToast } from "@/lib/toast";
 import SubMenu from "@/components/SubMenu/SubMenu";
-import { spec } from "node:test/reporters";
+import { useAuthStore } from "@/stores/useAuthStore";
+import ProviderTab from "./ProviderTab";
 
-export default function settings() {
-  const [providerList, setProviderList] = useState<any[]>([]);
-  const [showModal, setShowModal] = useState(false);
+type TabKey = "Account" | "Provider";
+
+export default function Settings() {
+  // Auth / user
+  const userId = useAuthStore((s) => s.user?.id);
+  const userAvatar = useAuthStore((s) => s.user?.avatar);
+  const updateUser = useAuthStore((s) => s.updateUser);
+
+  const name = useAuthStore((s) => s.user?.name ?? "");
+  const zip = useAuthStore((s) => s.user?.zipCode ?? "");
+
+  // Local state
+  const [activeTab, setActiveTab] = useState<TabKey>("Account");
+  const [avatar, setAvatar] = useState<string>("avatar.ico");
+  const [enableFlg, setEnableFlg] = useState(false);
   const [deletedModal, setDeletedModal] = useState(false);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [credentials, setCredentials] = useState<"MD" | "DO" | "DPM">("MD");
-  const [specialty, setSpecialty] = useState<"Woundcare" | "Podiatry">(
-    "Woundcare"
-  );
-  const [npiNumber, setNpiNumber] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const [activeTab, setActiveTab] = useState<"Account" | "Provider">("Account");
-  const [avatar, setAvatar] = useState<string>("avatar.ico");
-
-  const [enableFlg, setEnableFlg] = useState(false);
-
-  const [profileData, setProfileData] = useState({
-    FullName: "",
-    ZipCode: "",
-  });
-
+  const [profileData, setProfileData] = useState({ FullName: "", ZipCode: "" });
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
-  const fetchProviders = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            Id: sessionStorage.getItem("user_id"),
-            specialty: "All",
-          }),
-        }
-      );
-      const providerData = await res.json();
-      setProviderList(providerData.result);
-
-      // Only fetch avatar if not already cached
-      const cachedAvatar = sessionStorage.getItem("user_avatar");
-      if (cachedAvatar) {
-        setAvatar(cachedAvatar);
-      } else {
-        const userId = sessionStorage.getItem("user_id");
-        if (userId) {
-          const res_url = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(userId)}&fileType=${encodeURIComponent("image/png")}`
-          );
-          const { uploadURL, url } = await res_url.json();
-          const avatarUrl = url === "NotFound" ? "avatar.ico" : url;
-          setAvatar(avatarUrl);
-          sessionStorage.setItem("user_avatar", avatarUrl);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching providers:", error);
-    }
-  };
-
+  // Hydrate profile from store
   useEffect(() => {
-    const initialData = {
-      FullName: sessionStorage.getItem("user_name") || "",
-      ZipCode: sessionStorage.getItem("zipCode") || "",
-    };
-    setProfileData(initialData);
-    fetchProviders();
-  }, []);
+    setProfileData({ FullName: name, ZipCode: zip });
+  }, [name, zip]);
 
-  const removeProvider = async (id: number) => {
-    const res = await axios.delete(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/provider/${id}`
-    );
-    fetchProviders();
-    successToast("Successfully removed a Provider");
-  };
-  const handleAdd = async () => {
-    const newErrors: Record<string, string> = {};
-    if (!firstName) newErrors.firstName = "First name is required";
-    if (!lastName) newErrors.lastName = "Last name is required";
-    if (!credentials) newErrors.credentials = "Credentials are required";
-    if (!npiNumber) newErrors.npiNumber = "NPI number is required";
-    if (!zipCode) newErrors.zipCode = "Zip code is required";
-    if (!specialty) newErrors.specialty = "Specialty is required";
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      Object.values(newErrors).forEach((msg) => {
-        errorToast(msg);
-      });
-    }
-
-    if (Object.keys(newErrors).length === 0) {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/addprovider`,
-        {
-          firstName,
-          lastName,
-          credentials,
-          npiNumber,
-          zipCode,
-          specialty,
-          userId: sessionStorage.getItem("user_id"),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
+  // Avatar loader (separate from providers)
+  useEffect(() => {
+    (async () => {
+      try {
+        if (userAvatar) {
+          setAvatar(userAvatar);
+          return;
         }
-      );
-      fetchProviders();
-    }
-    successToast("Successfully added a new Provider");
-  };
+        if (!userId) return;
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(
+            userId
+          )}&fileType=${encodeURIComponent("image/png")}`
+        );
+        const { url } = await res.json();
+        const avatarUrl = url === "NotFound" ? "avatar.ico" : url;
+        setAvatar(avatarUrl);
+        updateUser({ avatar: avatarUrl });
+      } catch (e) {
+        console.error("Avatar presign failed", e);
+      }
+    })();
+  }, [userId, userAvatar, updateUser]);
+
+  // Handlers
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
   };
@@ -141,34 +73,33 @@ export default function settings() {
   };
 
   const handleProfileSubmit = async () => {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/update`,
-      {
-        id: sessionStorage.getItem("user_id"),
-        profileData,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      }
-    );
-    sessionStorage.setItem("user_name", profileData.FullName);
-    sessionStorage.setItem("zipCode", profileData.ZipCode);
-    window.location.reload();
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/update`,
+        { id: userId, profileData },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token") ?? ""}`,
+          },
+        }
+      );
+      updateUser({ name: profileData.FullName, zipCode: profileData.ZipCode });
+      successToast("Profile updated");
+    } catch (e) {
+      console.error(e);
+      errorToast("Failed to update profile");
+    }
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const { currentPassword, newPassword, confirmPassword } = passwordData;
-    const myId = sessionStorage.getItem("user_id");
 
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/changepassword`,
         {
-          id: parseInt(myId ?? "0", 10),
+          id: parseInt(userId ?? "0", 10),
           currentPassword,
           newPassword,
           confirmPassword,
@@ -180,8 +111,7 @@ export default function settings() {
         }
       );
 
-      // Success case
-      successToast(res.data.message || "Password updated successfully!");
+      successToast(res.data?.message || "Password updated successfully!");
       setPasswordData({
         currentPassword: "",
         newPassword: "",
@@ -190,16 +120,10 @@ export default function settings() {
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
-
-        if (status === 401) {
-          errorToast("Please type your correct password!");
-        } else if (status === 402) {
-          errorToast("Confirm password mismatch!");
-        } else if (status === 404) {
-          errorToast("User not found!");
-        } else {
-          errorToast("An error occurred while updating your password.");
-        }
+        if (status === 401) errorToast("Please type your correct password!");
+        else if (status === 402) errorToast("Confirm password mismatch!");
+        else if (status === 404) errorToast("User not found!");
+        else errorToast("An error occurred while updating your password.");
       } else {
         errorToast("Unexpected error occurred.");
       }
@@ -207,27 +131,29 @@ export default function settings() {
   };
 
   const handleDeleteAccount = (e: React.FormEvent) => {
+    e.preventDefault();
     console.log("Account deleted");
   };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
       setAvatar("avatar.ico");
       return;
     }
-    // Local preview
+
     const reader = new FileReader();
     reader.onloadend = () => setAvatar(reader.result as string);
     reader.readAsDataURL(file);
 
     try {
-      // Step 1: Get pre-signed URLs from backend
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent((await sessionStorage.getItem("user_id")) as string)}&fileType=${encodeURIComponent(file.type)}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(
+          userId as string
+        )}&fileType=${encodeURIComponent(file.type)}`
       );
       const { uploadURL, url } = await res.json();
 
-      // Step 2: Upload file directly to S3
       const uploadRes = await fetch(uploadURL, {
         method: "PUT",
         headers: { "Content-Type": file.type },
@@ -236,19 +162,16 @@ export default function settings() {
 
       if (uploadRes.status !== 200) {
         console.error("Upload failed", uploadRes);
+        errorToast("Avatar upload failed");
         return;
       }
-      const userId = await sessionStorage.getItem("user_id");
 
-      setAvatar(url); // use the S3 URL as avatar source
-
-      // Update cached avatar and timestamp
-      sessionStorage.setItem("user_avatar", url);
-      sessionStorage.setItem("last_avatar_fetch", Date.now().toString());
-
-      window.location.reload();
+      setAvatar(url);
+      updateUser({ avatar: url, lastAvatarFetch: Date.now().toString() });
+      successToast("Avatar updated");
     } catch (err) {
       console.error("Error uploading file:", err);
+      errorToast("Error uploading avatar");
     }
   };
 
@@ -259,12 +182,13 @@ export default function settings() {
         <div className="flex-none h-[10vh]">
           <SubMenu />
         </div>
+
         <header className="flex items-center justify-between px-8 bg-white border-b">
           <nav className="flex space-x-6 px-4">
-            {["Account", "Provider"].map((tab) => (
+            {(["Account", "Provider"] as TabKey[]).map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab as any)}
+                onClick={() => setActiveTab(tab)}
                 className={`relative pb-3 pt-2 transition-colors duration-300 ${
                   activeTab === tab
                     ? "text-blue-700 font-semibold"
@@ -272,8 +196,6 @@ export default function settings() {
                 }`}
               >
                 {tab}
-
-                {/* Active tab underline */}
                 {activeTab === tab && (
                   <span className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-700 rounded-t"></span>
                 )}
@@ -281,8 +203,8 @@ export default function settings() {
             ))}
           </nav>
         </header>
+
         <main className="flex flex-1 py-10">
-          {/* Account Tab */}
           {activeTab === "Account" && (
             <div className="w-full">
               <form
@@ -318,6 +240,7 @@ export default function settings() {
                         </p>
                       </div>
                     </div>
+
                     <div className="space-y-4">
                       <h6>Full Name</h6>
                       <input
@@ -326,13 +249,14 @@ export default function settings() {
                         placeholder="Full Name"
                         value={profileData.FullName}
                         onChange={handleProfileChange}
-                        disabled={!enableFlg} // Enable only if enableFlg is true
+                        disabled={!enableFlg}
                         className={`border rounded p-2 text-sm w-full ${
                           !enableFlg
                             ? "bg-gray-200 text-gray-600 cursor-not-allowed"
                             : ""
                         }`}
                       />
+
                       <h6>Zip Code</h6>
                       <input
                         type="text"
@@ -340,28 +264,34 @@ export default function settings() {
                         placeholder="Zip/postal code"
                         value={profileData.ZipCode}
                         onChange={handleProfileChange}
-                        disabled={!enableFlg} // Only enabled when enableFlg === true
+                        disabled={!enableFlg}
                         className={`border rounded p-2 text-sm w-full ${
                           !enableFlg
                             ? "bg-gray-200 text-gray-600 cursor-not-allowed"
                             : ""
                         }`}
                       />
+
                       <div className="flex items-center gap-4">
                         <button
                           className="bg-blue-900 text-white py-2 px-4 rounded mt-6 hover:bg-blue-800"
                           style={{ cursor: "pointer" }}
                           disabled={enableFlg}
-                          onClick={() => setEnableFlg(true)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setEnableFlg(true);
+                          }}
                         >
                           Edit
                         </button>
+
                         {enableFlg && (
                           <button
                             type="submit"
                             className="bg-green-900 text-white py-2 px-4 rounded mt-6 hover:bg-green-800"
                             style={{ cursor: "pointer" }}
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.preventDefault();
                               setEnableFlg(false);
                               handleProfileSubmit();
                             }}
@@ -374,7 +304,9 @@ export default function settings() {
                   </div>
                 </div>
               </form>
+
               <div className="border-b"></div>
+
               <form
                 onSubmit={handlePasswordSubmit}
                 className="bg-white p-6 rounded-lg w-2/3"
@@ -397,6 +329,7 @@ export default function settings() {
                         onChange={handlePasswordChange}
                         className="border rounded p-2 text-sm w-full"
                       />
+
                       <h6>New Password</h6>
                       <input
                         type="password"
@@ -406,6 +339,7 @@ export default function settings() {
                         onChange={handlePasswordChange}
                         className="border rounded p-2 text-sm w-full"
                       />
+
                       <h6>Confirm Password</h6>
                       <input
                         type="password"
@@ -416,6 +350,7 @@ export default function settings() {
                         className="border rounded p-2 text-sm w-full"
                       />
                     </div>
+
                     <button
                       type="submit"
                       className="bg-blue-900 text-white py-2 px-4 rounded mt-6 hover:bg-blue-800"
@@ -426,7 +361,9 @@ export default function settings() {
                   </div>
                 </div>
               </form>
+
               <div className="border-b"></div>
+
               <form
                 onSubmit={handleDeleteAccount}
                 className="bg-white p-6 rounded-lg w-2/3"
@@ -449,6 +386,7 @@ export default function settings() {
                       Close my account
                     </Button>
                   </div>
+
                   {deletedModal && (
                     <div
                       style={{
@@ -502,229 +440,8 @@ export default function settings() {
               </form>
             </div>
           )}
-          {/* Provider Tab */}
-          {activeTab === "Provider" && (
-            <div
-              className="bg-white p-6 rounded-lg shadow w-full"
-              style={{ width: "100%" }}
-            >
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                Provider Details
-              </h2>
-              <div className="md:w-1/2 pt-4">
-                <div className="border rounded-md overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          First Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Last Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Credentials
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          NPI Number
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Zip Code
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Specialty
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Action
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {providerList.map((provider) => (
-                        <tr key={provider.id}>
-                          <td className="px-6 py-4 text-sm">
-                            {provider.firstName}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            {provider.lastName}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            {provider.credentials}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            {provider.npiNumber}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            {provider.zipCode}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            {provider.specialty}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <div className="flex space-x-2">
-                              <button
-                                onClick={() => removeProvider(provider.id)}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div className="w-full pt-4">
-                <button
-                  type="submit"
-                  className="bg-blue-900 text-white py-2 px-4 rounded mt-6 hover:bg-blue-800"
-                  onClick={() => {
-                    if (
-                      sessionStorage.getItem("subscriptionType") ===
-                        "STARTER" &&
-                      providerList.length >= 3
-                    ) {
-                      errorToast(
-                        "You can't add more providers. Please upgrade your plan."
-                      );
-                    } else if (
-                      sessionStorage.getItem("subscriptionType") ===
-                        "PROFESSIONAL" &&
-                      providerList.length >= 10
-                    ) {
-                      errorToast(
-                        "You can't add more providers. Please upgrade your plan."
-                      );
-                    } else {
-                      setShowModal(true);
-                    }
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  Add Provider
-                </button>
-                {showModal && (
-                  <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-                  >
-                    <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-md">
-                      <h2 className="text-xl font-semibold mb-4">
-                        Add Provider
-                      </h2>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            First Name
-                          </label>
-                          <input
-                            type="text"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
-                          />
-                        </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Last Name
-                          </label>
-                          <input
-                            type="text"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Credentials
-                          </label>
-                          <select
-                            value={credentials}
-                            onChange={(e) =>
-                              setCredentials(
-                                e.target.value as "MD" | "DO" | "DPM"
-                              )
-                            }
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
-                          >
-                            <option value="MD">MD</option>
-                            <option value="DO">DO</option>
-                            <option value="DPM">DPM</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            NPI Number
-                          </label>
-                          <input
-                            type="text"
-                            value={npiNumber}
-                            onChange={(e) => setNpiNumber(e.target.value)}
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Zip Code
-                          </label>
-                          <input
-                            type="text"
-                            value={zipCode}
-                            onChange={(e) => setZipCode(e.target.value)}
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Specialty
-                          </label>
-                          <select
-                            value={specialty}
-                            onChange={(e) =>
-                              setSpecialty(
-                                e.target.value as "Woundcare" | "Podiatry"
-                              )
-                            }
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
-                          >
-                            <option value="Woundcare">Woundcare</option>
-                            <option value="Podiatry">Podiatry</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="mt-6 flex justify-end space-x-2">
-                        <Button
-                          onClick={() => setShowModal(false)}
-                          variant="outline"
-                          style={{ cursor: "pointer" }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            handleAdd();
-                            setShowModal(false);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        >
-                          Save
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          {activeTab === "Provider" && <ProviderTab />}
         </main>
       </Card>
     </div>
