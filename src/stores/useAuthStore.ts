@@ -27,7 +27,7 @@ type AuthState = {
     user: User;
   }) => void;
 
-  setFormData: (data: Record<string, any>) => void;
+  setFormData: (data: Record<string, any> | null) => void;
   updateUser: (patch: Partial<User>) => void;
   clearAuth: () => void;
 };
@@ -72,6 +72,7 @@ export const useAuthStore = create<AuthState>()(
         accessToken: s.accessToken,
         refreshToken: s.refreshToken,
         user: s.user,
+        formData: s.formData,
       }),
     }
   )

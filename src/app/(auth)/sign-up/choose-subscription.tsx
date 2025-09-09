@@ -120,7 +120,7 @@ export function ChooseSubscription({
 
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
-        { plan: selectedPlan.toLowerCase(), isYearly }
+        { plan: selectedPlan.toLowerCase(), isYearly, email: formData.email }
       );
       window.location.href = res.data.checkoutUrl;
     }
@@ -140,12 +140,13 @@ export function ChooseSubscription({
           isYearly,
           subscribedAt: null,
           providers: {
-            create: providers.map((provider: any, index: number) => ({
-              id: Date.now() + index,
+            create: providers.map((provider: any) => ({
               firstName: provider.firstName,
               lastName: provider.lastName,
               credentials: provider.credentials,
               npiNumber: String(provider.npiNumber),
+              zipCode: provider.zipCode,
+              specialty: provider.specialty,
             })),
           },
         }

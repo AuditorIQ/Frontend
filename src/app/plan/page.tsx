@@ -92,7 +92,7 @@ const page = () => {
 
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
-      { plan: plan.toLowerCase(), isYearly }
+      { plan: plan.toLowerCase(), isYearly, email: userEmail }
     );
     window.location.href = res.data.checkoutUrl;
   };
