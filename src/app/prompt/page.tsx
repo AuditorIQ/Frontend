@@ -90,33 +90,36 @@ export default function prompt() {
       `${process.env.NEXT_PUBLIC_API_URL}/api/openai/reset-prompt`,
       { specialty: activeTab }
     );
+    await fetchPromptAndSections();
     successToast("Reset prompt successfully!");
+    setShowModal(false);
+  };
+
+  const fetchPromptAndSections = async () => {
+    if (isLoading) return; // Prevent multiple simultaneous calls
+
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-prompt`,
+        { specialty: activeTab }
+      );
+      setText(res.data.prompt);
+
+      const res_sections = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-sections`,
+        { specialty: activeTab }
+      );
+      setToggles(JSON.parse(res_sections.data.sections));
+    } catch (error) {
+      console.error("Error fetching prompt data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   useEffect(() => {
-    const fetchData = async () => {
-      if (isLoading) return; // Prevent multiple simultaneous calls
-
-      setIsLoading(true);
-      try {
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-prompt`,
-          { specialty: activeTab }
-        );
-        setText(res.data.prompt);
-
-        const res_sections = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/get-sections`,
-          { specialty: activeTab }
-        );
-        setToggles(JSON.parse(res_sections.data.sections));
-      } catch (error) {
-        console.error("Error fetching prompt data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [activeTab, isReset]); // Removed showModal dependency
+    fetchPromptAndSections();
+  }, [activeTab]);
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -154,12 +157,11 @@ export default function prompt() {
               <div className="w-7/10 bg-gray-50 p-4 rounded-lg shadow relative">
                 <button
                   onClick={() => {
-                    setIsReset(!isReset);
                     setShowModal(true);
                   }}
                   className="absolute top-6 right-25 px-4 py-2 bg-red-500 text-white rounded cursor-pointer"
                 >
-                  <RefreshCw size={16}></RefreshCw>
+                  <RefreshCw size={16} />
                 </button>
                 {!isEdit ? (
                   <button
@@ -234,10 +236,7 @@ export default function prompt() {
                 }}
               >
                 <button
-                  onClick={() => {
-                    Resetprompt();
-                    setShowModal(false);
-                  }}
+                  onClick={Resetprompt}
                   className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                   style={{ width: "40%", cursor: "pointer" }}
                 >

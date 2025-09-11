@@ -8,28 +8,54 @@ import { Card } from "@/components/ui/card";
 import SubMenu from "@/components/SubMenu/SubMenu";
 import { useAuthStore } from "@/stores/useAuthStore";
 
-let mysubscriptionType = {
-  isEnabled: false,
-  name: "",
-  licenseType: "",
-  licenseStatus: "Disabled",
-  startDate: "",
-  endDate: "",
+type LicenseInfo = {
+  status: "Active" | "Expired";
+  startDate: string;
+  endDate: string;
 };
+
+function calculateLicenseStatus(
+  userSubscribedAt: string | null | undefined,
+  userIsYearly: boolean | undefined
+): LicenseInfo | null {
+  if (!userSubscribedAt) return null;
+  const subscribedDate = new Date(userSubscribedAt);
+  const now = new Date();
+
+  const expiryDate = new Date(subscribedDate);
+  if (userIsYearly) {
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+  } else {
+    expiryDate.setMonth(expiryDate.getMonth() + 1);
+  }
+
+  return {
+    status: now < expiryDate ? "Active" : "Expired",
+    startDate: subscribedDate.toISOString().split("T")[0],
+    endDate: expiryDate.toISOString().split("T")[0],
+  };
+}
 
 const page = () => {
   // Zustand hooks at the top level
   const updateUser = useAuthStore((s) => s.updateUser);
-  const userEmail = useAuthStore((s) => s.user?.email);
-  const userSubscriptionType = useAuthStore((s) => s.user?.subscriptionType);
-  const userSubscribedAt = useAuthStore((s) => s.user?.subscribedAt);
-  const userIsYearly = useAuthStore((s) => s.user?.isYearly);
-  const isAdmin = useAuthStore((s) => !!s.user?.isAdmin);
+  const user = useAuthStore((s) => s.user);
+  const userName = user?.name;
+  const userEmail = user?.email;
+  const userSubscriptionType = user?.subscriptionType;
+  const userSubscribedAt = user?.subscribedAt;
+  const userIsYearly = user?.isYearly;
+  const isAdmin = !!user?.isAdmin;
 
   const [isYearly, setIsYearly] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalPlan, setShowModalPlan] = useState(false);
   const [upgradePlan, setUpgradePlan] = useState("");
+  const [licenseInfo, setLicenseInfo] = useState<{
+    status: string;
+    startDate: string;
+    endDate: string;
+  } | null>(null);
 
   const plans = [
     {
@@ -82,20 +108,21 @@ const page = () => {
   ];
 
   const [subscriptionType, setSubscriptionType] = useState<string | null>(null);
+  // setSubscriptionType(userSubscriptionType || null);
 
   const subscribePlan = async (plan: string) => {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
+      { plan: plan.toLowerCase(), isYearly, email: userEmail }
+    );
     updateUser({
       subscriptionType: plan,
       isYearly, // keep as boolean
       subscribedAt: new Date().toISOString(),
     });
-
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
-      { plan: plan.toLowerCase(), isYearly, email: userEmail }
-    );
     window.location.href = res.data.checkoutUrl;
   };
+
   const cancelSubscription = async () => {
     try {
       const res = await axios.post(
@@ -123,41 +150,15 @@ const page = () => {
     }
     setShowModal(false);
   };
+
   const hasHydrated = useAuthStore.persist.hasHydrated?.() ?? true;
 
   if (!hasHydrated) return null;
 
   useEffect(() => {
-    mysubscriptionType.name = userSubscriptionType || "";
-    mysubscriptionType.licenseType = userSubscriptionType || "FREE";
-    let subscriptionType;
-    if (userSubscriptionType !== "FREE") {
-      const startDate = new Date(userSubscribedAt || "");
-      mysubscriptionType.startDate = startDate.toISOString().split("T")[0];
-      if (!isAdmin) {
-        startDate.setFullYear(startDate.getFullYear() + 10);
-        mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
-      } else if (userIsYearly) {
-        startDate.setFullYear(startDate.getFullYear() + 1);
-        mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
-      } else {
-        startDate.setMonth(startDate.getMonth() + 1);
-        mysubscriptionType.endDate = startDate.toISOString().split("T")[0];
-      }
-
-      if (new Date(startDate).getTime() > Date.now()) {
-        mysubscriptionType.isEnabled = true;
-        mysubscriptionType.licenseStatus = "Active";
-      } else {
-        mysubscriptionType.isEnabled = false;
-        mysubscriptionType.licenseStatus = "Disabled";
-      }
-    }
-
-    if (typeof window !== "undefined") {
-      subscriptionType = userSubscriptionType ?? "";
-    }
-  }, [userSubscriptionType, userSubscribedAt, userIsYearly, isAdmin]);
+    const info = calculateLicenseStatus(userSubscribedAt, userIsYearly);
+    setLicenseInfo(info);
+  }, [userSubscribedAt, userIsYearly]);
 
   return (
     <div className="flex min-h-screen">
@@ -168,7 +169,7 @@ const page = () => {
         </div>
         <div className="flex-grow">
           {/* Current Plan */}
-          {mysubscriptionType.licenseType !== "FREE" && (
+          {userSubscriptionType !== "FREE" && (
             <div className="p-6 overflow-x-auto">
               <table className="min-w-full border border-gray-300 rounded-lg">
                 <thead className="bg-gray-100">
@@ -192,30 +193,32 @@ const page = () => {
                 </thead>
                 <tbody>
                   <tr className="border-t border-gray-200">
-                    <td className="p-3">{mysubscriptionType.name}</td>
-                    <td className="p-3">{mysubscriptionType.licenseType}</td>
+                    <td className="p-3">{userName}</td>
+                    <td className="p-3">{userSubscriptionType}</td>
                     <td className="p-3">
                       <span
                         className={`inline-block px-2 py-1 text-sm font-medium rounded ${
-                          mysubscriptionType.licenseStatus === "Active"
+                          licenseInfo?.status === "Active"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {mysubscriptionType.licenseStatus}
+                        {licenseInfo?.status}
                       </span>
                     </td>
-                    <td className="p-3">{mysubscriptionType.startDate}</td>
-                    <td className="p-3">{mysubscriptionType.endDate}</td>
-                    <td>
-                      <button
-                        className="btn btn-danger"
-                        style={{ color: "red", cursor: "pointer" }}
-                        onClick={() => setShowModal(true)}
-                      >
-                        Cancel
-                      </button>
-                    </td>
+                    <td className="p-3">{licenseInfo?.startDate}</td>
+                    <td className="p-3">{licenseInfo?.endDate}</td>
+                    {licenseInfo?.status === "Active" && (
+                      <td>
+                        <button
+                          className="btn btn-danger"
+                          style={{ color: "red", cursor: "pointer" }}
+                          onClick={() => setShowModal(true)}
+                        >
+                          Cancel
+                        </button>
+                      </td>
+                    )}
                     {showModal && (
                       <div
                         style={{
@@ -322,18 +325,18 @@ const page = () => {
                 <button
                   style={{ cursor: "pointer" }}
                   disabled={
-                    mysubscriptionType.licenseType.toLowerCase() ===
+                    userSubscriptionType?.toLowerCase() ===
                     plan.name.toLowerCase()
                   }
                   className={`mb-4 w-full py-2 rounded-md text-white transition ${
-                    mysubscriptionType.licenseType.toLowerCase() !==
+                    userSubscriptionType?.toLowerCase() !==
                     plan.name.toLowerCase()
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-gray-400 cursor-not-allowed"
                   }`}
                   onClick={() => {
                     if (
-                      mysubscriptionType.licenseType.toLowerCase() !==
+                      userSubscriptionType?.toLowerCase() !==
                       plan.name.toLowerCase()
                     ) {
                       setUpgradePlan(plan.name);
@@ -341,7 +344,7 @@ const page = () => {
                     }
                   }}
                 >
-                  Subscribe
+                  Purchase
                 </button>
                 <ul className="space-y-2 text-sm">
                   {plan.features.map((f, j) => (

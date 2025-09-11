@@ -24,9 +24,34 @@ import { errorToast, successToast } from "@/lib/toast";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { buildAccessContext, canUseFeature } from "@/lib/access";
+import axios from "axios";
 
 const recordsPerPage = 5;
+const viewPDF = async (e: any) => {
+  e.preventDefault();
+  const res = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/openai/viewpdf`,
+    { url: e.target.value },
+    {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    }
+  );
 
+  const popup = window.open(
+    "",
+    "pdfPopup",
+    `width=${screen.availWidth},height=${screen.availHeight},top=0,left=0`
+  );
+
+  if (!popup) {
+    alert("Popup blocked. Please enable popups for this site.");
+    return;
+  }
+
+  popup.location.href = res.data.url;
+};
 export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuthStore();
@@ -246,6 +271,8 @@ export default function DashboardPage() {
                           variant="outline"
                           size="sm"
                           className="text-blue-600 hover:bg-blue-100"
+                          value={url}
+                          onClick={viewPDF}
                         >
                           Open
                         </Button>
