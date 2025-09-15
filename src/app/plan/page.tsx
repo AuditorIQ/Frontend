@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { errorToast } from "@/lib/toast";
+import { errorToast, successToast } from "@/lib/toast";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Card } from "@/components/ui/card";
 import SubMenu from "@/components/SubMenu/SubMenu";
@@ -41,10 +41,12 @@ const page = () => {
   const updateUser = useAuthStore((s) => s.updateUser);
   const user = useAuthStore((s) => s.user);
   const userName = user?.name;
+  const [licenseType, setLicenseType] = useState<string>("FREE");
+  const [billingMode, setBillingMode] = useState<string | null>("SUBSCRIPTION");
+  const [userSubscribedAt, setUserSubscribedAt] = useState<string | null>(null);
+  const [userIsYearly, setUserIsYearly] = useState<boolean>(false);
+  const [usersBillingMode, setUsersBillingMode] = useState<string>("-");
   const userEmail = user?.email;
-  const userSubscriptionType = user?.subscriptionType;
-  const userSubscribedAt = user?.subscribedAt;
-  const userIsYearly = user?.isYearly;
   const isAdmin = !!user?.isAdmin;
 
   const [isYearly, setIsYearly] = useState(false);
@@ -107,19 +109,16 @@ const page = () => {
     },
   ];
 
-  const [subscriptionType, setSubscriptionType] = useState<string | null>(null);
-  // setSubscriptionType(userSubscriptionType || null);
-
   const subscribePlan = async (plan: string) => {
     const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
-      { plan: plan.toLowerCase(), isYearly, email: userEmail }
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/create-checkout-session`,
+      {
+        plan: plan.toLowerCase(),
+        isYearly,
+        email: userEmail,
+        billingMode,
+      }
     );
-    updateUser({
-      subscriptionType: plan,
-      isYearly, // keep as boolean
-      subscribedAt: new Date().toISOString(),
-    });
     window.location.href = res.data.checkoutUrl;
   };
 
@@ -138,12 +137,7 @@ const page = () => {
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-
-      updateUser({
-        subscriptionType: "FREE",
-        isYearly: false, // keep as boolean
-        subscribedAt: "",
-      });
+      successToast(res.data.message);
     } catch (error: any) {
       errorToast(error?.response?.data?.message || "Something went wrong");
       setTimeout(() => {}, 1000);
@@ -156,6 +150,22 @@ const page = () => {
   if (!hasHydrated) return null;
 
   useEffect(() => {
+    try {
+      const res = axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/me`,
+        { email: userEmail }
+      );
+      res.then((res) => {
+        setUserSubscribedAt(res.data.subscribedAt);
+        setUserIsYearly(res.data.isYearly);
+        setLicenseType(res.data.subscriptionType);
+        res.data.billingMode === "ONE_TIME"
+          ? setUsersBillingMode("ONE TIME")
+          : setUsersBillingMode(res.data.billingMode);
+      });
+    } catch (error) {
+      console.log(error);
+    }
     const info = calculateLicenseStatus(userSubscribedAt, userIsYearly);
     setLicenseInfo(info);
   }, [userSubscribedAt, userIsYearly]);
@@ -169,13 +179,13 @@ const page = () => {
         </div>
         <div className="flex-grow">
           {/* Current Plan */}
-          {userSubscriptionType !== "FREE" && (
+          {licenseType !== "FREE" && (
             <div className="p-6 overflow-x-auto">
               <table className="min-w-full border border-gray-300 rounded-lg">
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="text-left p-3 font-semibold text-gray-700">
-                      User Details
+                      User Name
                     </th>
                     <th className="text-left p-3 font-semibold text-gray-700">
                       License Type
@@ -189,12 +199,15 @@ const page = () => {
                     <th className="text-left p-3 font-semibold text-gray-700">
                       End Date
                     </th>
+                    <th className="text-left p-3 font-semibold text-gray-700">
+                      Billing Mode
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-t border-gray-200">
                     <td className="p-3">{userName}</td>
-                    <td className="p-3">{userSubscriptionType}</td>
+                    <td className="p-3">{licenseType}</td>
                     <td className="p-3">
                       <span
                         className={`inline-block px-2 py-1 text-sm font-medium rounded ${
@@ -208,17 +221,19 @@ const page = () => {
                     </td>
                     <td className="p-3">{licenseInfo?.startDate}</td>
                     <td className="p-3">{licenseInfo?.endDate}</td>
-                    {licenseInfo?.status === "Active" && (
-                      <td>
-                        <button
-                          className="btn btn-danger"
-                          style={{ color: "red", cursor: "pointer" }}
-                          onClick={() => setShowModal(true)}
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    )}
+                    <td className="p-3">{usersBillingMode}</td>
+                    {licenseInfo?.status === "Active" &&
+                      usersBillingMode === "SUBSCRIPTION" && (
+                        <td>
+                          <button
+                            className="btn btn-danger"
+                            style={{ color: "red", cursor: "pointer" }}
+                            onClick={() => setShowModal(true)}
+                          >
+                            Cancel
+                          </button>
+                        </td>
+                      )}
                     {showModal && (
                       <div
                         style={{
@@ -274,8 +289,9 @@ const page = () => {
               </table>
             </div>
           )}
-          {/* Billing Toggle */}
-          <div className="flex justify-center items-center mb-10">
+          {/* Toggle Buttons  */}
+          <div className="flex flex-col md:flex-row justify-center items-center mb-10 gap-8 md:gap-16">
+            {/* Billing Cycle Toggle */}
             <div className="flex items-center gap-4">
               <span
                 className={
@@ -302,6 +318,44 @@ const page = () => {
                 Pay Yearly
               </span>
             </div>
+
+            {/* Billing Type Toggle */}
+            <div className="flex items-center gap-4">
+              <span
+                className={
+                  billingMode === "SUBSCRIPTION"
+                    ? "text-blue-900 font-semibold"
+                    : "text-gray-400"
+                }
+              >
+                Subscription
+              </span>
+              <div
+                className="w-16 h-8 bg-blue-200 rounded-full p-1 cursor-pointer flex items-center transition duration-300"
+                onClick={() =>
+                  setBillingMode(
+                    billingMode === "SUBSCRIPTION" ? "ONE_TIME" : "SUBSCRIPTION"
+                  )
+                }
+              >
+                <div
+                  className={`w-6 h-6 bg-blue-900 rounded-full shadow-md transform transition-transform duration-300 ${
+                    billingMode === "ONE_TIME"
+                      ? "translate-x-8"
+                      : "translate-x-0"
+                  }`}
+                />
+              </div>
+              <span
+                className={
+                  billingMode === "ONE_TIME"
+                    ? "text-blue-900 font-semibold"
+                    : "text-gray-400"
+                }
+              >
+                One-time
+              </span>
+            </div>
           </div>
           {/* Pricing Cards */}
           <div
@@ -325,26 +379,23 @@ const page = () => {
                 <button
                   style={{ cursor: "pointer" }}
                   disabled={
-                    userSubscriptionType?.toLowerCase() ===
-                    plan.name.toLowerCase()
+                    licenseType?.toLowerCase() === plan.name.toLowerCase()
                   }
                   className={`mb-4 w-full py-2 rounded-md text-white transition ${
-                    userSubscriptionType?.toLowerCase() !==
-                    plan.name.toLowerCase()
+                    licenseType?.toLowerCase() !== plan.name.toLowerCase()
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-gray-400 cursor-not-allowed"
                   }`}
                   onClick={() => {
                     if (
-                      userSubscriptionType?.toLowerCase() !==
-                      plan.name.toLowerCase()
+                      licenseType?.toLowerCase() !== plan.name.toLowerCase()
                     ) {
                       setUpgradePlan(plan.name);
                       setShowModalPlan(true);
                     }
                   }}
                 >
-                  Purchase
+                  {billingMode === "ONE_TIME" ? "Purchase" : "Subscribe"}
                 </button>
                 <ul className="space-y-2 text-sm">
                   {plan.features.map((f, j) => (

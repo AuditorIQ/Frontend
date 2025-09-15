@@ -27,6 +27,7 @@ export function ChooseSubscription({
   );
 
   const [yearly, setYearly] = useState(false);
+  const [billingMode, setBillingMode] = useState<string | null>("SUBSCRIPTION");
 
   const plans = [
     {
@@ -113,14 +114,19 @@ export function ChooseSubscription({
         subscribedAt: isoString,
       };
       useAuthStore.getState().setFormData(updatedData);
-      await updateFormData(updatedData);
+      updateFormData(updatedData);
 
       setisYearly(yearly);
       setsubscribedAt(isoString);
 
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/order-payment`,
-        { plan: selectedPlan.toLowerCase(), isYearly, email: formData.email }
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/create-checkout-session`,
+        {
+          plan: selectedPlan.toLowerCase(),
+          isYearly,
+          email: formData.email,
+          billingMode: billingMode,
+        }
       );
       window.location.href = res.data.checkoutUrl;
     }
@@ -169,7 +175,7 @@ export function ChooseSubscription({
       <div className="text-center mb-6">
         <h2 className="text-4xl font-bold">Choose Your Subscription</h2>
       </div>
-      <div className="flex justify-center items-center mb-10">
+      {/* <div className="flex justify-center items-center mb-10">
         <div className="flex items-center gap-4">
           <span
             className={yearly ? "text-gray-400" : "text-blue-900 font-semibold"}
@@ -190,6 +196,72 @@ export function ChooseSubscription({
             className={yearly ? "text-blue-900 font-semibold" : "text-gray-400"}
           >
             Pay Yearly
+          </span>
+        </div>
+      </div> */}
+      {/* Toggle Buttons  */}
+      <div className="flex flex-col md:flex-row justify-center items-center mb-10 gap-8 md:gap-16">
+        {/* Billing Cycle Toggle */}
+        <div className="flex items-center gap-4">
+          <span
+            className={
+              isYearly ? "text-gray-400" : "text-blue-900 font-semibold"
+            }
+          >
+            Pay Monthly
+          </span>
+          <div
+            className="w-16 h-8 bg-blue-200 rounded-full p-1 cursor-pointer flex items-center transition duration-300"
+            onClick={() => setYearly(!isYearly)}
+          >
+            <div
+              className={`w-6 h-6 bg-blue-900 rounded-full shadow-md transform transition-transform duration-300 ${
+                isYearly ? "translate-x-8" : "translate-x-0"
+              }`}
+            />
+          </div>
+          <span
+            className={
+              isYearly ? "text-blue-900 font-semibold" : "text-gray-400"
+            }
+          >
+            Pay Yearly
+          </span>
+        </div>
+
+        {/* Billing Type Toggle */}
+        <div className="flex items-center gap-4">
+          <span
+            className={
+              billingMode === "SUBSCRIPTION"
+                ? "text-blue-900 font-semibold"
+                : "text-gray-400"
+            }
+          >
+            Subscription
+          </span>
+          <div
+            className="w-16 h-8 bg-blue-200 rounded-full p-1 cursor-pointer flex items-center transition duration-300"
+            onClick={() =>
+              setBillingMode(
+                billingMode === "SUBSCRIPTION" ? "ONE_TIME" : "SUBSCRIPTION"
+              )
+            }
+          >
+            <div
+              className={`w-6 h-6 bg-blue-900 rounded-full shadow-md transform transition-transform duration-300 ${
+                billingMode === "ONE_TIME" ? "translate-x-8" : "translate-x-0"
+              }`}
+            />
+          </div>
+          <span
+            className={
+              billingMode === "ONE_TIME"
+                ? "text-blue-900 font-semibold"
+                : "text-gray-400"
+            }
+          >
+            One-time
           </span>
         </div>
       </div>

@@ -52,40 +52,10 @@ export default function Success() {
 
       // ---------- LOGGED-IN: subscribe plan ----------
       if (isLoggedIn) {
-        const email = effectiveUser!.email!.trim();
-        const subscriptionType =
-          effectiveUser?.subscriptionType?.toUpperCase() ?? "STARTER";
-        const isYearly = Boolean(effectiveUser?.isYearly);
+        successToast("Subscription updated!");
+        setFormData(null); // clean any leftover draft
+        router.replace("/plan");
 
-        try {
-          await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/subscribe-plan`,
-            {
-              email,
-              subscriptionType,
-              isYearly,
-            }
-          );
-
-          // reflect changes in local store (helps /plan UI)
-          updateUser({
-            subscriptionType,
-            isYearly,
-            subscribedAt: new Date().toISOString(),
-          });
-
-          successToast("Subscription updated!");
-        } catch (e: any) {
-          console.error("subscribe-plan failed:", e?.response?.data || e);
-          errorToast(
-            "Payment succeeded, but updating your plan failed. Check your plan page."
-          );
-        } finally {
-          try {
-            // setFormData(null); // clean any leftover draft
-          } catch {}
-          router.replace("/plan");
-        }
         return;
       }
 

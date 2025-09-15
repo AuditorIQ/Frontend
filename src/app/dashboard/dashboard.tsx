@@ -175,12 +175,12 @@ export default function DashboardPage() {
             <CardContent className="p-4">
               <h3>Provider compliance rates</h3>
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={providerData}>
+                <BarChart data={providerData} barCategoryGap="40%">
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="value" fill="#0ea5e9" />
+                  <Bar dataKey="value" fill="#0ea5e9" barSize={50} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
