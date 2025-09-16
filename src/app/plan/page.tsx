@@ -52,6 +52,8 @@ const page = () => {
   const [isYearly, setIsYearly] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalPlan, setShowModalPlan] = useState(false);
+  const [isSubscriptionActive, setIsSubscriptionActive] =
+    useState<boolean>(false);
   const [upgradePlan, setUpgradePlan] = useState("");
   const [licenseInfo, setLicenseInfo] = useState<{
     status: string;
@@ -159,6 +161,7 @@ const page = () => {
         setUserSubscribedAt(res.data.subscribedAt);
         setUserIsYearly(res.data.isYearly);
         setLicenseType(res.data.subscriptionType);
+        setIsSubscriptionActive(res.data.isSubscriptionActive);
         res.data.billingMode === "ONE_TIME"
           ? setUsersBillingMode("ONE TIME")
           : setUsersBillingMode(res.data.billingMode);
@@ -202,6 +205,9 @@ const page = () => {
                     <th className="text-left p-3 font-semibold text-gray-700">
                       Billing Mode
                     </th>
+                    {isSubscriptionActive && (
+                      <th className="text-left p-3 font-semibold text-gray-700"></th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -223,11 +229,11 @@ const page = () => {
                     <td className="p-3">{licenseInfo?.endDate}</td>
                     <td className="p-3">{usersBillingMode}</td>
                     {licenseInfo?.status === "Active" &&
-                      usersBillingMode === "SUBSCRIPTION" && (
-                        <td>
+                      usersBillingMode === "SUBSCRIPTION" &&
+                      isSubscriptionActive && (
+                        <td className="p-3">
                           <button
-                            className="btn btn-danger"
-                            style={{ color: "red", cursor: "pointer" }}
+                            className="bg-white text-red-500 border border-red-500 rounded-full px-6 py-2 hover:bg-red-500 hover:text-white transition-colors duration-200"
                             onClick={() => setShowModal(true)}
                           >
                             Cancel
