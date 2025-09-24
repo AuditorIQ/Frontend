@@ -156,7 +156,7 @@ export default function reports() {
             </div>
           </div>
 
-          <table className="min-w-full table-auto text-sm text-gray-700">
+          <table className="min-w-full table-auto text-sm text-gray-700 text-center">
             <thead className="bg-gray-100 text-gray-600 uppercase">
               <tr>
                 <th className="py-3 px-6 text-left font-medium">No.</th>

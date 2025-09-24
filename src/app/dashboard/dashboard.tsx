@@ -248,7 +248,10 @@ export default function DashboardPage() {
               <tbody>
                 {paginatedData.map(
                   ([no, patient, provider, date, status, url]) => (
-                    <tr key={no} className="border-b hover:bg-blue-50">
+                    <tr
+                      key={no}
+                      className="border-b hover:bg-blue-50 text-center"
+                    >
                       <td className="py-3 px-6">{no}</td>
                       <td className="py-3 px-6">{patient}</td>
                       <td className="py-3 px-6">{provider}</td>

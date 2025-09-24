@@ -138,6 +138,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
     }
 
     setUploading(false);
+    window.location.href = "/dashboard";
     successToast("All files processed.");
   };
 
