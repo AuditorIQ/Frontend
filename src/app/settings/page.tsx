@@ -111,7 +111,7 @@ export default function Settings() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+    const flg = useAuthStore.getState().user?.avatar === "avatar.ico";
     // Instant preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -141,7 +141,9 @@ export default function Settings() {
 
       // Final store update automatically adds cache-busting
       updateUser({ avatar: url });
-      successToast("Avatar uploaded successfully");
+      if (flg === false) successToast("Avatar uploaded successfully");
+      else
+        successToast("Avatar is updated. Log in again to apply these changes.");
     } catch (err) {
       console.error("Error uploading file:", err);
       errorToast("Error uploading avatar");
