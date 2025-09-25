@@ -172,28 +172,43 @@ const page = () => {
   if (!hasHydrated) return null;
 
   useEffect(() => {
-    try {
-      const res = axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/me`,
-        { email: userEmail }
-      );
-      res.then((res) => {
-        setUserSubscribedAt(res.data.subscribedAt);
-        setUserIsYearly(res.data.isYearly);
-        setLicenseType(res.data.subscriptionType);
-        setIsSubscriptionActive(res.data.isSubscriptionActive);
-        res.data.billingMode === "ONE_TIME"
-          ? setUsersBillingMode("ONE TIME")
-          : setUsersBillingMode(res.data.billingMode);
-      });
-      console.log(licenseInfo);
-      console.log(usersBillingMode);
-    } catch (error) {
-      console.log(error);
-    }
-    const info = calculateLicenseStatus(userSubscribedAt, userIsYearly);
-    setLicenseInfo(info);
-  }, [userSubscribedAt, userIsYearly]);
+    const fetchUser = async () => {
+      try {
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/me`,
+          { email: userEmail }
+        );
+
+        const data = res.data;
+
+        // set user info
+        setUserSubscribedAt(data.subscribedAt);
+        setUserIsYearly(data.isYearly);
+        setLicenseType(data.subscriptionType);
+
+        // ✅ compute license info right after fetching
+        const info = calculateLicenseStatus(data.subscribedAt, data.isYearly);
+        setLicenseInfo(info);
+
+        // ✅ normalize billing mode (always uppercase)
+        setUsersBillingMode(
+          data.billingMode?.toUpperCase() === "ONE_TIME"
+            ? "ONE TIME"
+            : data.billingMode?.toUpperCase() || "-"
+        );
+
+        // ✅ compute subscription active reliably
+        setIsSubscriptionActive(
+          data.billingMode?.toUpperCase() === "SUBSCRIPTION" &&
+            data.subscriptionType?.toUpperCase() !== "FREE"
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchUser();
+  }, [userEmail]);
 
   return (
     <div className="flex min-h-screen">
