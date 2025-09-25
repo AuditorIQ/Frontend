@@ -186,6 +186,8 @@ const page = () => {
           ? setUsersBillingMode("ONE TIME")
           : setUsersBillingMode(res.data.billingMode);
       });
+      console.log(licenseInfo);
+      console.log(usersBillingMode);
     } catch (error) {
       console.log(error);
     }
