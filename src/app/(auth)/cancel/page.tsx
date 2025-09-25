@@ -35,6 +35,7 @@ export default function Page() {
   const ran = useRef(false);
 
   useEffect(() => {
+    sessionStorage.setItem("subscriptionForm", "");
     if (ran.current) return;
     ran.current = true;
 

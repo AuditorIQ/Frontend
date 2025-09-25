@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { successToast, errorToast } from "@/lib/toast";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { isSubscriptionActive } from "@/lib/access";
 
 export default function Success() {
   const router = useRouter();
@@ -52,6 +53,36 @@ export default function Success() {
 
       // ---------- LOGGED-IN: subscribe plan ----------
       if (isLoggedIn) {
+        const subform = sessionStorage.getItem("subscriptionForm")
+          ? JSON.parse(sessionStorage.getItem("subscriptionForm")!)
+          : null;
+        if (!subform || !subform.email) {
+          return;
+        }
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/subscribe-plan`,
+          {
+            email: subform.email,
+            subscriptionType: subform.subscriptionType,
+            isYearly: subform.isYearly,
+            billingMode: subform.billingMode,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json", // 👈 important
+            },
+          }
+        );
+        const updatedData = {
+          subscriptionType: subform.subscriptionType,
+          isYearly: subform.isYearly,
+          billingMode: subform.billingMode,
+          subscribedAt: String(new Date()),
+          isSubscriptionActive: true,
+        };
+
+        updateUser(updatedData);
+        sessionStorage.setItem("subscriptionForm", "");
         successToast("Subscription updated!");
         setFormData(null); // clean any leftover draft
         router.replace("/plan");
@@ -78,6 +109,7 @@ export default function Success() {
         password: draft.password,
         practiceName: draft.practiceName,
         zipCode: draft.zipCode,
+        billingMode: draft.billingMode,
         subscriptionType: draft.subscriptionType?.toUpperCase() ?? "STARTER",
         isYearly: Boolean(draft.isYearly),
         subscribedAt: draft.subscribedAt ?? null,

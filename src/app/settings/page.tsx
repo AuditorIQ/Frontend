@@ -14,7 +14,7 @@ type TabKey = "Account" | "Provider";
 export default function Settings() {
   // Auth / user
   const userId = useAuthStore((s) => s.user?.id);
-  const userAvatar = useAuthStore((s) => s.user?.avatar);
+  const avatar = useAuthStore((s) => s.user?.avatar || "avatar.ico");
   const updateUser = useAuthStore((s) => s.updateUser);
 
   const name = useAuthStore((s) => s.user?.name ?? "");
@@ -22,10 +22,8 @@ export default function Settings() {
 
   // Local state
   const [activeTab, setActiveTab] = useState<TabKey>("Account");
-  const [avatar, setAvatar] = useState<string>("avatar.ico");
   const [enableFlg, setEnableFlg] = useState(false);
   const [deletedModal, setDeletedModal] = useState(false);
-
   const [profileData, setProfileData] = useState({ FullName: "", ZipCode: "" });
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -37,31 +35,6 @@ export default function Settings() {
   useEffect(() => {
     setProfileData({ FullName: name, ZipCode: zip });
   }, [name, zip]);
-
-  // Avatar loader (separate from providers)
-  useEffect(() => {
-    (async () => {
-      try {
-        if (userAvatar) {
-          setAvatar(userAvatar);
-          return;
-        }
-        if (!userId) return;
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/openai/presign-avatar?fileName=${encodeURIComponent(
-            userId
-          )}&fileType=${encodeURIComponent("image/png")}`
-        );
-        const { url } = await res.json();
-        const avatarUrl = url === "NotFound" ? "avatar.ico" : url;
-        setAvatar(avatarUrl);
-        updateUser({ avatar: avatarUrl });
-      } catch (e) {
-        console.error("Avatar presign failed", e);
-      }
-    })();
-  }, [userId, userAvatar, updateUser]);
 
   // Handlers
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,13 +110,13 @@ export default function Settings() {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) {
-      setAvatar("avatar.ico");
-      return;
-    }
+    if (!file) return;
 
+    // Instant preview
     const reader = new FileReader();
-    reader.onloadend = () => setAvatar(reader.result as string);
+    reader.onloadend = () => {
+      updateUser({ avatar: reader.result as string }); // temporary local preview
+    };
     reader.readAsDataURL(file);
 
     try {
@@ -166,9 +139,9 @@ export default function Settings() {
         return;
       }
 
-      setAvatar(url);
-      updateUser({ avatar: url, lastAvatarFetch: Date.now().toString() });
-      successToast("Avatar updated");
+      // Final store update automatically adds cache-busting
+      updateUser({ avatar: url });
+      successToast("Avatar uploaded successfully");
     } catch (err) {
       console.error("Error uploading file:", err);
       errorToast("Error uploading avatar");
@@ -207,10 +180,8 @@ export default function Settings() {
         <main className="flex flex-1 py-10">
           {activeTab === "Account" && (
             <div className="w-full">
-              <form
-                className="bg-white p-6 rounded-lg w-2/3"
-                style={{ border: "none" }}
-              >
+              {/* Profile form */}
+              <form className="bg-white p-6 rounded-lg w-2/3">
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-3">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -220,7 +191,7 @@ export default function Settings() {
                   <div className="col-span-9">
                     <div className="flex items-center space-x-4 py-4">
                       <img
-                        src={avatar || "avatar.ico"}
+                        src={avatar}
                         alt="User avatar"
                         onError={(e) => (e.currentTarget.src = "avatar.ico")}
                         className="w-32 h-32 object-cover rounded-full"
@@ -305,12 +276,10 @@ export default function Settings() {
                 </div>
               </form>
 
-              <div className="border-b"></div>
-
+              {/* Password form */}
               <form
                 onSubmit={handlePasswordSubmit}
                 className="bg-white p-6 rounded-lg w-2/3"
-                style={{ border: "none" }}
               >
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-3">
@@ -362,12 +331,10 @@ export default function Settings() {
                 </div>
               </form>
 
-              <div className="border-b"></div>
-
+              {/* Delete account form */}
               <form
                 onSubmit={handleDeleteAccount}
                 className="bg-white p-6 rounded-lg w-2/3"
-                style={{ border: "none" }}
               >
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-3">

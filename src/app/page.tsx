@@ -121,7 +121,7 @@ export default function Home() {
             className="register-button"
             onClick={() => (window.location.href = "/dashboard")}
           >
-            <span>Dashboard</span>
+            <span>{username}</span>
             <img src="nextBtn.svg" />
           </button>
         )}

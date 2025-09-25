@@ -74,6 +74,42 @@ export default function DashboardPage() {
   const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token") ?? "";
+
+    if (token) {
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("refreshToken", token);
+
+      useAuthStore.getState().setAuth({
+        accessToken: token,
+        refreshToken: token,
+        user: {
+          id: params.get("id") ?? "",
+          email: params.get("email") ?? "",
+          name: params.get("name") ?? "",
+          subscriptionType: params.get("subscriptionType") ?? "",
+          subscribedAt: params.get("subscribedAt") ?? "",
+          isYearly: (params.get("isYearly") ?? "").toLowerCase() === "true",
+          zipCode: params.get("zipCode") ?? "",
+          isAdmin: (params.get("isAdmin") ?? "").toLowerCase() === "true",
+          practiceName: params.get("practiceName") ?? "",
+          billingMode: params.get("billingMode") ?? "",
+          stripeCustomerId: params.get("stripeCustomerId") ?? "",
+          stripeSubscriptionId: params.get("stripeSubscriptionId") ?? "",
+          IsSubscriptionActive:
+            (params.get("IsSubscriptionActive") ?? "").toLowerCase() === "true",
+        },
+      });
+
+      successToast("Successfully Signed In");
+
+      // Immediately replace URL without waiting
+      window.history.replaceState({}, document.title, "/dashboard");
+
+      return; // <-- important to stop rest of effect
+    }
+
     if (!isAuthenticated) {
       errorToast("Unauthorized Attempt");
       const t = setTimeout(() => router.push("/sign-in"), 1000);
@@ -81,6 +117,7 @@ export default function DashboardPage() {
     }
 
     if (!user) return;
+
     const accessCtx = buildAccessContext({
       isAuthenticated,
       isAdmin: user.isAdmin,
@@ -88,6 +125,7 @@ export default function DashboardPage() {
       subscribedAt: user.subscribedAt ?? null,
       isYearly: user.isYearly,
     });
+
     const uploadsEnabled = canUseFeature("useUploads", accessCtx);
     setIsDisabled(!uploadsEnabled);
   }, [isAuthenticated, user, router]);

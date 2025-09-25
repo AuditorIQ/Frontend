@@ -5,13 +5,18 @@ type User = {
   id: string;
   email: string;
   name: string;
-  avatar?: string | null;
+  avatar?: string | "avatar.ico";
   lastAvatarFetch?: string | null;
   subscriptionType?: string | null;
   subscribedAt?: string | null;
   isYearly?: boolean;
   zipCode?: string | null;
   isAdmin?: boolean;
+  practiceName?: string | null;
+  billingMode?: string | null;
+  stripeCustomerId?: string | null;
+  stripeSubscriptionId?: string | null;
+  IsSubscriptionActive?: boolean;
 };
 
 type AuthState = {

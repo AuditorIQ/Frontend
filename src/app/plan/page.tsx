@@ -112,6 +112,17 @@ const page = () => {
   ];
 
   const subscribePlan = async (plan: string) => {
+    const subscriptionForm = {
+      email: userEmail,
+      subscriptionType: plan.toUpperCase(),
+      isYearly,
+      billingMode,
+    };
+    sessionStorage.setItem(
+      "subscriptionForm",
+      JSON.stringify(subscriptionForm)
+    );
+
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/create-checkout-session`,
       {
@@ -136,6 +147,15 @@ const page = () => {
           withCredentials: true,
         }
       );
+      const updatedData = {
+        subscriptionType: "FREE",
+        isYearly: false,
+        billingMode: null,
+        subscribedAt: null,
+        isSubscriptionActive: false,
+      };
+
+      updateUser(updatedData);
       setTimeout(() => {
         window.location.reload();
       }, 1000);

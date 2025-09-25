@@ -19,6 +19,7 @@ interface SignupFormState {
   providers: Provider[];
   isYearly: boolean;
   subscribedAt: string;
+  billingMode: string;
   setName: (name: string) => void;
   setEmail: (email: string) => void;
   setPassword: (password: string) => void;
@@ -29,6 +30,7 @@ interface SignupFormState {
   setProviders: (providers: Provider[]) => void;
   setisYearly: (isYearly: boolean) => void;
   setsubscribedAt: (subscribedAt: string) => void;
+  setbillingMode: (billingMode: string) => void;
   resetForm: () => void;
 }
 
@@ -43,6 +45,7 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
   providers: [],
   isYearly: false,
   subscribedAt: "",
+  billingMode: "",
 
   setName: (name) => set({ name }),
   setEmail: (email) => set({ email }),
@@ -54,6 +57,7 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
   setProviders: (providers) => set({ providers }),
   setisYearly: (isYearly) => set({ isYearly }),
   setsubscribedAt: (subscribedAt) => set({ subscribedAt }),
+  setbillingMode: (billingMode) => set({ billingMode }),
 
   resetForm: () =>
     set({
@@ -67,6 +71,7 @@ const useSignupFormStore = create<SignupFormState>((set) => ({
       providers: [],
       isYearly: false,
       subscribedAt: "",
+      billingMode: "",
     }),
 }));
 
