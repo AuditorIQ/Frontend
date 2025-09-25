@@ -181,6 +181,8 @@ const page = () => {
 
         const data = res.data;
 
+        console.log(data);
+
         // set user info
         setUserSubscribedAt(data.subscribedAt);
         setUserIsYearly(data.isYearly);
