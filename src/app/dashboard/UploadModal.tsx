@@ -35,6 +35,11 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   const [uploading, setUploading] = useState(false);
   const [providerList, setProviderList] = useState<any[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
+  const [selectedProviderId, setSelectedProviderId] = useState("");
+
+  const providerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedProviderId(e.target.value);
+  };
 
   const fetchProviders = async (myspecialty: string) => {
     try {
@@ -118,6 +123,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
       const formData = new FormData();
       formData.append("files", fileList[i].file);
       formData.append("specialty", selectedSpecialty);
+      formData.append("providerId", selectedProviderId);
 
       try {
         await axios.post(
@@ -190,9 +196,14 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           </div>
           <div>
             Rendering Provider
-            <select className="border rounded p-2">
+            <select
+              className="border rounded p-2"
+              value={selectedProviderId}
+              onChange={providerChange}
+            >
+              <option value="">-- Select a provider --</option>
               {providerList.map((p) => (
-                <option key={p.id} value={p.id}>
+                <option key={p.id} value={p.zipCode}>
                   {p.firstName} {p.lastName}
                 </option>
               ))}
