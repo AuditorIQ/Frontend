@@ -28,8 +28,10 @@ export default function Page() {
     } else if (res.status === 400) {
       errorToast("Email not found!");
       setTimeout(() => {}, 1000);
-    } else if (res.status === 401) {
-      errorToast("You can't change your account password.");
+    } else if (res.status === 500) {
+      errorToast(
+        "You've signed up with Google. You can't change the password."
+      );
       setTimeout(() => {}, 1000);
     }
     setLoading(false);
