@@ -142,7 +142,7 @@ export default function reports() {
       {/* Sidebar */}
       <Sidebar />
       <Card className="flex-1 p-4 flex flex-col">
-        <div className="flex-none h-[10vh]">
+        <div className="flex-none">
           <SubMenu />
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
@@ -155,18 +155,21 @@ export default function reports() {
               />
             </div>
           </div>
-
+        </div>
+        <div className="flex-1 overflow-y-auto">
           <table className="min-w-full table-auto text-sm text-gray-700 text-center">
             <thead className="bg-gray-100 text-gray-600 uppercase">
               <tr>
-                <th className="py-3 px-6 text-left font-medium">No.</th>
-                <th className="py-3 px-6 text-left font-medium">
+                <th className="py-3 px-6 font-medium text-center">No.</th>
+                <th className="py-3 px-6 font-medium text-center">
                   Patient Name
                 </th>
-                <th className="py-3 px-6 text-left font-medium">Provider</th>
-                <th className="py-3 px-6 text-left font-medium">Audit Date</th>
-                <th className="py-3 px-6 text-left font-medium">Status</th>
-                <th className="py-3 px-6 text-left font-medium">View</th>
+                <th className="py-3 px-6 font-medium text-center">Provider</th>
+                <th className="py-3 px-6 font-medium text-center">
+                  Audit Date
+                </th>
+                <th className="py-3 px-6 font-medium text-center">Status</th>
+                <th className="py-3 px-6 font-medium text-center">View</th>
               </tr>
             </thead>
             <tbody>
@@ -176,13 +179,15 @@ export default function reports() {
                     key={no}
                     className="border-b hover:bg-blue-50 transition duration-300 ease-in-out"
                   >
-                    <td className="py-3 px-6">{no}</td>
-                    <td className="py-3 px-6 font-medium text-gray-800">
+                    <td className="py-3 px-6 text-center">{no}</td>
+                    <td className="py-3 px-6 text-center font-medium text-gray-800">
                       {patient}
                     </td>
-                    <td className="py-3 px-6 text-gray-600">{provider}</td>
-                    <td className="py-3 px-6">{date}</td>
-                    <td className="py-3 px-6">
+                    <td className="py-3 px-6 text-center text-gray-600">
+                      {provider}
+                    </td>
+                    <td className="py-3 px-6 text-center">{date}</td>
+                    <td className="py-3 px-6 text-center">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-semibold ${
                           status === "Low"
@@ -195,7 +200,7 @@ export default function reports() {
                         {status}&nbsp;Risk
                       </span>
                     </td>
-                    <td className="py-3 px-6">
+                    <td className="py-3 px-6 text-center">
                       <Button
                         variant="outline"
                         size="sm"
@@ -211,6 +216,7 @@ export default function reports() {
               )}
             </tbody>
           </table>
+
           <div className="mt-4 flex justify-center gap-2">
             {Array.from({ length: totalPages }, (_, i) => (
               <button
