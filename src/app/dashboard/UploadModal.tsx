@@ -240,10 +240,10 @@ export default function UploadModal({ isOpen, onClose }: Props) {
                     {file.status === "error" && (
                       <XCircle className="text-red-500 w-4 h-4" />
                     )}
-                    {file.status === "pending" && (
-                      <Clock3 className="text-gray-400 w-4 h-4" />
-                    )}
-                    <span className="capitalize text-xs">{file.status}</span>
+                    {file.status === "pending" && <></>}
+                    <span className="capitalize text-xs">
+                      {file.status !== "pending" ? file.status : ""}
+                    </span>
                     <button
                       onClick={() => handleRemoveFile(idx)}
                       className="text-red-500 hover:text-red-700"
