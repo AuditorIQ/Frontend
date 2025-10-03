@@ -266,7 +266,7 @@ export default function UploadModal({ isOpen, onClose }: Props) {
           >
             {uploading ? (
               <>
-                <Loader2 className="animate-spin h-4 w-4" /> Auditing...
+                <Loader2 className="animate-spin h-4 w-4" /> Processing
               </>
             ) : (
               "Audit"
