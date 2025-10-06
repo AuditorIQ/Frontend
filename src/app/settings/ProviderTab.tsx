@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
@@ -60,6 +60,12 @@ export default function ProviderTab() {
       errorToast("Failed to refresh providers");
     }
   }, [setProviders, userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchAndHydrateProviders();
+    }
+  }, [userId, fetchAndHydrateProviders]);
 
   const canAddMore = () => {
     if (userSubscriptionType === "STARTER") return providers.length < 3;
