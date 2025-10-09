@@ -13,6 +13,7 @@ import {
   HelpCircle,
   LogOut,
   Edit,
+  Users,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { buildAccessContext, shouldShowNavItem } from "@/lib/access";
@@ -29,6 +30,7 @@ export default function Sidebar() {
         { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
         { name: "Results", href: "/results", icon: ClipboardList },
         { name: "Reports", href: "/reports", icon: PieChart },
+        { name: "Patients", href: "/patients", icon: Users },
       ],
     },
     {
@@ -53,6 +55,11 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 h-full bg-white border-r p-4 text-sm">
+      <div className="py-3">
+        <a href="/">
+          <img src="logo_asset.svg" />
+        </a>
+      </div>
       {navItems.map((section, index) => (
         <div key={index} className="mb-6">
           <h4 className="uppercase text-xs text-gray-400 mb-2">
