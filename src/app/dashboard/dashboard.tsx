@@ -62,16 +62,12 @@ export default function DashboardPage() {
     allCount,
     lowRate,
     nonLowCount,
-    loading,
   } = useDashboardData();
   const isAuthenticated = useAuthStore.getState().isAuthenticated();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKey, setSearchKey] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
-
-  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -165,7 +161,9 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-semibold">Overview</h1>
           <div>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                window.location.href = "/newaudit";
+              }}
               className={`px-6 py-3 rounded-lg ${
                 isDisabled
                   ? "bg-gray-400 cursor-not-allowed"
@@ -173,15 +171,8 @@ export default function DashboardPage() {
               } text-white`}
               disabled={isDisabled}
             >
-              Upload Charts
+              New Audit
             </button>
-            <UploadModal
-              isOpen={isModalOpen}
-              onClose={() => {
-                setIsModalOpen(false);
-                setTimeout(() => window.location.reload(), 100);
-              }}
-            />
           </div>
         </div>
 
