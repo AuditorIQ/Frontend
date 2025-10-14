@@ -122,7 +122,6 @@ export default function Patients() {
             isOpen={isModalOpen}
             onClose={() => {
               setIsModalOpen(false);
-              successToast("New Patient is added.");
               setTimeout(() => window.location.reload(), 100);
               // Removed forced reload - let the natural state update handle it
             }}
@@ -135,8 +134,8 @@ export default function Patients() {
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
                   <tr>
-                    <th className="py-3 px-4 border-b">First Name</th>
                     <th className="py-3 px-4 border-b">Last Name</th>
+                    <th className="py-3 px-4 border-b">First Name</th>
                     <th className="py-3 px-4 border-b">Date of Birth</th>
                     <th className="py-3 px-4 border-b">Gender</th>
                   </tr>
@@ -150,10 +149,10 @@ export default function Patients() {
                       } hover:bg-gray-100 cursor-pointer`}
                       onClick={() => handleRowClick(patient.id)}
                     >
+                      <td className="py-3 px-4 border-b">{patient.lastName}</td>
                       <td className="py-3 px-4 border-b">
                         {patient.firstName}
                       </td>
-                      <td className="py-3 px-4 border-b">{patient.lastName}</td>
                       <td className="py-3 px-4 border-b">
                         {new Date(patient.dateofBirth).toLocaleDateString(
                           "en-US"

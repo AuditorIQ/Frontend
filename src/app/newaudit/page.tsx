@@ -341,7 +341,7 @@ export default function NewAuditPage() {
                                     <CommandItem
                                       key={p.id}
                                       // ✅ Make the value searchable by name
-                                      value={`${p.lastName} ${p.firstName}`}
+                                      value={`${p.lastName}, ${p.firstName}`}
                                       onSelect={() => {
                                         setSelectedPatient(p.id);
                                         setOpen(false);
@@ -378,7 +378,7 @@ export default function NewAuditPage() {
                         isOpen={isModalOpen}
                         onClose={() => {
                           setIsModalOpen(false);
-                          successToast("New Patient is added.");
+
                           fetchPatients(parseInt(user?.id ?? "0", 10));
                           // Removed forced reload - let the natural state update handle it
                         }}

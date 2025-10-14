@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { successToast } from "@/lib/toast";
 
 type PatientInfo = {
   firstName: string;
@@ -113,8 +114,9 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
         throw new Error(
           errorData.message || "Failed to add patient. Please try again."
         );
+      } else {
+        successToast("New Patient is added.");
       }
-
       onClose(); // Close modal on success
     } catch (err) {
       console.error(err);
@@ -134,32 +136,6 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="p-6 space-y-4">
-          {/* First Name Field */}
-          <div className="flex items-center space-x-4">
-            <label
-              htmlFor="firstName"
-              className="block font-medium text-gray-700 w-32 text-right"
-            >
-              First Name
-            </label>
-            <div className="flex-1">
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={patientInfo.firstName}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                className={`border rounded-md px-3 py-2 w-full focus:ring-gray-500 focus:border-gray-500 ${
-                  errors.firstName ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.firstName && (
-                <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
-              )}
-            </div>
-          </div>
-
           {/* Last Name Field */}
           <div className="flex items-center space-x-4">
             <label
@@ -186,6 +162,32 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
+          {/* First Name Field */}
+          <div className="flex items-center space-x-4">
+            <label
+              htmlFor="firstName"
+              className="block font-medium text-gray-700 w-32 text-right"
+            >
+              First Name
+            </label>
+            <div className="flex-1">
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={patientInfo.firstName}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                className={`border rounded-md px-3 py-2 w-full focus:ring-gray-500 focus:border-gray-500 ${
+                  errors.firstName ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.firstName && (
+                <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+              )}
+            </div>
+          </div>
+
           {/* Date of Birth Field */}
           <div className="flex items-center gap-4">
             <label
@@ -198,15 +200,36 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
               <DatePicker
                 id="dateofBirth"
                 selected={patientInfo.dateofBirth}
-                onChange={handleDateChange}
-                dateFormat="yyyy-MM-dd" // Fixed format
+                onChange={(date) => {
+                  if (date) {
+                    handleDateChange(date); // Update the state with the selected date
+                    setFieldError("dateofBirth", ""); // Clear any existing error if the date is valid
+                  } else {
+                    setFieldError("dateofBirth", "Invalid date format."); // Set an error if the date is invalid
+                  }
+                }}
+                onChangeRaw={(e) => {
+                  const input = e?.target as HTMLInputElement; // Cast the event target to HTMLInputElement
+                  if (input) {
+                    const inputValue = input.value; // Get the value typed in the input field
+                    const parsedDate = new Date(inputValue); // Parse the input value into a Date object
+                    if (!isNaN(parsedDate.getTime())) {
+                      handleDateChange(parsedDate); // Update state if the date is valid
+                      setFieldError("dateofBirth", ""); // Clear any error
+                    } else {
+                      setFieldError("dateofBirth", "Invalid date format."); // Set an error if the date is invalid
+                    }
+                  }
+                }}
+                dateFormat="yyyy-MM-dd" // Ensure the date format is consistent
                 wrapperClassName="w-full"
                 className={`border rounded-md px-3 py-2 w-full focus:ring-gray-500 focus:border-gray-500 ${
                   errors.dateofBirth ? "border-red-500" : "border-gray-300"
                 }`}
                 onCalendarClose={() => {
-                  if (!patientInfo.dateofBirth)
+                  if (!patientInfo.dateofBirth) {
                     setFieldError("dateofBirth", "This field is required.");
+                  }
                 }}
               />
               {errors.dateofBirth && (
@@ -269,7 +292,9 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
 
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={() => {
+            onClose();
+          }}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
           aria-label="Close"
         >
