@@ -25,6 +25,24 @@ import {
 } from "@/lib/access";
 import { successToast, errorToast } from "@/lib/toast";
 
+import PatientModal from "../patients/PatientModal";
+
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
+import { ChevronsUpDown, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 type FileWithStatus = {
   file: File;
   status: "pending" | "processing" | "done" | "error";
@@ -35,10 +53,10 @@ type UploadFile = {
   status: "pending" | "uploading" | "done" | "error";
 };
 
-const specialties = ["Wound Care", "Podiatry"];
+const specialties = ["Wound Qualification", "Wound Care General"];
 const specialtyMap: Record<string, string> = {
-  "Wound Care": "Woundcare",
-  Podiatry: "Podiatry",
+  "Wound Qualification": "Woundcare",
+  "Wound Care General": "Woundcare",
 };
 
 export default function NewAuditPage() {
@@ -49,13 +67,20 @@ export default function NewAuditPage() {
   const [provider, setProvider] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [providerList, setProviderList] = useState<any[]>([]);
-  const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
+  const [selectedSpecialty, setSelectedSpecialty] = useState(
+    "Wound Qualification"
+  );
+
+  const [open, setOpen] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState("");
   const [fileList, setFileList] = useState<FileWithStatus[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const providerChange = (e: string) => {
     setSelectedProviderId(e);
+    setZipCode(providerList.find((item) => item.id === e).zipCode);
   };
 
   const [selectedPatient, setSelectedPatient] = useState("");
@@ -183,6 +208,8 @@ export default function NewAuditPage() {
 
   const fetchPatients = async (ownerId: number) => {
     try {
+      const prevPatient = patient;
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/patient/patient/${ownerId}`,
         {
@@ -191,6 +218,10 @@ export default function NewAuditPage() {
         }
       );
       const patientsData = await res.json();
+      const addedPatients = patientsData.filter(
+        (np: any) => !prevPatient.some((pp) => pp.id === np.id)
+      );
+      setSelectedPatient(addedPatients[0].id);
       setPatient(patientsData);
     } catch (error) {
       console.error(error);
@@ -281,27 +312,77 @@ export default function NewAuditPage() {
                       Patient <span className="text-red-500">*</span>
                     </Label>
                     <div className="flex gap-2 mt-1">
-                      <Select
-                        value={selectedPatient}
-                        onValueChange={setSelectedPatient}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select patient..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {patient.map((p) => (
-                            <SelectItem value={p.id}>
-                              {p.firstName} {p.lastName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        variant="outline"
-                        className="flex items-center gap-1 whitespace-nowrap hover:bg-blue-50"
-                      >
-                        <PlusCircle className="h-4 w-4" /> New
-                      </Button>
+                      <div className="w-3/4">
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={open}
+                              className="w-full justify-between"
+                            >
+                              {selectedPatient
+                                ? `${patient.find((p) => p.id === selectedPatient)?.lastName}, ${
+                                    patient.find(
+                                      (p) => p.id === selectedPatient
+                                    )?.firstName
+                                  }`
+                                : "Select patient..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[300px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search patient..." />
+                              <CommandList>
+                                <CommandEmpty>No patient found.</CommandEmpty>
+                                <CommandGroup>
+                                  {patient.map((p) => (
+                                    <CommandItem
+                                      key={p.id}
+                                      // ✅ Make the value searchable by name
+                                      value={`${p.lastName} ${p.firstName}`}
+                                      onSelect={() => {
+                                        setSelectedPatient(p.id);
+                                        setOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          selectedPatient === p.id
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                      />
+                                      {p.lastName}, {p.firstName}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="w-1/4">
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-1 whitespace-nowrap hover:bg-blue-50"
+                          style={{ width: "100%" }}
+                          onClick={() => setIsModalOpen(true)}
+                        >
+                          <PlusCircle className="h-4 w-4" /> New
+                        </Button>
+                      </div>
+                      <PatientModal
+                        isOpen={isModalOpen}
+                        onClose={() => {
+                          setIsModalOpen(false);
+                          successToast("New Patient is added.");
+                          fetchPatients(parseInt(user?.id ?? "0", 10));
+                          // Removed forced reload - let the natural state update handle it
+                        }}
+                      />
                     </div>
                   </div>
                   {/* Zip Code */}

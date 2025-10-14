@@ -22,10 +22,10 @@ type FileWithStatus = {
   status: "pending" | "processing" | "done" | "error";
 };
 
-const specialties = ["Wound Care", "Podiatry"];
+const specialties = ["Wound Care General", "Wound Qualification"];
 const specialtyMap: Record<string, string> = {
-  "Wound Care": "Woundcare",
-  Podiatry: "Podiatry",
+  "Wound Care General": "Woundcare",
+  "Wound Qualification": "Woundcare",
 };
 
 export default function UploadModal({ isOpen, onClose }: Props) {
@@ -34,7 +34,8 @@ export default function UploadModal({ isOpen, onClose }: Props) {
   const [fileList, setFileList] = useState<FileWithStatus[]>([]);
   const [uploading, setUploading] = useState(false);
   const [providerList, setProviderList] = useState<any[]>([]);
-  const [selectedSpecialty, setSelectedSpecialty] = useState("Wound Care");
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState("Wound Care General");
   const [selectedProviderId, setSelectedProviderId] = useState("");
 
   const providerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

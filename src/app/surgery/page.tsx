@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function surgery() {
-  const [specialty, setSpecialty] = useState("Wound Care");
+  const [specialty, setSpecialty] = useState("Wound Care General");
   const [form, setForm] = useState({
     diagnosisCodes: [""],
     procedureCodes: [""],
@@ -30,8 +30,8 @@ export default function surgery() {
         value={specialty}
         onChange={(e) => setSpecialty(e.target.value)}
       >
-        <option value="Wound Care">Wound Care</option>
-        <option value="Podiatry">Podiatry</option>
+        <option value="Wound Care General">Wound Care General</option>
+        <option value="Wound Qualification">Wound Qualification</option>
       </select>
 
       <div>

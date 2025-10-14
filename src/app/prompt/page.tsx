@@ -42,9 +42,9 @@ function ToggleSwitch({ isOn, onToggle, label }: ToggleSwitchProps) {
 }
 
 export default function prompt() {
-  const [activeTab, setActiveTab] = useState<"Wound Care" | "Podiatry">(
-    "Wound Care"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "Wound Care General" | "Wound Qualification"
+  >("Wound Care General");
   const [text, setText] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [isReset, setIsReset] = useState(false);
@@ -129,7 +129,7 @@ export default function prompt() {
         </div>
         <header className="flex items-center justify-between px-8 bg-white border-b">
           <nav className="flex space-x-6 px-4">
-            {["Wound Care", "Podiatry"].map((tab) => (
+            {["Wound Care General", "Wound Qualification"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}

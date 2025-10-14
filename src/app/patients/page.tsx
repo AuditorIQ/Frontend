@@ -7,6 +7,8 @@ import PatientModal from "./PatientModal";
 import { useRouter } from "next/navigation"; // Updated import for App Router
 import { successToast } from "@/lib/toast";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 interface Patient {
   id: number;
@@ -21,6 +23,21 @@ export default function Patients() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchkey, setSearchKey] = useState("");
+
+  const filteredDataset = patients.filter((item) =>
+    Object.values(item).some(
+      (value) =>
+        typeof value === "string" &&
+        value.toLowerCase().includes(searchkey.toLowerCase())
+    )
+  );
+
+  const SearchKeyChange = (e: any) => {
+    const newValue = e.target.value;
+    setSearchKey(newValue);
+  };
+
   const ownerId = useAuthStore.getState().user?.id;
 
   // Fetch patients with error handling
@@ -78,11 +95,23 @@ export default function Patients() {
       <Sidebar />
       <Card className="flex-1 p-4 flex flex-col">
         <SubMenu />
-        <div className="mt-8 p-4 mx-auto flex flex-col items-center text-center w-3/5 border border-gray-300 shadow-lg rounded-lg">
+        <div className="mt-8 p-4 mx-auto flex flex-col w-3/5 border border-gray-300 shadow-lg rounded-lg">
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">Patients</h1>
           <div className="flex justify-between items-center mb-6 w-full">
-            <h1 className="text-2xl font-bold text-gray-800">Patients</h1>
+            {/* Left side - Search */}
+            <div className="flex items-center gap-3">
+              <Search className="w-5 h-5 text-gray-600" />
+              <Input
+                placeholder="Search"
+                value={searchkey}
+                onChange={SearchKeyChange}
+                className="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Right side - Button */}
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow transition-colors"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-sm transition-colors"
               onClick={() => setIsModalOpen(true)}
             >
               + New Patient
@@ -100,7 +129,7 @@ export default function Patients() {
           />
 
           <div className="overflow-x-auto w-full">
-            {patients.length === 0 ? (
+            {filteredDataset.length === 0 ? (
               <p className="py-4 text-gray-500">No patients found</p>
             ) : (
               <table className="w-full text-left border-collapse">
@@ -113,7 +142,7 @@ export default function Patients() {
                   </tr>
                 </thead>
                 <tbody>
-                  {patients.map((patient) => (
+                  {filteredDataset.map((patient) => (
                     <tr
                       key={patient.id}
                       className={`${
@@ -131,17 +160,7 @@ export default function Patients() {
                         )}
                       </td>
                       <td className="py-3 px-4 border-b">
-                        <select
-                          value={patient.gender}
-                          onChange={(e) =>
-                            handleGenderChange(patient.id, e.target.value)
-                          }
-                          className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          onClick={(e) => e.stopPropagation()} // Prevent row click when selecting gender
-                        >
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                        </select>
+                        <label className="px-2 py-1">{patient.gender}</label>
                       </td>
                     </tr>
                   ))}

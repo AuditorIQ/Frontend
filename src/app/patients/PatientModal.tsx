@@ -102,7 +102,12 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
           }),
         }
       );
-
+      setPatientInfo({
+        firstName: "",
+        lastName: "",
+        dateofBirth: null,
+        gender: "",
+      });
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(

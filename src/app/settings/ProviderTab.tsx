@@ -384,8 +384,8 @@ export default function ProviderTab() {
                     }
                     className="mt-1 w-full border border-gray-300 rounded-md p-2"
                   >
-                    <option value="Woundcare">Woundcare</option>
-                    <option value="Podiatry">Podiatry</option>
+                    <option value="Woundcare">Wound Care General</option>
+                    <option value="Podiatry">Wound Qualification</option>
                   </select>
                   {errors.specialty && (
                     <p className="text-xs text-red-600 mt-1">

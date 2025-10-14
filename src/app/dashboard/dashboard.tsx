@@ -164,7 +164,7 @@ export default function DashboardPage() {
               onClick={() => {
                 window.location.href = "/newaudit";
               }}
-              className={`px-6 py-3 rounded-lg ${
+              className={`cursor-pointer px-6 py-3 rounded-lg ${
                 isDisabled
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-500 hover:bg-blue-600"

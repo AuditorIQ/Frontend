@@ -235,8 +235,8 @@ export function AddProviders({
                 }
               }}
             >
-              <option value="Woundcare">Wound Care</option>
-              <option value="Podiatry">Podiatry</option>
+              <option value="Woundcare">Wound Care General</option>
+              <option value="Podiatry">Wound Qualification</option>
             </select>
             {errors.specialty && (
               <p className="text-red-500 text-xs">{errors.specialty}</p>
