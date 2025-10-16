@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation"; // Updated import for App Router
 import { successToast } from "@/lib/toast";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { DeleteIcon, Edit, Edit2, Search, Trash2 } from "lucide-react";
+import axios from "axios";
 
 interface Patient {
   id: number;
@@ -24,6 +25,7 @@ export default function Patients() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [searchkey, setSearchKey] = useState("");
+  const [isEdit, setIsEdit] = useState<number | null>(null);
 
   const filteredDataset = patients.filter((item) =>
     Object.values(item).some(
@@ -33,6 +35,25 @@ export default function Patients() {
     )
   );
 
+  const removePatient = async (id: number) => {
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/patient/patient/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token") ?? ""}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    successToast("Removed Patient successfully.");
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  };
+
   const SearchKeyChange = (e: any) => {
     const newValue = e.target.value;
     setSearchKey(newValue);
@@ -41,38 +62,30 @@ export default function Patients() {
   const ownerId = useAuthStore.getState().user?.id;
 
   // Fetch patients with error handling
+  const fetchPatients = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/patient/patient/${ownerId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to fetch patients");
+
+      const data = await res.json();
+      setPatients(data);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/patient/patient/${ownerId}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        if (!res.ok) throw new Error("Failed to fetch patients");
-
-        const data = await res.json();
-        setPatients(data);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchPatients();
   }, []); // Removed patients from dependencies to prevent infinite loops
-
-  const handleGenderChange = (id: number, newGender: string) => {
-    setPatients((prevPatients) =>
-      prevPatients.map((patient) =>
-        patient.id === id ? { ...patient, gender: newGender } : patient
-      )
-    );
-  };
 
   const handleRowClick = (patientId: number) => {
     sessionStorage.setItem("currentPatientId", String(patientId));
@@ -122,7 +135,7 @@ export default function Patients() {
             isOpen={isModalOpen}
             onClose={() => {
               setIsModalOpen(false);
-              setTimeout(() => window.location.reload(), 100);
+
               // Removed forced reload - let the natural state update handle it
             }}
           />
@@ -138,6 +151,7 @@ export default function Patients() {
                     <th className="py-3 px-4 border-b">First Name</th>
                     <th className="py-3 px-4 border-b">Date of Birth</th>
                     <th className="py-3 px-4 border-b">Gender</th>
+                    <th className="py-3 px-4 border-b">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -147,20 +161,72 @@ export default function Patients() {
                       className={`${
                         patient.id % 2 === 0 ? "bg-gray-50" : "bg-white"
                       } hover:bg-gray-100 cursor-pointer`}
-                      onClick={() => handleRowClick(patient.id)}
                     >
-                      <td className="py-3 px-4 border-b">{patient.lastName}</td>
-                      <td className="py-3 px-4 border-b">
+                      <td
+                        className="py-3 px-4 border-b"
+                        onClick={() => handleRowClick(patient.id)}
+                      >
+                        {patient.lastName}
+                      </td>
+                      <td
+                        className="py-3 px-4 border-b"
+                        onClick={() => handleRowClick(patient.id)}
+                      >
                         {patient.firstName}
                       </td>
-                      <td className="py-3 px-4 border-b">
+                      <td
+                        className="py-3 px-4 border-b"
+                        onClick={() => handleRowClick(patient.id)}
+                      >
                         {new Date(patient.dateofBirth).toLocaleDateString(
                           "en-US"
                         )}
                       </td>
-                      <td className="py-3 px-4 border-b">
+                      <td
+                        className="py-3 px-4 border-b"
+                        onClick={() => handleRowClick(patient.id)}
+                      >
                         <label className="px-2 py-1">{patient.gender}</label>
                       </td>
+                      <td>
+                        <div className="flex space-x-2">
+                          <button
+                            className="text-green-500 hover:text-green-700"
+                            onClick={() => {
+                              setIsEdit(patient.id);
+                            }}
+                          >
+                            <Edit size={24} />
+                          </button>
+
+                          <button
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => removePatient(patient.id)}
+                          >
+                            <Trash2 size={24} />
+                          </button>
+                        </div>
+                      </td>
+                      {isEdit === patient.id && (
+                        <PatientModal
+                          isOpen={isEdit === patient.id ? true : false}
+                          id={String(patient.id)}
+                          lastName={
+                            isEdit === patient.id ? patient.lastName : ""
+                          }
+                          firstName={
+                            isEdit === patient.id ? patient.firstName : ""
+                          }
+                          dateofBirth={
+                            isEdit === patient.id ? patient.dateofBirth : ""
+                          }
+                          gender={isEdit === patient.id ? patient.gender : ""}
+                          onClose={() => {
+                            setIsEdit(null);
+                            // Removed forced reload - let the natural state update handle it
+                          }}
+                        />
+                      )}
                     </tr>
                   ))}
                 </tbody>

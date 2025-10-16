@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { successToast } from "@/lib/toast";
 
 type PatientInfo = {
+  id: string;
   firstName: string;
   lastName: string;
   dateofBirth: Date | null;
@@ -12,6 +13,7 @@ type PatientInfo = {
 };
 
 type Errors = {
+  id?: string;
   firstName?: string;
   lastName?: string;
   dateofBirth?: string;
@@ -21,15 +23,29 @@ type Errors = {
 
 type PatientModalProps = {
   isOpen: boolean;
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+  dateofBirth?: string;
+  gender?: string;
   onClose: () => void;
 };
 
-const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
+const PatientModal: React.FC<PatientModalProps> = ({
+  isOpen,
+  id,
+  firstName,
+  lastName,
+  dateofBirth,
+  gender,
+  onClose,
+}) => {
   const [patientInfo, setPatientInfo] = useState<PatientInfo>({
-    firstName: "",
-    lastName: "",
-    dateofBirth: null,
-    gender: "",
+    id: id || "",
+    firstName: firstName || "",
+    lastName: lastName || "",
+    dateofBirth: dateofBirth ? new Date(dateofBirth) : null,
+    gender: gender || "",
   });
 
   const [errors, setErrors] = useState<Errors>({});
@@ -87,23 +103,45 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
       setSubmitting(true);
       const ownerId = useAuthStore.getState().user?.id;
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/patient/add-patient`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            firstName: patientInfo.firstName.trim(),
-            lastName: patientInfo.lastName.trim(),
-            gender: patientInfo.gender,
-            dateofBirth: patientInfo.dateofBirth
-              ? patientInfo.dateofBirth.toISOString()
-              : null,
-            ownerId,
-          }),
-        }
-      );
+      let res;
+      if (firstName) {
+        res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/patient/edit-patient`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: patientInfo.id,
+              firstName: patientInfo.firstName.trim(),
+              lastName: patientInfo.lastName.trim(),
+              gender: patientInfo.gender,
+              dateofBirth: patientInfo.dateofBirth
+                ? patientInfo.dateofBirth.toISOString()
+                : null,
+              ownerId,
+            }),
+          }
+        );
+      } else {
+        res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/patient/add-patient`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firstName: patientInfo.firstName.trim(),
+              lastName: patientInfo.lastName.trim(),
+              gender: patientInfo.gender,
+              dateofBirth: patientInfo.dateofBirth
+                ? patientInfo.dateofBirth.toISOString()
+                : null,
+              ownerId,
+            }),
+          }
+        );
+      }
       setPatientInfo({
+        id: "",
         firstName: "",
         lastName: "",
         dateofBirth: null,
@@ -115,7 +153,11 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
           errorData.message || "Failed to add patient. Please try again."
         );
       } else {
-        successToast("New Patient is added.");
+        if (id) successToast("Patient updated successfully.");
+        else successToast("New Patient is added.");
+        setTimeout(() => {
+          window.location.href = "/patients";
+        }, 1000);
       }
       onClose(); // Close modal on success
     } catch (err) {
@@ -221,7 +263,7 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
                     }
                   }
                 }}
-                dateFormat="yyyy-MM-dd" // Ensure the date format is consistent
+                dateFormat="MM/dd/yyyy" // Ensure the date format is consistent
                 wrapperClassName="w-full"
                 className={`border rounded-md px-3 py-2 w-full focus:ring-gray-500 focus:border-gray-500 ${
                   errors.dateofBirth ? "border-red-500" : "border-gray-300"
@@ -285,7 +327,10 @@ const PatientModal: React.FC<PatientModalProps> = ({ isOpen, onClose }) => {
                 submitting ? "opacity-70 cursor-not-allowed" : ""
               } bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md`}
             >
-              {submitting ? "Submitting..." : "Submit"}
+              {id && submitting ? "Updating..." : ""}
+              {!id && submitting ? "Creating..." : ""}
+              {id && !submitting ? "Update" : ""}
+              {!id && !submitting ? "Add" : ""}
             </button>
           </div>
         </div>

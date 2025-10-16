@@ -197,7 +197,7 @@ export default function ProviderTab() {
         Provider Details
       </h2>
 
-      <div className="md:w-1/2 pt-4">
+      <div className="md:w-2/3 pt-4">
         <div className="border rounded-md overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
