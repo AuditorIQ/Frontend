@@ -134,6 +134,7 @@ export default function Patients() {
           <PatientModal
             isOpen={isModalOpen}
             onClose={() => {
+              setIsEdit(null);
               setIsModalOpen(false);
 
               // Removed forced reload - let the natural state update handle it
@@ -155,80 +156,82 @@ export default function Patients() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredDataset.map((patient) => (
-                    <tr
-                      key={patient.id}
-                      className={`${
-                        patient.id % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      } hover:bg-gray-100 cursor-pointer`}
-                    >
-                      <td
-                        className="py-3 px-4 border-b"
-                        onClick={() => handleRowClick(patient.id)}
+                  {filteredDataset
+                    .sort((a, b) => a.id - b.id) // Sort by patient.id in ascending order
+                    .map((patient) => (
+                      <tr
+                        key={patient.id}
+                        className={`${
+                          patient.id % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        } hover:bg-gray-100 cursor-pointer`}
                       >
-                        {patient.lastName}
-                      </td>
-                      <td
-                        className="py-3 px-4 border-b"
-                        onClick={() => handleRowClick(patient.id)}
-                      >
-                        {patient.firstName}
-                      </td>
-                      <td
-                        className="py-3 px-4 border-b"
-                        onClick={() => handleRowClick(patient.id)}
-                      >
-                        {new Date(patient.dateofBirth).toLocaleDateString(
-                          "en-US"
-                        )}
-                      </td>
-                      <td
-                        className="py-3 px-4 border-b"
-                        onClick={() => handleRowClick(patient.id)}
-                      >
-                        <label className="px-2 py-1">{patient.gender}</label>
-                      </td>
-                      <td>
-                        <div className="flex space-x-2">
-                          <button
-                            className="text-green-500 hover:text-green-700"
-                            onClick={() => {
-                              setIsEdit(patient.id);
-                            }}
-                          >
-                            <Edit size={24} />
-                          </button>
+                        <td
+                          className="py-3 px-4 border-b"
+                          onClick={() => handleRowClick(patient.id)}
+                        >
+                          {patient.lastName}
+                        </td>
+                        <td
+                          className="py-3 px-4 border-b"
+                          onClick={() => handleRowClick(patient.id)}
+                        >
+                          {patient.firstName}
+                        </td>
+                        <td
+                          className="py-3 px-4 border-b"
+                          onClick={() => handleRowClick(patient.id)}
+                        >
+                          {new Date(patient.dateofBirth).toLocaleDateString(
+                            "en-US"
+                          )}
+                        </td>
+                        <td
+                          className="py-3 px-4 border-b"
+                          onClick={() => handleRowClick(patient.id)}
+                        >
+                          <label className="px-2 py-1">{patient.gender}</label>
+                        </td>
+                        <td>
+                          <div className="flex space-x-2">
+                            <button
+                              className="text-green-500 hover:text-green-700"
+                              onClick={() => {
+                                setIsEdit(patient.id);
+                              }}
+                            >
+                              <Edit size={24} />
+                            </button>
 
-                          <button
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() => removePatient(patient.id)}
-                          >
-                            <Trash2 size={24} />
-                          </button>
-                        </div>
-                      </td>
-                      {isEdit === patient.id && (
-                        <PatientModal
-                          isOpen={isEdit === patient.id ? true : false}
-                          id={String(patient.id)}
-                          lastName={
-                            isEdit === patient.id ? patient.lastName : ""
-                          }
-                          firstName={
-                            isEdit === patient.id ? patient.firstName : ""
-                          }
-                          dateofBirth={
-                            isEdit === patient.id ? patient.dateofBirth : ""
-                          }
-                          gender={isEdit === patient.id ? patient.gender : ""}
-                          onClose={() => {
-                            setIsEdit(null);
-                            // Removed forced reload - let the natural state update handle it
-                          }}
-                        />
-                      )}
-                    </tr>
-                  ))}
+                            <button
+                              className="text-red-500 hover:text-red-700"
+                              onClick={() => removePatient(patient.id)}
+                            >
+                              <Trash2 size={24} />
+                            </button>
+                          </div>
+                        </td>
+                        {isEdit === patient.id && (
+                          <PatientModal
+                            isOpen={isEdit === patient.id ? true : false}
+                            id={String(patient.id)}
+                            lastName={
+                              isEdit === patient.id ? patient.lastName : ""
+                            }
+                            firstName={
+                              isEdit === patient.id ? patient.firstName : ""
+                            }
+                            dateofBirth={
+                              isEdit === patient.id ? patient.dateofBirth : ""
+                            }
+                            gender={isEdit === patient.id ? patient.gender : ""}
+                            onClose={() => {
+                              setIsEdit(null);
+                              setIsModalOpen(false);
+                            }}
+                          />
+                        )}
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             )}

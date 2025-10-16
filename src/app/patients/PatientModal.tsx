@@ -29,6 +29,7 @@ type PatientModalProps = {
   dateofBirth?: string;
   gender?: string;
   onClose: () => void;
+  onUpdatePatient?: (updatedPatient: any) => void; // Added callback for updating patient
 };
 
 const PatientModal: React.FC<PatientModalProps> = ({
@@ -39,6 +40,7 @@ const PatientModal: React.FC<PatientModalProps> = ({
   dateofBirth,
   gender,
   onClose,
+  onUpdatePatient,
 }) => {
   const [patientInfo, setPatientInfo] = useState<PatientInfo>({
     id: id || "",
@@ -104,7 +106,7 @@ const PatientModal: React.FC<PatientModalProps> = ({
       const ownerId = useAuthStore.getState().user?.id;
 
       let res;
-      if (firstName) {
+      if (id) {
         res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/patient/edit-patient`,
           {
@@ -140,21 +142,29 @@ const PatientModal: React.FC<PatientModalProps> = ({
           }
         );
       }
-      setPatientInfo({
-        id: "",
-        firstName: "",
-        lastName: "",
-        dateofBirth: null,
-        gender: "",
-      });
+
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(
           errorData.message || "Failed to add patient. Please try again."
         );
       } else {
-        if (id) successToast("Patient updated successfully.");
-        else successToast("New Patient is added.");
+        const updatedPatient = {
+          id: patientInfo.id,
+          firstName: patientInfo.firstName.trim(),
+          lastName: patientInfo.lastName.trim(),
+          gender: patientInfo.gender,
+          dateofBirth: patientInfo.dateofBirth
+            ? patientInfo.dateofBirth.toISOString()
+            : null,
+          ownerId,
+        };
+        if (id) {
+          successToast("Patient updated successfully.");
+          onUpdatePatient && onUpdatePatient(updatedPatient); // Update patient in parent state
+        } else {
+          successToast("New Patient is added.");
+        }
         setTimeout(() => {
           window.location.href = "/patients";
         }, 1000);
