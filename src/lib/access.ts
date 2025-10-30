@@ -8,7 +8,8 @@ export type FeatureKey =
   | "viewReports"
   | "usePrompt"
   | "managePlan"
-  | "useUploads";
+  | "useUploads"
+  | "useAccountList";
 
 export type SubscriptionTier =
   | "FREE"
@@ -33,6 +34,7 @@ const roleFeatureMatrix: Record<Role, Partial<Record<FeatureKey, boolean>>> = {
     usePrompt: true,
     managePlan: false, // admins do not see plan & payments in current UX
     useUploads: true,
+    useAccountList: true,
   },
   user: {
     viewDashboard: true,
@@ -41,6 +43,7 @@ const roleFeatureMatrix: Record<Role, Partial<Record<FeatureKey, boolean>>> = {
     usePrompt: false,
     managePlan: true,
     useUploads: true,
+    useAccountList: false,
   },
 };
 
@@ -92,6 +95,8 @@ export function shouldShowNavItem(name: string, ctx: AccessContext): boolean {
       return canUseFeature("usePrompt", ctx);
     case "Plan & Payments":
       return canUseFeature("managePlan", ctx);
+    case "Accounts":
+      return canUseFeature("useAccountList", ctx);
     default:
       return true;
   }

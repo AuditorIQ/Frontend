@@ -14,6 +14,7 @@ import {
   LogOut,
   Edit,
   Users,
+  Stethoscope,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { buildAccessContext, shouldShowNavItem } from "@/lib/access";
@@ -30,7 +31,8 @@ export default function Sidebar() {
         { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
         { name: "Results", href: "/results", icon: ClipboardList },
         { name: "Reports", href: "/reports", icon: PieChart },
-        { name: "Patients", href: "/patients", icon: Users },
+        { name: "Patients", href: "/patients", icon: Stethoscope },
+        { name: "Accounts", href: "/accounts", icon: Users },
       ],
     },
     {
