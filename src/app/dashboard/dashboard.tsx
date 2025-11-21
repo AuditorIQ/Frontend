@@ -314,18 +314,6 @@ export default function DashboardPage() {
                 )}
               </tbody>
             </table>
-            {/* Pagination */}
-            <div className="mt-4 flex justify-center gap-2">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-white text-blue-500"}`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </Card>
