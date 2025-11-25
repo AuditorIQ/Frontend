@@ -87,7 +87,7 @@ export default function Patients() {
     fetchPatients();
   }, []); // Removed patients from dependencies to prevent infinite loops
 
-  const handleRowClick = (patientId: number) => {
+  const handleRowClick = (patientId: string) => {
     sessionStorage.setItem("currentPatientId", String(patientId));
     window.location.href = "/patientdetail";
   };
@@ -167,19 +167,19 @@ export default function Patients() {
                       >
                         <td
                           className="py-3 px-4 border-b"
-                          onClick={() => handleRowClick(patient.id)}
+                          onClick={() => handleRowClick(String(patient.id))}
                         >
                           {patient.lastName}
                         </td>
                         <td
                           className="py-3 px-4 border-b"
-                          onClick={() => handleRowClick(patient.id)}
+                          onClick={() => handleRowClick(String(patient.id))}
                         >
                           {patient.firstName}
                         </td>
                         <td
                           className="py-3 px-4 border-b"
-                          onClick={() => handleRowClick(patient.id)}
+                          onClick={() => handleRowClick(String(patient.id))}
                         >
                           {new Date(patient.dateofBirth).toLocaleDateString(
                             "en-US"
@@ -187,7 +187,7 @@ export default function Patients() {
                         </td>
                         <td
                           className="py-3 px-4 border-b"
-                          onClick={() => handleRowClick(patient.id)}
+                          onClick={() => handleRowClick(String(patient.id))}
                         >
                           <label className="px-2 py-1">{patient.gender}</label>
                         </td>
