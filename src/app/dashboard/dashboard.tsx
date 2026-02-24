@@ -36,13 +36,13 @@ const viewPDF = async (e: any) => {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
-    }
+    },
   );
 
   const popup = window.open(
     "",
     "pdfPopup",
-    `width=${screen.availWidth},height=${screen.availHeight},top=0,left=0`
+    `width=${screen.availWidth},height=${screen.availHeight},top=0,left=0`,
   );
 
   if (!popup) {
@@ -133,13 +133,13 @@ export default function DashboardPage() {
     Object.values(item).some(
       (value) =>
         typeof value === "string" &&
-        value.toLowerCase().includes(searchKey.toLowerCase())
-    )
+        value.toLowerCase().includes(searchKey.toLowerCase()),
+    ),
   );
   const totalPages = Math.ceil(filteredDataset.length / recordsPerPage);
   const paginatedData = filteredDataset.slice(
     (currentPage - 1) * recordsPerPage,
-    currentPage * recordsPerPage
+    currentPage * recordsPerPage,
   );
 
   return (
@@ -164,7 +164,7 @@ export default function DashboardPage() {
               onClick={() => {
                 window.location.href = "/newaudit";
               }}
-              className={`cursor-pointer px-6 py-3 rounded-lg ${
+              className={`cursor-pointer mx-3 px-6 py-3 rounded-lg ${
                 isDisabled
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-500 hover:bg-blue-600"
@@ -172,6 +172,19 @@ export default function DashboardPage() {
               disabled={isDisabled}
             >
               New Audit
+            </button>
+            <button
+              onClick={() => {
+                window.location.href = "/analyse";
+              }}
+              className={`cursor-pointer mx-3 px-6 py-3 rounded-lg ${
+                isDisabled
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white`}
+              disabled={isDisabled}
+            >
+              Analyse
             </button>
           </div>
         </div>
@@ -310,7 +323,7 @@ export default function DashboardPage() {
                         </Button>
                       </td>
                     </tr>
-                  )
+                  ),
                 )}
               </tbody>
             </table>

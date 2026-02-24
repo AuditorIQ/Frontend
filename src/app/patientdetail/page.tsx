@@ -27,13 +27,13 @@ const viewpdf = async (e: any) => {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
-    }
+    },
   );
 
   const popup = window.open(
     "",
     "pdfPopup",
-    `width=${screen.availWidth},height=${screen.availHeight},top=0,left=0`
+    `width=${screen.availWidth},height=${screen.availHeight},top=0,left=0`,
   );
 
   if (!popup) {
@@ -76,7 +76,7 @@ export default function PatientDetail() {
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
       const result_data = await res.json();
       const patientsData = result_data.find((p: any) => p.id === ownerId);
@@ -111,7 +111,7 @@ export default function PatientDetail() {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
-          }
+          },
         );
 
         const baseresult = list.data.list
@@ -136,7 +136,7 @@ export default function PatientDetail() {
           .filter(
             (item: any) =>
               item[1] ===
-              currentpatient.firstName + " " + currentpatient.lastName
+              currentpatient.firstName + " " + currentpatient.lastName,
           );
         setDataset(baseresult);
       } catch (error) {
@@ -153,7 +153,7 @@ export default function PatientDetail() {
   // Calculate compliance metrics
   const totalAudits = dataset.length;
   const compliantCharts = dataset.filter(
-    (item) => item[4] === "Low" || item[4] === "Moderate"
+    (item) => item[4] === "Low" || item[4] === "Moderate",
   ).length;
   const complianceRate =
     totalAudits > 0
